@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>SteemWriter</title>
+    
+    <link href="./thirdParty/css/bootstrap.css" rel="stylesheet">
+    <link href="./css/app.css" rel="stylesheet">
+    <link href="./css/non-responsive.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+        <div class="navbar-center" id="editorMode">
+            <ul class="navbar-nav" style="float: none;display: inline-block;list-style-type: none;">
+                <li><a style="text-decoration: none;" href="#">Visual</a></li>
+                <li><a style="text-decoration: none;" href="#">Markdown</a></li>
+                <li><a style="text-decoration: none;" href="#">Preview</a></li>
+            </ul>
+        </div>
+
+        <ul class="nav navbar-nav navbar-left">
+            <li><a href="#"><b style="font-size: 17px;">SteemWriter</b></a></li>
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Action</a></li>
+                <li><a href="#">Another action</a></li>
+                <li><a href="#">Something else here</a></li>
+                <li role="separator" class="divider"></li>
+                <li class="dropdown-header">Nav header</li>
+                <li><a href="#">Separated link</a></li>
+                <li><a href="#">One more separated link</a></li>
+              </ul>
+            </li>
+        </ul>
+
+    </nav>
+
+    <div class="container container-noPadding">
+        <h1>Hello World!</h1>
+        <!-- All of the Node.js APIs are available in this renderer process. -->
+        We are using node <script>document.write(process.versions.node)</script>,
+        Chromium <script>document.write(process.versions.chrome)</script>,
+        and Electron <script>document.write(process.versions.electron)</script>.
+
+    </div> <!-- /container -->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="./thirdParty/js/jquery-3.1.0.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+    <script src="./thirdParty/js/bootstrap.min.js"></script>
+
+    <script>
+      // You can also require other files to run in this process
+      require('./renderer.js');
+    </script>
+  </body>
+</html>
