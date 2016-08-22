@@ -1,0 +1,7 @@
+{
+    "loadingScreen": {
+        "loading": "Loading SteemWriter...",
+        "init": "Initiating Database...",
+        "upgrade": "Upgrading Database..."
+    }
+}
