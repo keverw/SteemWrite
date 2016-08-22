@@ -12,6 +12,7 @@
     "electron-reload": "^1.0.2"
   },
   "dependencies": {
+    "electron-irpc": "0.0.1",
     "jade": "^1.11.0"
   }
 }

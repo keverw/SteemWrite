@@ -9,6 +9,10 @@ require('electron-reload')(__dirname, {
   electron: require('electron-prebuilt')
 });
 
+// IRPC Modules
+var irpc = require('electron-irpc');
+
+var irpcMain = irpc.main();
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow;
