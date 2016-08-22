@@ -4,6 +4,9 @@ var app = electron.app;
 // Module to create native browser window.
 var BrowserWindow = electron.BrowserWindow;
 
+global.isAppReady = false;
+global.isAppClosing = false;
+
 //For DEV
 require('electron-reload')(__dirname, {
   electron: require('electron-prebuilt')
@@ -46,24 +49,38 @@ function createWindow () {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+app.on('ready', function()
+{
+    global.isAppReady = true;
+    createWindow();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
+    if (global.isAppReady && !global.isAppClosing)
+    {
   // On OS X it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== 'darwin') {
     app.quit();
   }
+  }
 
 });
 
-app.on('activate', function () {
+});
+
+app.on('activate', function ()
+{
+    if (global.isAppReady && !global.isAppClosing)
+    {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
     createWindow();
   }
+
+    }
 });
 
 // In this file you can include the rest of your app's specific main process
