@@ -20,7 +20,7 @@ var dialog = require('electron').dialog;
 
 global.closeWithError = function(msg)
 {
-    if (typeof msg == 'object') msg = msg.message; //convert error object to use it's string    
+    if (typeof msg == 'object') msg = msg.message; //convert error object to use it's string
     dialog.showErrorBox(global.lang.appErrors.title, msg);
     app.quit();
 };
@@ -42,14 +42,14 @@ var mainWindow;
 
 function createWindow()
 {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({
-      backgroundColor: '#272b30',
-      width: 1200,
-      height: 700,
+    // Create the browser window.
+    mainWindow = new BrowserWindow({
+        backgroundColor: '#272b30',
+        width: 1200,
+        height: 700,
         minWidth: 800,
-      minHeight: 500
-  });
+        minHeight: 500
+    });
 
   // and load the index.html of the app.
   mainWindow.loadURL('file://' + __dirname + '/index.html');
@@ -88,36 +88,95 @@ app.on('ready', function()
 });
 
 // Quit when all windows are closed.
-app.on('window-all-closed', function ()
+app.on('window-all-closed', function()
 {
     if (global.isAppReady && !global.isAppClosing)
     {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
+      // On OS X it is common for applications and their menu bar
+      // to stay active until the user quits explicitly with Cmd + Q
       if (process.platform !== 'darwin')
       {
-    app.quit();
-  }
+        app.quit();
+      }
 
-  }
-
-});
+    }
 
 });
 
-app.on('activate', function ()
+var allowClose = false;
+
+function canIClose()
+{
+    if (!global.isMigrateingDone) //migrating isn't done/stopped
+    {
+        return false;
+    }
+    else //nothing that says no
+    {
+        return true;
+    }
+
+}
+
+function doClose()
+{
+    if (canIClose())
+    {
+        if (global.db) //db isn't null, close it
+        {
+            global.db.close(function(err)
+            {
+                allowClose = true;
+
+                if (err) return global.closeWithError(err);
+                app.quit();
+            });
+        }
+        else
+        {
+            allowClose = true;
+            app.quit(); //close later
+        }
+
+    }
+    else
+    {
+        setTimeout(function()
+        {
+            doClose(); //try again
+        }, 100);
+    }
+
+}
+
+app.on('before-quit', function(event)
+{
+    if (!global.isAppClosing) //not running closing code
+    {
+        global.isAppClosing = true;
+        event.preventDefault();
+        doClose();
+    }
+    else if (!allowClose) //not allowed to close
+    {
+        event.preventDefault();
+    }
+
+});
+
+app.on('activate', function()
 {
     if (global.isAppReady && !global.isAppClosing)
     {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
+        // On OS X it's common to re-create a window in the app when the
+        // dock icon is clicked and there are no other windows open.
         if (mainWindow === null)
         {
-    createWindow();
-  }
+          createWindow();
+        }
 
     }
-    
+
 });
 
 // In this file you can include the rest of your app's specific main process
