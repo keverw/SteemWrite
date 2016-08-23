@@ -1,7 +1,8 @@
 // This file is loaded by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
-var util = require('./modules/util.js');
+var util = require('./modules/util.js'); //my own utils
+var nodeUtil = require('util'); //Node.js utils
 var irpc = require('electron-irpc');
 var irpcRenderer = irpc.renderer();
 
@@ -21,7 +22,7 @@ var isDBReady = function(isReadyCB)
         else
         {
             //update ui based on result
-            var dbResultUIState = [result.dbTask, result.totalSteps, result.doneSteps].join(',');
+            var dbResultUIState = [result.dbTask, result.totalSteps, result.doneSteps, result.appDBVer, result.userDBVer].join(',');
 
             if (dbResultLastUIState != dbResultUIState)
             {
@@ -34,7 +35,7 @@ var isDBReady = function(isReadyCB)
                 }
                 else if (result.dbTask == 'u')
                 {
-                    $('#loadingScreen h4').text(global.lang.loadingScreen.upgrade).show();
+                    $('#loadingScreen h4').text(nodeUtil.format(global.lang.loadingScreen.upgrade, result.userDBVer + '/' + result.appDBVer)).show();
                 }
 
                 //update progress

@@ -2,7 +2,7 @@
     "loadingScreen": {
         "loading": "Loading SteemWriter...",
         "init": "Initiating Database...",
-        "upgrade": "Upgrading Database..."
+        "upgrade": "Upgrading Database - %s..."
     },
     "appErrors": {
         "title": "App Error",

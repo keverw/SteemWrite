@@ -20,6 +20,12 @@ global.closeWithError = function(msg)
     dialog.showErrorBox(global.lang.appErrors.title, msg);
     app.quit();
 };
+
+global.justClose = function()
+{
+    app.quit();
+};
+
 // IRPC Modules
 var irpc = require('electron-irpc');
 var irpcMain = irpc.main();
@@ -88,7 +94,8 @@ app.on('activate', function ()
     {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
+        if (mainWindow === null)
+        {
     createWindow();
   }
 
