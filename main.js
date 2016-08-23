@@ -34,7 +34,7 @@ global.justClose = function()
 var irpc = require('electron-irpc');
 var irpcMain = irpc.main();
 
-require('./modules/dbHelpers.js').init(irpcMain);
+require('./modules/main/dbHelpers.js').init(irpcMain);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
