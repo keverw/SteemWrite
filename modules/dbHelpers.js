@@ -1,9 +1,24 @@
 (function ()
 {
+    var applicationDBVer = 1;
+
+    //1_init.js is the intial database
+    //then for migrations change applicationDBVer to the lastest version
+    //then add in files in the same format as init named 2.js, 3.js, etc
+
+    //////////////////////////////////////////////////////////////////
+    ////////////////// Do not Edit ////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
+    // Edit this only code if you want to modify how the migration sysem works
+    // Use the steps above if you want to add in new migrations
+    //////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////
+
     global.didMigrateCheck = false;
     global.isMigrateingDone = false;
     global.dbMeta = {
-        appDBVer: 1,  //app DB ver num
+        appDBVer: applicationDBVer,  //app DB ver num
         userDBVer: -1, //user app db num
         dbTask: '', //i for init, u for upgrading
         totalSteps: 0, //progress bar - total steps
@@ -102,6 +117,7 @@
     }
 
     //note: when user is wanting to close... finsh up step and then stop - use global.isAppClosing to detect it then set global.isMigrateingDone to true to allow closing
+    var didCalculateProgress = false;
     function dbMigrate()
     {
         setTimeout(function()
@@ -121,19 +137,41 @@
                 {
                     global.dbMeta.dbTask = 'i';
                     global.dbMeta.totalSteps++;
-                    global.dbMeta.totalSteps = global.dbMeta.totalSteps + require('../migrations/init.js').getTotal;
-                    
-                    runMigration('init', global.dbMeta.appDBVer);
+                    global.dbMeta.totalSteps = global.dbMeta.totalSteps + require('../migrations/1_init.js').getTotal;
+
+                    runMigration('1_init', global.dbMeta.appDBVer);
                 }
                 else //non empty db - check for upgrading
                 {
-                    //todo: check if they need a upgrade or not
-                    //if yes, caluate for progress and mark as done. then do each file.
+                    if (global.dbMeta.appDBVer === global.dbMeta.userDBVer)
+                    {
+                        global.isMigrateingDone = true;
+                        isDBReady = true;
+                    }
+                    else
+                    {
+                        var nextVersion = global.dbMeta.userDBVer+1;
 
-                    //global.dbMeta.dbTask = 'u';
+                        //Calculate Progress
+                        if (!didCalculateProgress)
+                        {
+                            global.dbMeta.dbTask = 'u';
 
-                    global.isMigrateingDone = true;
-                    isDBReady = true;
+                            didCalculateProgress = true;
+                            var newVersions = global.dbMeta.appDBVer - global.dbMeta.userDBVer;
+
+                            for (var i = nextVersion; i <= global.dbMeta.appDBVer; i++)
+                            {
+                                global.dbMeta.totalSteps++; //adds the step it needs to do
+                                global.dbMeta.totalSteps = global.dbMeta.totalSteps + require('../migrations/' + i  + '.js').getTotal; //total count of what needs to be done
+                            }
+
+                        }
+
+                        //Run Migration
+                        runMigration(nextVersion, nextVersion);
+                    }
+
                 }
 
             }

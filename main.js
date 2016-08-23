@@ -12,6 +12,10 @@ require('electron-reload')(__dirname, {
   electron: require('electron-prebuilt')
 });
 
+global.lang = require('./lang/en.json');
+
+global.db = null;
+
 var dialog = require('electron').dialog;
 
 global.closeWithError = function(msg)
@@ -29,6 +33,9 @@ global.justClose = function()
 // IRPC Modules
 var irpc = require('electron-irpc');
 var irpcMain = irpc.main();
+
+require('./modules/dbHelpers.js').init(irpcMain);
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 var mainWindow;
@@ -40,9 +47,8 @@ function createWindow()
       backgroundColor: '#272b30',
       width: 1200,
       height: 700,
-      minWidth: 700,
+        minWidth: 800,
       minHeight: 500
-
   });
 
   // and load the index.html of the app.
@@ -64,8 +70,19 @@ function createWindow()
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
+
+var path = require('path');
+var sqlite3 = require('sqlite3');
+
 app.on('ready', function()
 {
+    var dbFile = path.join(app.getPath('userData'), 'main.db');
+
+    if (!global.db)
+    {
+        global.db = new sqlite3.Database(dbFile);
+    }
+
     global.isAppReady = true;
     createWindow();
 });
