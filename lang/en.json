@@ -3,5 +3,9 @@
         "loading": "Loading SteemWriter...",
         "init": "Initiating Database...",
         "upgrade": "Upgrading Database..."
+    },
+    "appErrors": {
+        "title": "App Error",
+        "newerDB": "Local database version is newer than the current version of this app. Please upgrade to the lastest version."
     }
 }

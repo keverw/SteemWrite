@@ -12,6 +12,14 @@ require('electron-reload')(__dirname, {
   electron: require('electron-prebuilt')
 });
 
+var dialog = require('electron').dialog;
+
+global.closeWithError = function(msg)
+{
+    if (typeof msg == 'object') msg = msg.message; //convert error object to use it's string    
+    dialog.showErrorBox(global.lang.appErrors.title, msg);
+    app.quit();
+};
 // IRPC Modules
 var irpc = require('electron-irpc');
 var irpcMain = irpc.main();
