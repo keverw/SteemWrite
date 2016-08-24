@@ -27,7 +27,7 @@ if (global.appConfig.dev)
 {
     require('electron-reload')(__dirname, {
       electron: require('electron-prebuilt')
-    });    
+    });
 }
 
 global.lang = require('./lang/en.json');
@@ -123,6 +123,8 @@ var sqlite3 = require('sqlite3');
 
 app.on('ready', function()
 {
+    require('./menu.js').init(app);
+
     var dbFile = path.join(app.getPath('userData'), 'main.db');
 
     if (!global.db)
