@@ -1,8 +1,22 @@
 global.appConfig = require('./appConfig.json');
-
 var electron = require('electron');
 // Module to control application life.
 var app = electron.app;
+
+function makeSingleInstance() {
+    return app.makeSingleInstance(function () {
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore();
+            mainWindow.focus();
+        }
+    });
+}
+
+if (makeSingleInstance())
+{
+    return app.quit();
+}
+
 // Module to create native browser window.
 var BrowserWindow = electron.BrowserWindow;
 
@@ -56,19 +70,13 @@ var irpcMain = irpc.main();
 
 irpcMain.addFunction('closeWithError', function(parameters, cb)
 {
-    cb(null, {
-        ok: true
-    });
-
+    cb(null, {ok: true});
     global.closeWithError(parameters.err);
 });
 
 irpcMain.addFunction('quit', function(parameters, cb)
 {
-    cb(null, {
-        ok: true
-    });
-
+    cb(null, {ok: true});
     app.quit();
 });
 
