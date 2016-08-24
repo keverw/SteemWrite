@@ -15,6 +15,8 @@
     //////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
+    var migrationsPath = process.cwd() + '/migrations';
+
     global.didMigrateCheck = false;
     global.isMigrateingDone = false;
     global.dbMeta = {
@@ -75,7 +77,7 @@
         {
             if (err) return global.dbMigrateErr(err);
 
-            require('../migrations/' + file + '.js').migrate(function(commit)
+            require(migrationsPath + '/' + file + '.js').migrate(function(commit)
             {
 
                 if (commit) //commit
@@ -137,7 +139,7 @@
                 {
                     global.dbMeta.dbTask = 'i';
                     global.dbMeta.totalSteps++;
-                    global.dbMeta.totalSteps = global.dbMeta.totalSteps + require('../migrations/1_init.js').getTotal;
+                    global.dbMeta.totalSteps = global.dbMeta.totalSteps + require(migrationsPath + '/1_init.js').getTotal;
 
                     runMigration('1_init', global.dbMeta.appDBVer);
                 }
@@ -163,7 +165,7 @@
                             for (var i = nextVersion; i <= global.dbMeta.appDBVer; i++)
                             {
                                 global.dbMeta.totalSteps++; //adds the step it needs to do
-                                global.dbMeta.totalSteps = global.dbMeta.totalSteps + require('../migrations/' + i  + '.js').getTotal; //total count of what needs to be done
+                                global.dbMeta.totalSteps = global.dbMeta.totalSteps + require(migrationsPath + '/' + i  + '.js').getTotal; //total count of what needs to be done
                             }
 
                         }
