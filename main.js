@@ -1,3 +1,5 @@
+global.appConfig = require('./appConfig.json');
+
 var electron = require('electron');
 // Module to control application life.
 var app = electron.app;
@@ -7,10 +9,12 @@ var BrowserWindow = electron.BrowserWindow;
 global.isAppReady = false;
 global.isAppClosing = false;
 
-//For DEV
-require('electron-reload')(__dirname, {
-  electron: require('electron-prebuilt')
-});
+if (global.appConfig.dev)
+{
+    require('electron-reload')(__dirname, {
+      electron: require('electron-prebuilt')
+    });    
+}
 
 global.lang = require('./lang/en.json');
 

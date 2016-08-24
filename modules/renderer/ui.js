@@ -19,7 +19,7 @@
 
             irpcRenderer.call('kvs.set', {
                 k: 'licenseVer',
-                v: global.licenseVer
+                v: global.appConfig.licenseVer
             }, function(err, result)
             {
                 if (err) return global.closeWithError(err);

@@ -8,8 +8,6 @@ global.viewData = {
     viewMeta: {}
 };
 
-global.licenseVer = 1;
-
 var ui = require('./modules/renderer/ui.js');
 var util = require('./modules/util.js'); //my own utils
 var nodeUtil = require('util'); //Node.js utils
@@ -116,7 +114,7 @@ $(function()
         {
             if (err) return global.closeWithError(err);
 
-            if (result && typeof result == 'object' && result.v == global.licenseVer)
+            if (result && typeof result == 'object' && result.v == global.appConfig.licenseVer)
             {
                 global.hasAgreed('loadingScreen');
             }

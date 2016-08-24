@@ -1,9 +1,7 @@
 (function ()
 {
-    var applicationDBVer = 1;
-
     //1_init.js is the intial database
-    //then for migrations change applicationDBVer to the lastest version
+    //then for migrations change applicationDBVer to the lastest version in appConfig.json
     //then add in files in the same format as init named 2.js, 3.js, etc
 
     //////////////////////////////////////////////////////////////////
@@ -20,7 +18,7 @@
     global.didMigrateCheck = false;
     global.isMigrateingDone = false;
     global.dbMeta = {
-        appDBVer: applicationDBVer,  //app DB ver num
+        appDBVer: global.appConfig.applicationDBVer,  //app DB ver num
         userDBVer: -1, //user app db num
         dbTask: '', //i for init, u for upgrading
         totalSteps: 0, //progress bar - total steps
