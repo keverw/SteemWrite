@@ -30,11 +30,28 @@ global.justClose = function()
     app.quit();
 };
 
+global.isDBReady = function(cb)
+{
+    if (global.db)
+    {
+        cb();
+    }
+    else
+    {
+        var notReadyErr = new Error('Database not ready');
+        notReadyErr.type = 'db';
+        notReadyErr.code = 'notReady';
+        cb(notReadyErr);
+    }
+
+};
+
 // IRPC Modules
 var irpc = require('electron-irpc');
 var irpcMain = irpc.main();
 
 require('./modules/main/dbHelpers.js').init(irpcMain);
+irpcMain.addModule(require('./modules/main/kvs.js'), 'kvs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.

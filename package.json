@@ -13,6 +13,7 @@
     "electron-reload": "^1.0.2"
   },
   "dependencies": {
+    "async": "^2.0.1",
     "electron-irpc": "0.0.1",
     "jade": "^1.11.0",
     "sqlite3": "^3.1.4"
