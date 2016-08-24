@@ -27,6 +27,24 @@
             var tplPath = path.join(__dirname, '../views', name + '.jade');
             var fn = jade.compile(fs.readFileSync(tplPath, 'utf-8'));
             return fn(locals);
+        },
+        toObject: function(error)
+        {
+            var alt = {};
+
+            Object.getOwnPropertyNames(error).forEach(function (key) {
+                if (error[key] && typeof error[key] == 'object')
+                {
+                    alt[key] = module.toObject(error[key]);
+                }
+                else
+                {
+                    alt[key] = error[key];
+                }
+
+            });
+
+            return alt;
         }
     };
 

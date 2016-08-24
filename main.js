@@ -50,6 +50,24 @@ global.isDBReady = function(cb)
 var irpc = require('electron-irpc');
 var irpcMain = irpc.main();
 
+irpcMain.addFunction('closeWithError', function(parameters, cb)
+{
+    cb(null, {
+        ok: true
+    });
+
+    global.closeWithError(parameters.err);
+});
+
+irpcMain.addFunction('quit', function(parameters, cb)
+{
+    cb(null, {
+        ok: true
+    });
+    
+    app.quit();
+});
+
 require('./modules/main/dbHelpers.js').init(irpcMain);
 irpcMain.addModule(require('./modules/main/kvs.js'), 'kvs');
 

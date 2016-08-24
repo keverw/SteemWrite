@@ -52,3 +52,27 @@ a[href^="ftp://"] {
 #editorMode{
     display: none;
 }
+
+/*License Screen*/
+#licenseView{
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#licenseView .licenseText{
+    height: 20em;
+    background: white;
+    width: 100%;
+    display: block;
+    overflow-y: scroll;
+    color: black;
+}
+
+#licenseView h1{
+    margin-bottom: 35px;
+}
+
+#licenseView h3{
+    margin-bottom: 20px;
+}

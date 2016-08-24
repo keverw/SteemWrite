@@ -14,6 +14,25 @@ var nodeUtil = require('util'); //Node.js utils
 var irpc = require('electron-irpc');
 var irpcRenderer = irpc.renderer();
 
+var fs = require('fs');
+
+global.closeWithError = function(msg)
+{
+    if (msg && typeof msg == 'object')
+    {
+        msg = util.toObject(msg);
+    }
+
+    irpcRenderer.call('closeWithError', {
+        err: msg
+    }, function(err, result)
+    {
+        if (err) throw err;
+    });
+
+    return;
+};
+
 var dbResultLastUIState = '';
 var isDBReady = function(isReadyCB)
 {
@@ -67,21 +86,60 @@ var isDBReady = function(isReadyCB)
     });
 };
 
+function hasAgreed(currentLayerID)
+{
+    //show main ui
+    $('#appView').html(util.getViewHtml('base/main'));
+    $('#' + currentLayerID).fadeOut('fast', function()
+    {
+        $('#appView').fadeIn('fast');
+        $('#menuDropdownName').text('Accounts');
+        $('#menuDropdownItems').html(util.getViewHtml('base/menuDropdown'));
+    });
+
+    //enable update checks/connect to blockchain
+
+}
+
 $(function()
 {
     $('#loadingScreen h1').text(global.lang.loadingScreen.loading).show();
 
     isDBReady(function()
     {
-        $('#appView').html(util.getViewHtml('base/main'));
-        $('#loadingScreen').fadeOut('fast', function()
+        //check license agreement
+        var licenseVer = 1;
+
+        irpcRenderer.call('kvs.read', {
+        	k: 'licenseVer',
+        }, function(err, result)
         {
-            $('#appView').fadeIn('fast');
-            $('#menuDropdownName').text('Accounts');
-            $('#menuDropdownItems').html(util.getViewHtml('base/menuDropdown'));
+            if (err) return global.closeWithError(err);
+
+            if (result && typeof result == 'object' && result.v == licenseVer)
+            {
+                hasAgreed('loadingScreen');
+            }
+            else
+            {
+                $('#licenseView').html(util.getViewHtml('base/license'));
+
+                fs.readFile('./LICENSE-en.html', 'utf8', function(err, data)
+                {
+                    if (err) return global.closeWithError(err);
+                    $('#licenseView .licenseText').html(data);
+
+                    $('#loadingScreen').fadeOut('fast', function()
+                    {
+                        $('#licenseView').fadeIn('fast');
+                    });
+
+                });
+
+            }
+
         });
 
     });
 
 });
-
