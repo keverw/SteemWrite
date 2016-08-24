@@ -1,122 +1,240 @@
 (function()
 {
+	//note: If this is ever translated in the future - replace the role: ones with what's in menu-item-roles.js in the electron-master
+	//note: Then translate each label
+
 	var Menu = require('electron').Menu;
+
+    function displayDialog(focusedWindow, dialogName)
+    {
+        if (focusedWindow) //is the focused window
+        {
+            focusedWindow.webContents.send('display-dialog', dialogName);
+        }
+        else if (global.mainWindow) //has a main window
+        {
+            global.mainWindow.webContents.send('display-dialog', dialogName);
+
+            if (global.mainWindow.isMinimized()) global.mainWindow.restore();
+            global.mainWindow.focus();
+        }
+        else //does not have a main window
+        {
+            if (global.isAppReady && !global.isAppClosing)
+            {
+                global.createWindow();
+
+                global.mainWindow.webContents.once('dom-ready', function()
+                {
+                    global.mainWindow.webContents.send('display-dialog', dialogName);
+                });
+
+            }
+
+        }
+    }
+
+    function getAboutMenuItem(appName)
+    {
+        return {
+            label: process.platform === 'linux' ? 'About' : 'About ' + appName,
+            click: function click(item, focusedWindow)
+            {
+                displayDialog(focusedWindow, 'about');
+            }
+        };
+
+    }
+
+	function getEditMenu() //Edit Menu
+	{
+		var editMenu = {
+			label: 'Edit',
+			submenu: [
+			{
+				role: 'undo'
+			},
+			{
+				role: 'redo'
+			},
+			{
+				type: 'separator'
+			},
+			{
+				role: 'cut'
+			},
+			{
+				role: 'copy'
+			},
+			{
+				role: 'paste'
+			},
+			{
+				role: 'pasteandmatchstyle'
+			},
+			{
+				role: 'delete'
+			},
+			{
+				role: 'selectall'
+			}]
+		};
+
+		if (process.platform === 'darwin')
+		{
+			editMenu.submenu.push(
+			{
+				type: 'separator'
+			},
+			{
+				label: 'Speech',
+				submenu: [
+				{
+					role: 'startspeaking'
+				},
+				{
+					role: 'stopspeaking'
+				}]
+			});
+		}
+
+		return editMenu;
+	}
+
+	function getViewMenu() //View Menu
+	{
+		var viewMenu = {
+			label: 'View',
+			submenu: []
+		};
+
+		if (global.appConfig.dev)
+		{
+			viewMenu.submenu.push(
+			{
+				label: 'Reload',
+				accelerator: 'CmdOrCtrl+R',
+				click: function click(item, focusedWindow)
+				{
+					if (focusedWindow) focusedWindow.reload();
+				}
+			},
+			{
+				label: 'Toggle Developer Tools',
+				accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+				click: function click(item, focusedWindow)
+				{
+					if (focusedWindow) focusedWindow.webContents.toggleDevTools();
+				}
+			},
+			{
+				type: 'separator'
+			});
+
+		}
+
+		viewMenu.submenu.push(
+		{
+			role: 'togglefullscreen'
+		});
+
+		return viewMenu;
+	}
+
+	function getFileMenu() //File Menu
+	{
+		var fileMenu = {
+			label: 'File',
+			submenu: []
+		};
+
+		if (process.platform !== 'darwin') //Add exit on non Mac platforms
+		{
+			fileMenu.submenu.push(
+			{
+				role: 'quit'
+			});
+		}
+
+		return fileMenu;
+	}
+
+	function getWindowMenu() //Window Menu
+	{
+		return {
+			role: 'window',
+			submenu: [
+			{
+				label: 'Minimize',
+				accelerator: 'CmdOrCtrl+M',
+				role: 'minimize'
+			},
+			{
+				label: 'Zoom',
+				role: 'zoom'
+			}]
+		};
+
+	}
+
+	function getHelpMenu(appName) //Help Menu
+	{
+		var helpMenu = {
+			role: 'help',
+			submenu: []
+		};
+
+		helpMenu.submenu.push(
+		{
+			label: 'Learn More',
+			click: function click()
+			{
+				require('electron').shell.openExternal('http://electron.atom.io');
+			}
+		});
+
+		if (process.platform !== 'darwin') //Add about on non Mac platforms
+		{
+			helpMenu.submenu.push(getAboutMenuItem(appName));
+		}
+
+		return helpMenu;
+	}
 
 	module.exports = {
 		init: function(app)
 		{
+            var appName = app.getName();
+
 			var template = [];
 
-			//Edit Menu
-			template.push(
+			//File Menu
+			if (process.platform !== 'darwin') //not currently used on OS X
 			{
-				label: 'Edit',
-				submenu: [
-				{
-					role: 'undo'
-				},
-				{
-					role: 'redo'
-				},
-				{
-					type: 'separator'
-				},
-				{
-					role: 'cut'
-				},
-				{
-					role: 'copy'
-				},
-				{
-					role: 'paste'
-				},
-				{
-					role: 'pasteandmatchstyle'
-				},
-				{
-					role: 'delete'
-				},
-				{
-					role: 'selectall'
-				}]
-			});
-
-			//View Menu
-			var viewMenu = {
-				label: 'View',
-				submenu: []
-			};
-
-			if (global.appConfig.dev)
-			{
-				viewMenu.submenu.push(
-				{
-					label: 'Reload',
-					accelerator: 'CmdOrCtrl+R',
-					click: function click(item, focusedWindow)
-					{
-						if (focusedWindow) focusedWindow.reload();
-					}
-				},
-				{
-					label: 'Toggle Developer Tools',
-					accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-					click: function click(item, focusedWindow)
-					{
-						if (focusedWindow) focusedWindow.webContents.toggleDevTools();
-					}
-				},
-				{
-					type: 'separator'
-				});
-
+				template.push(getFileMenu()); //add file menu
 			}
 
-			viewMenu.submenu.push({
-				role: 'togglefullscreen'
-			});
+			template.push(getEditMenu()); //add edit menu
 
-			template.push(viewMenu);
+			//View Menu
+			template.push(getViewMenu()); //add view menu
 
 			//Window Menu
-			template.push(
+			if (process.platform === 'darwin')
 			{
-				role: 'window',
-				submenu: [
-				{
-					role: 'minimize'
-				},
-				{
-					role: 'close'
-				}]
-			});
+				template.push(getWindowMenu());
+			}
 
 			//Help Menu
-			template.push(
-			{
-				role: 'help',
-				submenu: [
-				{
-					label: 'Learn More',
-					click: function click()
-					{
-						require('electron').shell.openExternal('http://electron.atom.io');
-					}
-				}]
-			});
+			template.push(getHelpMenu(appName));
 
 			//Mac Menu Adjustments
 			if (process.platform === 'darwin')
 			{
-				var name = app.getName();
-
 				template.unshift(
 				{
-					label: name,
-					submenu: [
-					{
-						role: 'about'
-					},
+					label: appName,
+					submenu: [getAboutMenuItem(appName),
 					{
 						type: 'separator'
 					},
@@ -144,38 +262,6 @@
 					}]
 				});
 
-				// Edit menu.
-				template[1].submenu.push(
-				{
-					type: 'separator'
-				},
-				{
-					label: 'Speech',
-					submenu: [
-					{
-						role: 'startspeaking'
-					},
-					{
-						role: 'stopspeaking'
-					}]
-				});
-
-				// Window menu.
-				template[3].submenu = [
-				{
-					label: 'Close',
-					accelerator: 'CmdOrCtrl+W',
-					role: 'close'
-				},
-				{
-					label: 'Minimize',
-					accelerator: 'CmdOrCtrl+M',
-					role: 'minimize'
-				},
-				{
-					label: 'Zoom',
-					role: 'zoom'
-				}];
 			}
 
 			// Set the menu

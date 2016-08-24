@@ -1,6 +1,7 @@
 // This file is loaded by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
+global.appConfig = require('./appConfig.json');
 global.lang = require('./lang/en.json');
 
 global.viewData = {
@@ -101,8 +102,36 @@ global.hasAgreed = function(currentLayerID)
 
 };
 
+///////////////////////////////////////////////////////////////////////////
+var isJQReady = false;
+
+var ipc = require('electron').ipcRenderer;
+ipc.on('display-dialog', function(event, msg)
+{
+    var checkJQ = setInterval(function()
+    {
+        if (isJQReady)
+        {
+            clearInterval(checkJQ);
+
+            ///////////////////// JQ is ready
+            if (msg == 'about')
+            {
+                alert('about');
+            }
+
+            ////////////////////////////////////
+        }
+
+    }, 1);
+
+});
+
+///////////////////////////////////////////////////////////////////////////
 $(function()
 {
+    isJQReady = true;
+
     $('#loadingScreen h1').text(global.lang.loadingScreen.loading).show();
 
     isDBReady(function()

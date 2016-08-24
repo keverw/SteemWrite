@@ -5,9 +5,9 @@ var app = electron.app;
 
 function makeSingleInstance() {
     return app.makeSingleInstance(function () {
-        if (mainWindow) {
-            if (mainWindow.isMinimized()) mainWindow.restore();
-            mainWindow.focus();
+        if (global.mainWindow) {
+            if (global.mainWindow.isMinimized()) global.mainWindow.restore();
+            global.mainWindow.focus();
         }
     });
 }
@@ -85,12 +85,14 @@ irpcMain.addModule(require('./modules/main/kvs.js'), 'kvs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-var mainWindow;
+global.mainWindow = null;
 
-function createWindow()
+global.createWindow = function()
 {
+    if (global.mainWindow) return;
+
     // Create the browser window.
-    mainWindow = new BrowserWindow({
+    global.mainWindow = new BrowserWindow({
         backgroundColor: '#272b30',
         width: 1200,
         height: 700,
@@ -99,20 +101,20 @@ function createWindow()
     });
 
   // and load the index.html of the app.
-  mainWindow.loadURL('file://' + __dirname + '/index.html');
+  global.mainWindow.loadURL('file://' + __dirname + '/index.html');
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools();
 
   // Emitted when the window is closed.
-  mainWindow.on('closed', function()
+  global.mainWindow.on('closed', function()
   {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
-        mainWindow = null;
+        global.mainWindow = null;
     });
-}
+};
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -133,7 +135,7 @@ app.on('ready', function()
     }
 
     global.isAppReady = true;
-    createWindow();
+    global.createWindow();
 });
 
 // Quit when all windows are closed.
@@ -219,9 +221,9 @@ app.on('activate', function()
     {
         // On OS X it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
-        if (mainWindow === null)
+        if (global.mainWindow === null)
         {
-          createWindow();
+          global.createWindow();
         }
 
     }
