@@ -7,6 +7,8 @@ li
 li.divider(role='separator')
 li.dropdown-header Nav header
 li
-  a(href='#') Separated link
+    a(onclick='ui.infoBox()') #{global.lang.menus.info}
 li
-  a(href='#') One more separated link
+    a(onclick='ui.optionsBox()') #{global.lang.menus.options}
+li
+    a(onclick='ui.close()') #{global.lang.menus.close}

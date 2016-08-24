@@ -1,6 +1,14 @@
 // This file is loaded by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
+global.lang = require('./lang/en.json');
+
+global.viewData = {
+    viewName: '',
+    viewMeta: {}
+};
+
+var ui = require('./modules/renderer/ui.js');
 var util = require('./modules/util.js'); //my own utils
 var nodeUtil = require('util'); //Node.js utils
 var irpc = require('electron-irpc');

@@ -7,5 +7,10 @@
     "appErrors": {
         "title": "App Error",
         "newerDB": "Local database version is newer than the current version of this app. Please upgrade to the lastest version."
+    },
+    "menus": {
+        "info": "Info",
+        "options": "Options",
+        "close": "Close"
     }
 }
