@@ -8,6 +8,8 @@ global.viewData = {
     viewMeta: {}
 };
 
+global.licenseVer = 1;
+
 var ui = require('./modules/renderer/ui.js');
 var util = require('./modules/util.js'); //my own utils
 var nodeUtil = require('util'); //Node.js utils
@@ -86,7 +88,7 @@ var isDBReady = function(isReadyCB)
     });
 };
 
-function hasAgreed(currentLayerID)
+global.hasAgreed = function(currentLayerID)
 {
     //show main ui
     $('#appView').html(util.getViewHtml('base/main'));
@@ -99,7 +101,7 @@ function hasAgreed(currentLayerID)
 
     //enable update checks/connect to blockchain
 
-}
+};
 
 $(function()
 {
@@ -108,17 +110,15 @@ $(function()
     isDBReady(function()
     {
         //check license agreement
-        var licenseVer = 1;
-
         irpcRenderer.call('kvs.read', {
         	k: 'licenseVer',
         }, function(err, result)
         {
             if (err) return global.closeWithError(err);
 
-            if (result && typeof result == 'object' && result.v == licenseVer)
+            if (result && typeof result == 'object' && result.v == global.licenseVer)
             {
-                hasAgreed('loadingScreen');
+                global.hasAgreed('loadingScreen');
             }
             else
             {

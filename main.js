@@ -64,7 +64,7 @@ irpcMain.addFunction('quit', function(parameters, cb)
     cb(null, {
         ok: true
     });
-    
+
     app.quit();
 });
 

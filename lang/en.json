@@ -12,5 +12,11 @@
         "info": "Info",
         "options": "Options",
         "close": "Close"
+    },
+    "licenseView": {
+        "title": "To continue using this application, you must agree to the terms of the software license agreement",
+        "how": "Click Agree to continue or Disagree to close this application",
+        "agreeBTN": "Agree",
+        "disagreeBTN": "Disagree"
     }
 }

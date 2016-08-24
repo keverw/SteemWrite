@@ -1,11 +1,11 @@
 h1
-    | To continue using this application, you must agree to the terms of the software license agreement
+    | #{global.lang.licenseView.title}
 .licenseText
 h3
-    | Click Agree to continue or Disagree to close this application
+    | #{global.lang.licenseView.how}
 .licenseButtons
     .btn-group.btn-group-justified(role='group', aria-label='...')
         .btn-group(role='group')
-            button.btn.btn-danger(type='button') Disagree
+            button.btn.btn-danger(type='button', onclick='ui.licenseDisagree()') #{global.lang.licenseView.disagreeBTN}
         .btn-group(role='group')
-            button.btn.btn-success(type='button') Agree
+            button.btn.btn-success(type='button', onclick='ui.licenseAgree()') #{global.lang.licenseView.agreeBTN}
