@@ -7,12 +7,6 @@
             var window = remote.getCurrentWindow();
             window.close();
         },
-        infoBox: function() {
-
-        },
-        optionsBox: function() {
-
-        },
         licenseAgree: function()
         {
             $('#licenseView .licenseButtons button').prop('disabled', true);

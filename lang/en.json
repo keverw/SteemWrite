@@ -8,11 +8,6 @@
         "title": "App Error",
         "newerDB": "Local database version is newer than the current version of this app. Please upgrade to the lastest version."
     },
-    "menus": {
-        "info": "Info",
-        "options": "Options",
-        "close": "Close"
-    },
     "licenseView": {
         "title": "To continue using this application, you must agree to the terms of the software license agreement",
         "how": "Click Agree to continue or Disagree to close this application",
