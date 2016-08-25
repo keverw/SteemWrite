@@ -3,6 +3,7 @@
 // All of the Node.js APIs are available in this process.
 
 global.appConfig = require('./appConfig.json');
+global.appConfig.appVersion = require('./package.json').version;
 global.lang = require('./lang/en.json');
 
 var app = require('electron').remote.app;

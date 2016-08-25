@@ -1,4 +1,7 @@
 global.appConfig = require('./appConfig.json');
+global.appConfig.appVersion = require('./package.json').version;
+global.lang = require('./lang/en.json');
+
 var electron = require('electron');
 // Module to control application life.
 var app = electron.app;
@@ -29,8 +32,6 @@ if (global.appConfig.dev)
       electron: require('electron-prebuilt')
     });
 }
-
-global.lang = require('./lang/en.json');
 
 global.db = null;
 
