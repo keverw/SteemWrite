@@ -1,8 +1,12 @@
 // This file is loaded by the index.html file and will
 // be executed in the renderer process for that window.
 // All of the Node.js APIs are available in this process.
+
 global.appConfig = require('./appConfig.json');
 global.lang = require('./lang/en.json');
+
+var app = require('electron').remote.app;
+global.userDataPath = app.getPath('userData');
 
 global.viewData = {
     viewName: '',
@@ -117,7 +121,28 @@ ipc.on('display-dialog', function(event, msg)
             ///////////////////// JQ is ready
             if (msg == 'about')
             {
-                alert('about');
+                if(!$('.has-about-menu-loaded').length)
+                {
+                    bootbox.dialog({
+                        message: util.getViewHtml('base/aboutContexts'),
+                        title: 'About',
+                        onEscape: function() {},
+                        closeButton: true,
+                        className: 'has-about-menu-loaded',
+                        buttons: {
+                            ok: {
+                              label: 'OK',
+                              className: 'btn-primary'
+                            }
+                        }
+                    });
+
+                }
+
+            }
+            else if (msg == 'settings')
+            {
+                bootbox.alert('settings');
             }
 
             ////////////////////////////////////
@@ -130,6 +155,10 @@ ipc.on('display-dialog', function(event, msg)
 ///////////////////////////////////////////////////////////////////////////
 $(function()
 {
+    bootbox.setDefaults({
+        backdrop: 'static'
+    });
+
     isJQReady = true;
 
     $('#loadingScreen h1').text(global.lang.loadingScreen.loading).show();

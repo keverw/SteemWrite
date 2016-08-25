@@ -1,0 +1,15 @@
+img(src='https://placeholdit.imgix.net/~text?txtsize=48&txt=512%C3%97512&w=512&h=512')
+div.appName SteemWriter
+div.appVersion 1.0.2
+
+if global.appConfig.dev
+    div.poweredBy
+        div.poweredByLabel Powered By
+        ul
+          li Electron #{process.versions.electron}
+          li Node #{process.versions.node}
+          li Chromium #{process.versions.chrome}
+          li V8 #{process.versions.v8}
+          li userDataPath
+            | 
+            code #{global.userDataPath}
