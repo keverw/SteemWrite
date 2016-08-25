@@ -148,9 +148,21 @@
 			submenu: []
 		};
 
+        fileMenu.submenu.push({
+            label: 'Options…',
+            accelerator: 'CmdOrCtrl+,',
+            click: function click(item, focusedWindow)
+            {
+                displayDialog(focusedWindow, 'settings');
+            }
+        });
+
 		if (process.platform !== 'darwin') //Add exit on non Mac platforms
 		{
 			fileMenu.submenu.push(
+            {
+                type: 'separator'
+            },
 			{
 				role: 'quit'
 			});
@@ -195,7 +207,12 @@
 
 		if (process.platform !== 'darwin') //Add about on non Mac platforms
 		{
-			helpMenu.submenu.push(getAboutMenuItem(appName));
+			helpMenu.submenu.push(
+                {
+                    type: 'separator'
+                },
+                getAboutMenuItem(appName)
+            );
 		}
 
 		return helpMenu;
@@ -235,6 +252,17 @@
 				{
 					label: appName,
 					submenu: [getAboutMenuItem(appName),
+                    {
+						type: 'separator'
+					},
+                    {
+                        label: 'Preferences…',
+                        accelerator: 'CmdOrCtrl+,',
+                        click: function click(item, focusedWindow)
+                        {
+                            displayDialog(focusedWindow, 'settings');
+                        }
+                    },
 					{
 						type: 'separator'
 					},
