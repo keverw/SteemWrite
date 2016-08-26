@@ -1,5 +1,6 @@
 {
     "applicationDBVer": 1,
     "licenseVer": 1,
-    "dev": true 
+    "dev": true,
+    "defaultWS": "wss://node.steem.ws"
 }
