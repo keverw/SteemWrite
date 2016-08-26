@@ -8,9 +8,12 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
       li
         a(style='text-decoration: none;', href='#') Preview
   ul.nav.navbar-nav.navbar-left
-    li
-      a(href='#')
-        b(style='font-size: 17px;') SteemWriter
+      li
+        div(id="bcStatus", class="led led-yellow", data-toggle='tooltip', data-placement='right', title='Connecting...')
+      li
+        a(href='#')
+            b(style='font-size: 17px;') SteemWriter
+        
   ul.nav.navbar-nav.navbar-right
     li.dropdown
       a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')

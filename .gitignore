@@ -2,7 +2,7 @@ npm-debug.log
 node_modules/
 
 #css is auto generated from LESS
-css
+/css
 
 ############
 # Windows Crap
