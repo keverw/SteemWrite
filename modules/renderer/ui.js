@@ -70,7 +70,7 @@
         displaySettings: function()
         {
             settingsBox = bootbox.dialog({
-                message: util.getViewHtml('base/settingsContexts'),
+                message: util.getViewHtml('settings/main'),
                 title: menuName + '&nbsp;<span class="subTitle"></span>',
                 closeButton: false,
                 className: 'has-settings-menu-loaded',

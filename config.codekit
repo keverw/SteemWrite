@@ -294,13 +294,13 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0
 		},
-	"\/views\/base\/settingsContexts.jade": {
+	"\/views\/settings\/main.jade": {
 		"compileDebug": 1,
 		"fileType": 512,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/views\/base\/settingsContexts.jade",
-		"outputAbbreviatedPath": "\/views\/base\/settingsContexts.html",
+		"inputAbbreviatedPath": "\/views\/settings\/main.jade",
+		"outputAbbreviatedPath": "\/views\/settings\/main.html",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0
