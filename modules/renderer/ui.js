@@ -61,6 +61,11 @@
                 bootbox.alert('accounts later');
             }
         },
+        closeSettings: function(settingsBox)
+        {
+            settingsBox.modal('hide');
+            return false;
+        },
         displaySettings: function()
         {
             var settingsBox = bootbox.dialog({
@@ -72,8 +77,9 @@
                     close: {
                       label: 'Close',
                       className: 'btn-danger',
-                      callback: function () {
-
+                      callback: function ()
+                      {
+                          return module.exports.closeSettings(settingsBox);
                       }
 
                     }
@@ -84,7 +90,7 @@
             $('.has-settings-menu-loaded .modal-header').prepend('<button type="button" class="close" aria-hidden="true">&times;</button>');
             $('.has-settings-menu-loaded .modal-header .close').click(function()
             {
-                alert("Handler for X called.");
+                return module.exports.closeSettings(settingsBox);
             });
 
             //Load general Tab
