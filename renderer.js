@@ -11,7 +11,8 @@ global.userDataPath = app.getPath('userData');
 
 global.viewData = {
     viewName: '',
-    viewMeta: {}
+    viewMeta: {},
+    settingsViewMeta: {tabReq: null}
 };
 
 var ui = require('./modules/renderer/ui.js');
@@ -143,10 +144,9 @@ ipc.on('display-dialog', function(event, msg)
             }
             else if (msg == 'settings')
             {
-                bootbox.alert('settings');
+                ui.openSettings();
             }
 
-            ////////////////////////////////////
         }
 
     }, 1);
