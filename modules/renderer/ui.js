@@ -1,8 +1,9 @@
-//global.viewData.viewName
 (function ()
 {
     var menuName = (process.platform === 'darwin') ? 'Preferences' : 'Options';
     var uuid = require('node-uuid');
+
+    var settingsBox;
 
     module.exports = {
         close: function() {
@@ -61,14 +62,14 @@
                 bootbox.alert('accounts later');
             }
         },
-        closeSettings: function(settingsBox)
+        closeSettings: function()
         {
             settingsBox.modal('hide');
             return false;
         },
         displaySettings: function()
         {
-            var settingsBox = bootbox.dialog({
+            settingsBox = bootbox.dialog({
                 message: util.getViewHtml('base/settingsContexts'),
                 title: menuName + '&nbsp;<span class="subTitle"></span>',
                 closeButton: false,
@@ -79,7 +80,7 @@
                       className: 'btn-danger',
                       callback: function ()
                       {
-                          return module.exports.closeSettings(settingsBox);
+                          return module.exports.closeSettings();
                       }
 
                     }
@@ -90,7 +91,7 @@
             $('.has-settings-menu-loaded .modal-header').prepend('<button type="button" class="close" aria-hidden="true">&times;</button>');
             $('.has-settings-menu-loaded .modal-header .close').click(function()
             {
-                return module.exports.closeSettings(settingsBox);
+                return module.exports.closeSettings();
             });
 
             //Load general Tab
