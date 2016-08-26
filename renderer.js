@@ -45,11 +45,9 @@ var isDBReady = function(isReadyCB)
 {
     irpcRenderer.call('dbHelpers.isReady', {}, function(err, result)
     {
-        if (err)
-        {
-            throw err;
-        }
-        else if (result.ready)
+        if (err) return global.closeWithError(err);
+
+        if (result.ready)
         {
             isReadyCB();
         }

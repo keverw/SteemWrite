@@ -159,8 +159,7 @@
                 }
             });
         }
-
-
+        
 		if (process.platform !== 'darwin') //add exit on non Mac
 		{
 			fileMenu.submenu.push(
