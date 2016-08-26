@@ -4,10 +4,9 @@
 
     var cmds = {
         auto_vacuum: 'PRAGMA auto_vacuum = 1',
-        make_cvsTBL: 'CREATE TABLE `kvs` (`k` TEXT, `v`	TEXT, PRIMARY KEY(k));',
-        insertDefault_host: 'INSERT INTO kvs (`k`, `v`) VALUES ("defaultWS", "' + global.appConfig.defaultWS + '");'
+        make_cvsTBL: 'CREATE TABLE `kvs` (`k` TEXT, `v`	TEXT, PRIMARY KEY(k));'
     };
-    
+
     module.exports = {
         getTotal: Object.keys(cmds).length, //how many things you plan todo
         migrate: function(doneCB)

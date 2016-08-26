@@ -33,7 +33,10 @@ if (global.appConfig.dev)
     });
 }
 
-global.db = null;
+global.db = null; //SQLite3 connection
+global.bc = null; //BC connection
+global.bcReady = false; //BC connection ready
+global.bcStatus = ''; //BC connection status
 
 var dialog = require('electron').dialog;
 
@@ -79,6 +82,77 @@ irpcMain.addFunction('quit', function(parameters, cb)
 {
     cb(null, {ok: true});
     app.quit();
+});
+
+function bcAlertUI(status)
+{
+    global.bcStatus = status;
+
+    if (global.mainWindow)
+    {
+        global.mainWindow.webContents.send('bc-status', {
+            ready: global.bcReady,
+            status: global.bcStatus
+        });
+    }
+
+}
+
+var bcConnLock = false;
+
+irpcMain.addFunction('bc-connect', function(parameters, cb)
+{
+    //tell the status
+    cb(null, {
+        ready: global.bcReady,
+        status: global.bcStatus
+    });
+    
+    if (bcConnLock) return;
+    bcConnLock = true;
+
+    //connect
+    var kvs = require('./modules/main/kvs.js'),
+        steemClient = require('steem-rpc').Client;
+
+    kvs.read({
+        k: 'wsNode'
+    }, function(err, result)
+    {
+        if (err) global.closeWithError(parameters.err);
+
+        var wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
+        /////////////////////////////////////////////
+        global.bc = steemClient.get({
+            maxReconnectAttempts: null, //unlimited reconnect attempts
+            idleThreshold: 0,
+            apis: ['database_api', 'login_api', 'network_broadcast_api'],
+            url: wsHost,
+            statusCallback: function(e) //possibly open, closed, error
+            {
+                bcAlertUI(e);
+            }
+        }, true);
+
+        global.bc.initPromise.then(function(res)
+        {
+            global.bcReady = true;
+            console.log("*** Connected to", res, "***");
+
+            // Pulse the websocket every 20 seconds for block number 1, just to make
+            // sure the websocket doesn't disconnect.
+            setInterval(function(){
+                global.bc.database_api().exec('get_block', [1]).then(function(res) {});
+            }, 20000);
+
+        }).catch(function(err)
+        {
+            console.log('Connection error:', err);
+            bcAlertUI('error');
+        });
+
+    });
+
 });
 
 require('./modules/main/dbHelpers.js').init(irpcMain);

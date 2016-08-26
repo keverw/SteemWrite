@@ -91,18 +91,51 @@ var isDBReady = function(isReadyCB)
     });
 };
 
+global.bcReady = false; //BC connection ready
+global.bcStatus = ''; //BC connection status
+
+function updateBCStatus(info)
+{
+    global.bcReady = info.ready;
+    global.bcStatus = info.status;
+
+    if (info.status == 'open') //green
+    {
+        $('#bcStatus').attr('class','led led-green').attr('title', 'Connected');
+    }
+    else if (info.status == 'closed') //yellow
+    {
+        $('#bcStatus').attr('class','led led-yellow').attr('title', 'Connecting...');
+    }
+    else if (info.status == 'error') //red
+    {
+        $('#bcStatus').attr('class','led led-red').attr('title', 'Error');
+    }
+
+}
+
 global.hasAgreed = function(currentLayerID)
 {
-    //show main ui
     $('#appView').html(util.getViewHtml('base/main'));
-    $('#' + currentLayerID).fadeOut('fast', function()
-    {
-        $('#appView').fadeIn('fast');
-        $('#menuDropdownName').text('Accounts');
-        $('#menuDropdownItems').html(util.getViewHtml('base/menuDropdown'));
-    });
 
-    //enable update checks/connect to blockchain
+    //tell to connect to blockchain
+    irpcRenderer.call('bc-connect', {}, function(err, result)
+    {
+        if (err) return global.closeWithError(err);
+
+        //update blockchain connection status
+        updateBCStatus(result);
+        
+        //show main ui
+        $('#' + currentLayerID).fadeOut('fast', function()
+        {
+            $('body').tooltip({selector: '[data-toggle=tooltip]'});
+            $('#appView').fadeIn('fast');
+            $('#menuDropdownName').text('Accounts');
+            $('#menuDropdownItems').html(util.getViewHtml('base/menuDropdown'));
+        });
+
+    });
 
 };
 
@@ -151,6 +184,11 @@ ipc.on('display-dialog', function(event, msg)
 
 });
 
+ipc.on('bc-status', function(event, msg)
+{
+    updateBCStatus(msg);
+});
+
 ///////////////////////////////////////////////////////////////////////////
 $(function()
 {
@@ -166,7 +204,7 @@ $(function()
     {
         //check license agreement
         irpcRenderer.call('kvs.read', {
-        	k: 'licenseVer',
+        	k: 'licenseVer'
         }, function(err, result)
         {
             if (err) return global.closeWithError(err);
