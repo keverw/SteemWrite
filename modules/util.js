@@ -45,7 +45,19 @@
             });
 
             return alt;
+        },
+        isWS: function(address)
+        {
+            var url = require('url'),
+                _ = require('underscore');
+
+            var protocols = ['ws+unix:', 'ws:', 'wss:', 'http', 'https'];
+            
+            ////////////////////////////
+            var serverUrl = url.parse(address);
+            return (_.contains(protocols, serverUrl.protocol) && serverUrl.host) ? true : false;
         }
+
     };
 
 }());
