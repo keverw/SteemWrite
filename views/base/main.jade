@@ -9,7 +9,9 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
         a(style='text-decoration: none;', href='#') Preview
   ul.nav.navbar-nav.navbar-left
       li
-        div(id="bcStatus", class="led led-yellow", data-toggle='tooltip', data-placement='right', title='Connecting...')
+        div(id="bcStatus", class="led led-yellow", data-toggle='tooltip', data-placement='right', title='Connecting...', onclick='ui.restartIcon()')
+            #bcRestartIcon(style='display: none;')
+                span.glyphicon.glyphicon-repeat(aria-hidden='true')
       li
         a(href='#')
             b(style='font-size: 17px;') SteemWriter

@@ -25,6 +25,17 @@
     clearSettingsViewMeta();
     ////////////////////////
     module.exports = {
+        restartIcon: function()
+        {
+            if (global.bcRestart)
+            {
+                irpcRenderer.call('relaunch', {}, function(err, result)
+                {
+                    if (err) throw err;
+                });
+            }
+            
+        },
         close: function() {
             var remote = require('electron').remote;
             var window = remote.getCurrentWindow();
@@ -81,21 +92,95 @@
 
                 return id;
             },
+            whatChanged: function()
+            {
+                var result = {
+                    unsaved: false,
+                    what: {}
+                };
+
+                //check for changes
+                var wsHostVal = $('#generalTabWSHostInput').val();
+                if (wsHostVal != settingsViewMeta.fields.general.wsHost)
+                {
+                    result.unsaved = true;
+                    result.what.wsHost = {val: wsHostVal};
+                }
+
+                //return result
+                return result;
+            },
             closeSettings: function()
             {
-                clearSettingsViewMeta();
-                settingsBox.modal('hide');
+                var changed = module.exports.settingTabHelpers.whatChanged();
+
+                if (changed.unsaved)
+                {
+
+                    bootbox.confirm('Unsaved Changes. Are you sure you want to close?', function(result)
+                    {
+                        if (result)
+                        {
+                            clearSettingsViewMeta();
+                            settingsBox.modal('hide');
+                        }
+
+                    });
+
+                }
+                else
+                {
+                    clearSettingsViewMeta();
+                    settingsBox.modal('hide');
+                }
 
                 return false;
             },
             updateSettings: function()
             {
-                //Wire up controls
-                // if (userinput != settingsViewMeta.fields.general.wsHost)
-                // {
-                //     //save
-                // }
+                var changed = module.exports.settingTabHelpers.whatChanged();
 
+                if (changed.unsaved)
+                {
+                    if (changed.what.wsHost) //update wsHost
+                    {
+                        console.log(changed.what.wsHost.val);
+
+                        if (util.isWS(changed.what.wsHost.val))
+                        {
+                            irpcRenderer.call('update-wshost', {
+                                k: 'wsNode',
+                                v: changed.what.wsHost.val
+                            }, function(err, result)
+                            {
+                                if (err)
+                                {
+                                    console.log(err);
+                                    bootbox.alert('Error Updating Steem Node...');
+                                }
+                                else
+                                {
+                                    settingsViewMeta.fields.general.wsHost = changed.what.wsHost.val;
+                                    global.updateBCStatus(result);
+                                }
+
+                            });
+
+                        }
+                        else
+                        {
+                            bootbox.alert('Invalid Steem Node Websocket Address, Field not saved.');
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    bootbox.alert('No unsaved changes.');
+                }
+
+                return false;
             },
             showTab: function()
             {
@@ -116,7 +201,15 @@
         settingTab: {
             general_setDefault: function()
             {
-                bootbox.alert('later...');
+                if ($('#generalTabWSHostInput').val() == global.appConfig.defaultWS)
+                {
+                    bootbox.alert('Steem Node is already set to default websocket host');
+                }
+                else
+                {
+                    $('#generalTabWSHostInput').val(global.appConfig.defaultWS);
+                }
+
             },
             general: function()
             {
@@ -189,7 +282,8 @@
                       className: 'btn-success updateBTN',
                       callback: function()
                       {
-                          return module.exports.settingTabHelpers.updateSettings();
+                          module.exports.settingTabHelpers.updateSettings();
+                          return false;
                       }
 
                     },

@@ -33,10 +33,14 @@ if (global.appConfig.dev)
     });
 }
 
+var kvs = require('./modules/main/kvs.js');
+
 global.db = null; //SQLite3 connection
 global.bc = null; //BC connection
 global.bcReady = false; //BC connection ready
 global.bcStatus = ''; //BC connection status
+global.bcNode = ''; //BC connection node
+global.bcRestart = false; //bc require restart
 
 var dialog = require('electron').dialog;
 
@@ -78,6 +82,15 @@ irpcMain.addFunction('closeWithError', function(parameters, cb)
     global.closeWithError(parameters.err);
 });
 
+var doRelaunch = false;
+irpcMain.addFunction('relaunch', function(parameters, cb)
+{
+    doRelaunch = true;
+    cb(null, {ok: true});
+    app.relaunch({args: process.argv.slice(1) + ['--relaunch']});
+    app.quit();
+});
+
 irpcMain.addFunction('quit', function(parameters, cb)
 {
     cb(null, {ok: true});
@@ -92,28 +105,50 @@ function bcAlertUI(status)
     {
         global.mainWindow.webContents.send('bc-status', {
             ready: global.bcReady,
-            status: global.bcStatus
+            status: global.bcStatus,
+            node: global.bcNode,
+            restart: global.bcRestart
         });
+
     }
 
 }
 
 var bcConnLock = false;
 
+irpcMain.addFunction('update-wshost', function(parameters, cb)
+{
+    kvs.set(parameters, function(err)
+    {
+        if (err) return cb(err);
+
+        global.bcRestart = (global.bcNode != parameters.v);
+        cb(null, {
+            ready: global.bcReady,
+            status: global.bcStatus,
+            node: global.bcNode,
+            restart: global.bcRestart
+        });
+
+    });
+
+});
+
 irpcMain.addFunction('bc-connect', function(parameters, cb)
 {
     //tell the status
     cb(null, {
         ready: global.bcReady,
-        status: global.bcStatus
+        status: global.bcStatus,
+        node: global.bcNode,
+        restart: global.bcRestart
     });
-    
+
     if (bcConnLock) return;
     bcConnLock = true;
 
     //connect
-    var kvs = require('./modules/main/kvs.js'),
-        steemClient = require('steem-rpc').Client;
+    var steemClient = require('steem-rpc').Client;
 
     kvs.read({
         k: 'wsNode'
@@ -122,6 +157,8 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
         if (err) global.closeWithError(parameters.err);
 
         var wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
+        global.bcNode = wsHost;
+
         /////////////////////////////////////////////
         global.bc = steemClient.get({
             maxReconnectAttempts: null, //unlimited reconnect attempts
@@ -142,7 +179,12 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
             // Pulse the websocket every 20 seconds for block number 1, just to make
             // sure the websocket doesn't disconnect.
             setInterval(function(){
-                global.bc.database_api().exec('get_block', [1]).then(function(res) {});
+                global.bc.database_api().exec('get_block', [1]).then(function(res) {
+                    //console.log('database_api res', res);
+                }).catch(function(e) {
+                    //console.log('database_api res', e);
+                });
+
             }, 20000);
 
         }).catch(function(err)
@@ -156,7 +198,7 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
 });
 
 require('./modules/main/dbHelpers.js').init(irpcMain);
-irpcMain.addModule(require('./modules/main/kvs.js'), 'kvs');
+irpcMain.addModule(kvs, 'kvs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -255,12 +297,24 @@ function doClose()
                 allowClose = true;
 
                 if (err) return global.closeWithError(err);
+
+                if (doRelaunch)
+                {
+                    app.relaunch({args: process.argv.slice(1) + ['--relaunch']});
+                }
+
                 app.quit();
             });
         }
         else
         {
             allowClose = true;
+
+            if (doRelaunch)
+            {
+                app.relaunch({args: process.argv.slice(1) + ['--relaunch']});
+            }
+
             app.quit(); //close later
         }
 

@@ -19,6 +19,7 @@ a:not([draggable=true]), img:not([draggable=true]) {
     -webkit-user-drag: none;
     user-drag: none; /* Technically not supported in Electron yet */
 }
+
 a[href^="http://"],
 a[href^="https://"],
 a[href^="ftp://"] {
@@ -55,6 +56,15 @@ a[href^="ftp://"] {
     margin-top: 12px;
     margin-left: 15px;
     margin-right: 15px;
+}
+
+#bcRestartIcon{
+    color: black;
+    font-weight: bold;
+    position: relative;
+    left: 4px;
+    top: 2px;
+    font-size: 14px;
 }
 
 #editorMode{
@@ -141,6 +151,6 @@ a[href^="ftp://"] {
     border: 1px solid #1c1e22;
 
     .general{
-        padding: 20px;    
+        padding: 20px;
     }
 }

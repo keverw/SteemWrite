@@ -50,7 +50,7 @@
         },
         isWS: function(address)
         {
-            var protocols = ['ws+unix:', 'ws:', 'wss:', 'http', 'https'];
+            var protocols = ['ws+unix:', 'ws:', 'wss:', 'http:', 'https:'];
 
             ////////////////////////////
             var serverUrl = url.parse(address);

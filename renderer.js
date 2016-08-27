@@ -92,15 +92,28 @@ var isDBReady = function(isReadyCB)
 
 global.bcReady = false; //BC connection ready
 global.bcStatus = ''; //BC connection status
+global.bcNode = ''; //BC connection node
+global.bcRestart = false; //bc require restart
 
-function updateBCStatus(info)
+global.updateBCStatus = function(info)
 {
     global.bcReady = info.ready;
     global.bcStatus = info.status;
+    global.bcNode = info.node;
+    global.bcRestart = info.restart;
+
+    if (global.bcRestart)
+    {
+        $('#bcRestartIcon').show();
+    }
+    else
+    {
+        $('#bcRestartIcon').hide();
+    }
 
     if (info.status == 'open') //green
     {
-        $('#bcStatus').attr('class','led led-green').attr('title', 'Connected');
+        $('#bcStatus').attr('class','led led-green').attr('title', 'Connected to ' + global.bcNode);
     }
     else if (info.status == 'closed') //yellow
     {
@@ -111,7 +124,7 @@ function updateBCStatus(info)
         $('#bcStatus').attr('class','led led-red').attr('title', 'Error');
     }
 
-}
+};
 
 global.hasAgreed = function(currentLayerID)
 {
@@ -123,7 +136,7 @@ global.hasAgreed = function(currentLayerID)
         if (err) return global.closeWithError(err);
 
         //update blockchain connection status
-        updateBCStatus(result);
+        global.updateBCStatus(result);
 
         //show main ui
         $('#' + currentLayerID).fadeOut('fast', function()
@@ -185,7 +198,7 @@ ipc.on('display-dialog', function(event, msg)
 
 ipc.on('bc-status', function(event, msg)
 {
-    updateBCStatus(msg);
+    global.updateBCStatus(msg);
 });
 
 ///////////////////////////////////////////////////////////////////////////
