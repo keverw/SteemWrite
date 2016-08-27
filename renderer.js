@@ -22,6 +22,25 @@ var irpcRenderer = irpc.renderer();
 
 var fs = require('fs');
 
+//Edit context menus
+var inputMenu = require('electron-input-menu');
+var context = require('electron-contextmenu-middleware');
+
+inputMenu.registerShortcuts();
+
+context.use(inputMenu);
+context.activate();
+//End Edit context menus
+
+//Debug menu
+if (global.appConfig.dev)
+{
+    var debugMenu = require('debug-menu');
+    debugMenu.install();  // activate context menu
+}
+
+//End Debug Menu
+
 global.closeWithError = function(msg)
 {
     if (msg && typeof msg == 'object')
