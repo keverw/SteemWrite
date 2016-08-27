@@ -11,8 +11,7 @@ global.userDataPath = app.getPath('userData');
 
 global.viewData = {
     viewName: '',
-    viewMeta: {},
-    settingsViewMeta: {tabReq: null}
+    viewMeta: {}
 };
 
 var ui = require('./modules/renderer/ui.js');
@@ -125,7 +124,7 @@ global.hasAgreed = function(currentLayerID)
 
         //update blockchain connection status
         updateBCStatus(result);
-        
+
         //show main ui
         $('#' + currentLayerID).fadeOut('fast', function()
         {

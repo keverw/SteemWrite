@@ -294,6 +294,17 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0
 		},
+	"\/views\/settings\/generalTab.jade": {
+		"compileDebug": 1,
+		"fileType": 512,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/views\/settings\/generalTab.jade",
+		"outputAbbreviatedPath": "\/views\/settings\/generalTab.html",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0
+		},
 	"\/views\/settings\/main.jade": {
 		"compileDebug": 1,
 		"fileType": 512,

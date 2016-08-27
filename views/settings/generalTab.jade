@@ -1,0 +1,8 @@
+form.form-horizontal
+  .form-group
+    label.col-sm-3.control-label(for='wsHostInput') Steem Node
+    .col-sm-9
+        .input-group
+          input#wsHostInput.form-control(type='text', placeholder='Steem Node', value=wsHost)
+          span.input-group-btn
+            button.btn.btn-default(type='button',onclick='ui.settingTab.general_setDefault()') Use Default
