@@ -3,7 +3,9 @@
     var crypto = require('crypto'),
         fs = require('fs'),
         path = require('path'),
-        jade = require('jade');
+        jade = require('jade'),
+        url = require('url'),
+        _ = require('underscore');
 
     module.exports = {
         encrypt: function(data, key)
@@ -48,11 +50,8 @@
         },
         isWS: function(address)
         {
-            var url = require('url'),
-                _ = require('underscore');
-
             var protocols = ['ws+unix:', 'ws:', 'wss:', 'http', 'https'];
-            
+
             ////////////////////////////
             var serverUrl = url.parse(address);
             return (_.contains(protocols, serverUrl.protocol) && serverUrl.host) ? true : false;
