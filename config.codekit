@@ -250,6 +250,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/thirdParty\/js\/loadingoverlay.min.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/thirdParty\/js\/loadingoverlay.min.js",
+		"outputAbbreviatedPath": "\/thirdParty\/js\/min\/loadingoverlay.min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/views\/base\/aboutContexts.jade": {
 		"compileDebug": 1,
 		"fileType": 512,

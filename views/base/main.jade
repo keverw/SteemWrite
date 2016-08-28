@@ -12,6 +12,8 @@ nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
         div(id="bcStatus", class="led led-yellow", data-toggle='tooltip', data-placement='right', title='Connecting...', onclick='ui.restartIcon()')
             #bcRestartIcon(style='display: none;')
                 span.glyphicon.glyphicon-repeat(aria-hidden='true')
+      li#accountsLocked(style='display: none;', onclick='ui.unlockIcon()')
+        span.glyphicon.glyphicon-lock(aria-hidden='true')
       li
         a(href='#')
             b(style='font-size: 17px;') SteemWriter

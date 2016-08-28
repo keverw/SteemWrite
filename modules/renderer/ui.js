@@ -34,7 +34,11 @@
                     if (err) throw err;
                 });
             }
-            
+
+        },
+        unlockIcon: function()
+        {
+            bootbox.alert('Later...');
         },
         close: function() {
             var remote = require('electron').remote;
