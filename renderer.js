@@ -153,6 +153,8 @@ function showMainUI(currentLayerID, loadAccountsResult)
         lastAcc: loadAccounts.lastAcc
     };
 
+    var viewHolder = ui.mainContentHolder.view();
+
     //update view
     if (loadAccountsResult.hasAccs)
     {
@@ -164,8 +166,8 @@ function showMainUI(currentLayerID, loadAccountsResult)
     else //update default screen with a prompt to add accounts
     {
         $('#menuDropdownName').text('Accounts');
-        $('#mainContent').html(util.getViewHtml('base/noAccountsView'));
-        
+        viewHolder.html(util.getViewHtml('base/noAccountsView'));
+
         $('#noAccountsView').click(function(e)
         {
             ui.openSettings('accounts');
@@ -186,6 +188,8 @@ function showMainUI(currentLayerID, loadAccountsResult)
     }
 
     //transition to displaying view
+    ui.mainContentHolder.ready(viewHolder);
+
     $('#' + currentLayerID).fadeOut('fast', function()
     {
         $('body').tooltip({selector: '[data-toggle=tooltip]'});

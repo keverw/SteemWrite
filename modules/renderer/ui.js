@@ -5,7 +5,7 @@
     var uuid = require('node-uuid');
 
     var settingsBox,
-    settingsViewMeta;
+        settingsViewMeta;
 
     function clearSettingsViewMeta()
     {
@@ -318,16 +318,16 @@
             }
             else //Load general Tab
             {
-            module.exports.settingTab.general();
+                module.exports.settingTab.general();
             }
 
         },
         openSettings: function(tabName)
         {
 
-            if(!$('.has-settings-menu-loaded').length)
+            if (!$('.has-settings-menu-loaded').length)
             {
-                if($('#appView').is(':visible'))
+                if ($('#appView').is(':visible'))
                 {
                     module.exports.displaySettings(tabName);
                 }
@@ -342,6 +342,55 @@
         {
             //alert($(ele).text());
         },
+        mainContentHolder: {
+            view: function() //returns the view to write to
+            {
+                var id = uuid.v1().replace(/-/g, '');
+                var viewHolderID = 'mainContent_' + id;
+
+                $('#mainContentHolder').prepend('<div id="' + viewHolderID + '" class="viewHolder" style="display: none;"></div>');
+
+                return $('#' + viewHolderID);
+            },
+            ready: function($viewHolderSelector, cb) //view that is transitioned to
+            {
+                var id = $viewHolderSelector.attr('id');
+
+                if (id)
+                {
+                    var selector = '#' + id;
+
+                    if ($(selector).is(':visible'))
+                    {
+                        if (typeof cb == 'function') cb('already'); //already visible
+                    }
+                    else
+                    {
+                        var views = $('#mainContentHolder .viewHolder:not(' + selector + ')');
+
+                        if (views.length > 0)
+                        {
+                            views.fadeOut('fast', function()
+                            {
+                                $(selector).fadeIn('fast');
+                                if (typeof cb == 'function') cb('show'); //ui was shown
+                            }).remove();
+                        }
+                        else
+                        {
+                            $(selector).fadeIn('fast');
+                            if (typeof cb == 'function') cb('show'); //ui was shown
+                        }
+
+                    }
+
+                }
+                else
+                {
+                    if (typeof cb == 'function') cb(false); //not found
+                }
+
+            }
         }
 
     };
