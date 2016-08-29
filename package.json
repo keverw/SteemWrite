@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "async": "^2.0.1",
+    "bcrypt": "^0.8.7",
     "electron-contextmenu-middleware": "^1.0.2",
     "electron-input-menu": "^2.0.3",
     "electron-irpc": "0.0.1",

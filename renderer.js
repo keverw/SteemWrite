@@ -145,9 +145,86 @@ global.updateBCStatus = function(info)
 
 };
 
+function showMainUI(currentLayerID, loadAccountsResult)
+{
+    var menuMeta = {
+        hasAccs: loadAccounts.hasAccs,
+        accountsList: loadAccounts.accountsList,
+        lastAcc: loadAccounts.lastAcc
+    };
+
+    //update view
+    if (loadAccountsResult.hasAccs)
+    {
+        $('#menuDropdownName').text(menuMeta.lastAcc);
+
+        //todo: update default screen with drafts, etc of account
+        //todo: load posts...
+    }
+    else //update default screen with a prompt to add accounts
+    {
+        $('#menuDropdownName').text('Accounts');
+        $('#mainContent').html(util.getViewHtml('base/noAccountsView'));
+        
+        $('#noAccountsView').click(function(e)
+        {
+            ui.openSettings('accounts');
+        });
+
+    }
+
+    $('#menuDropdownItems').html(util.getViewHtml('base/menuDropdown', menuMeta));
+
+    //handle if locked...
+    if (loadAccountsResult.isLocked)
+    {
+        $('#accountsLocked').show();
+    }
+    else
+    {
+        $('#accountsLocked').hide();
+    }
+
+    //transition to displaying view
+    $('#' + currentLayerID).fadeOut('fast', function()
+    {
+        $('body').tooltip({selector: '[data-toggle=tooltip]'});
+        $('#appView').fadeIn('fast');
+    });
+
+}
+
+function loadAccounts(currentLayerID)
+{
+
+    irpcRenderer.call('accounts.basicInfo', {}, function(err, result)
+    {
+        if (err) return global.closeWithError(err);
+
+        if (result.dataLocked) //wait...
+        {
+            setTimeout(function(err)
+            {
+                loadAccounts(currentLayerID);
+            }, 500);
+
+        }
+        else //call load accounts function
+        {
+            irpcRenderer.call('accounts.loadAccounts', {}, function(err, result)
+            {
+                if (err) return global.closeWithError(err);
+                showMainUI(currentLayerID, result);
+            });
+
+        }
+
+    });
+
+}
+
 global.hasAgreed = function(currentLayerID)
 {
-    $('#appView').html(util.getViewHtml('base/main'));
 
     //tell to connect to blockchain
     irpcRenderer.call('bc-connect', {}, function(err, result)
@@ -157,14 +234,8 @@ global.hasAgreed = function(currentLayerID)
         //update blockchain connection status
         global.updateBCStatus(result);
 
-        //show main ui
-        $('#' + currentLayerID).fadeOut('fast', function()
-        {
-            $('body').tooltip({selector: '[data-toggle=tooltip]'});
-            $('#appView').fadeIn('fast');
-            $('#menuDropdownName').text('Accounts');
-            $('#menuDropdownItems').html(util.getViewHtml('base/menuDropdown'));
-        });
+        // load accounts
+        loadAccounts(currentLayerID);
 
     });
 
@@ -223,13 +294,14 @@ ipc.on('bc-status', function(event, msg)
 ///////////////////////////////////////////////////////////////////////////
 $(function()
 {
+    $('#loadingScreen h1').text(global.lang.loadingScreen.loading).show();
+    $('#appView').html(util.getViewHtml('base/main'));
+
     bootbox.setDefaults({
         backdrop: 'static'
     });
 
     isJQReady = true;
-
-    $('#loadingScreen h1').text(global.lang.loadingScreen.loading).show();
 
     isDBReady(function()
     {

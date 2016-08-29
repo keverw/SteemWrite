@@ -1,14 +1,11 @@
-li
-  a(href='#') Action
-li
-  a(href='#') Another action
-li
-  a(href='#') Something else here
-li.divider(role='separator')
-li.dropdown-header Nav header
-//- li
-//-     a(onclick='ui.infoBox()') #{global.lang.menus.info}
-//- li
-//-     a(onclick='ui.optionsBox()') #{global.lang.menus.options}
-//- li
-//-     a(onclick='ui.close()') #{global.lang.menus.close}
+if hasAccs
+    each val in accountsList
+        li
+            a(onclick='ui.switchAccount(this)')=val
+    
+    li.divider(role='separator')
+    li
+        a(onclick='ui.openSettings("accounts");')='Manage Accounts'
+else
+    li
+        a(onclick='ui.openSettings("accounts");')='Add Accounts'

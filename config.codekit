@@ -133,6 +133,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/main\/accounts.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/main\/accounts.js",
+		"outputAbbreviatedPath": "\/modules\/main\/min\/accounts-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/main\/dbHelpers.js": {
 		"fileType": 64,
 		"ignore": 1,
@@ -301,6 +312,17 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/views\/base\/menuDropdown.jade",
 		"outputAbbreviatedPath": "\/views\/base\/menuDropdown.html",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0
+		},
+	"\/views\/base\/noAccountsView.jade": {
+		"compileDebug": 1,
+		"fileType": 512,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/views\/base\/noAccountsView.jade",
+		"outputAbbreviatedPath": "\/views\/base\/noAccountsView.html",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0

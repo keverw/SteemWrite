@@ -23,7 +23,7 @@
             {
                 var badInput = new Error('Missing k');
                 badInput.type = 'db';
-                badInput.code = 'notReady';
+                badInput.code = 'badInput';
                 cb(badInput);
             }
 
@@ -46,7 +46,7 @@
             {
                 var badInput = new Error('Missing k and/or v');
                 badInput.type = 'db';
-                badInput.code = 'notReady';
+                badInput.code = 'badInput';
                 cb(badInput);
             }
 
@@ -71,7 +71,7 @@
             {
                 var badInput = new Error('Missing k');
                 badInput.type = 'db';
-                badInput.code = 'notReady';
+                badInput.code = 'badInput';
                 cb(badInput);
             }
 

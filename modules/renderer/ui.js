@@ -273,7 +273,7 @@
                 bootbox.alert('accounts later');
             }
         },
-        displaySettings: function()
+        displaySettings: function(tabName)
         {
             settingsBox = bootbox.dialog({
                 message: util.getViewHtml('settings/main'),
@@ -312,18 +312,24 @@
                 return module.exports.settingTabHelpers.closeSettings();
             });
 
-            //Load general Tab
+            if (tabName == 'accounts') //Load accounts Tab
+            {
+                module.exports.settingTab.accounts();
+            }
+            else //Load general Tab
+            {
             module.exports.settingTab.general();
+            }
 
         },
-        openSettings: function()
+        openSettings: function(tabName)
         {
 
             if(!$('.has-settings-menu-loaded').length)
             {
                 if($('#appView').is(':visible'))
                 {
-                    module.exports.displaySettings();
+                    module.exports.displaySettings(tabName);
                 }
                 else
                 {
@@ -331,6 +337,11 @@
                 }
             }
 
+        },
+        switchAccount: function(ele)
+        {
+            //alert($(ele).text());
+        },
         }
 
     };
