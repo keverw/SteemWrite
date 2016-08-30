@@ -38,6 +38,7 @@
             p='Account Credentials are not currently encrypted.'
             button.btn.btn-success(type='button', onclick='ui.accounts.encryptCredentials()') Encrypt Credentials
         .encryptdStatus.encryptdLocked(style='display: none;')
+            button.btn.btn-success(type='button', onclick='unlock()') Unlock
             p="encryptd and locked"
         .encryptdStatus.encryptdUnlocked(style='display: none;')
             p="encryptd and unlocked"

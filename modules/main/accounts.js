@@ -218,6 +218,49 @@
 
             });
 
+        },
+        unlock: function(parameters, cb)
+        {
+            if (global.accountsData.isLoaded)
+            {
+                var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
+                var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+
+                if (isEncrypted)
+                {
+                    bcrypt.compare(parameters.passphrase, global.accountsData.stored.password, function(err, res)
+                    {
+                        if (err) return cb(err);
+
+                        if (res)
+                        {
+                            global.accountsData.masterPass = parameters.passphrase;
+                            cb(null, {isUnlocked: true, msg: 'Unlocked'});
+                        }
+                        else
+                        {
+                            cb(null, {msg: 'Invalid Passphrase.'});
+                        }
+
+
+                    });
+
+                }
+                else if (isUnlocked)
+                {
+                    cb(null, {msg: 'Already unlocked'});
+                }
+                else
+                {
+                    cb(null, {msg: 'Account Credentials are not currently encrypted.'});
+                }
+
+            }
+            else
+            {
+                cb(null, {msg: 'Accounts Data Not Loaded'});
+            }
+
         }
 
     };

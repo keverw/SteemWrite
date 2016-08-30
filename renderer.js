@@ -142,6 +142,56 @@ global.updateBCStatus = function(info)
 
 };
 
+global.unlock = function()
+{
+    bootbox.prompt({
+        title: 'Unlock',
+        inputType: 'password',
+        callback: function(result)
+        {
+            if (typeof result !== 'undefined' && result !== null)
+            {
+                if (result.length > 0)
+                {
+                    irpcRenderer.call('accounts.unlock', {
+                        passphrase: result
+                    }, function(err, result)
+                    {
+                        if (err)
+                        {
+                            console.log(err);
+                            bootbox.alert('Error Unlocking...');
+                        }
+                        else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                        {
+                            if (result.isUnlocked)
+                            {
+                                $('#settingsContent .accounts .encryptdStatus').hide();
+                                $('#settingsContent .accounts .encryptdUnlocked').show();
+                                $('#accountsLocked').hide();
+                            }
+
+                            bootbox.alert(result.msg);
+                        }
+                        else
+                        {
+                            bootbox.alert('Error Unlocking...');
+                        }
+
+                    });
+
+                }
+                else
+                {
+                    bootbox.alert('Empty passphrase');
+                }
+
+            }
+        }
+    });
+
+};
+
 function showMainUI(currentLayerID, loadAccountsResult)
 {
     var menuMeta = {
@@ -178,6 +228,9 @@ function showMainUI(currentLayerID, loadAccountsResult)
     if (loadAccountsResult.isLocked)
     {
         $('#accountsLocked').show();
+
+        //Prompt Unlock on startup
+        global.unlock();
     }
     else
     {
@@ -306,7 +359,7 @@ $(function()
     global.userDataPath = app.getPath('userData');
 
     isJQReady = true;
-    
+
     isDBReady(function()
     {
         //check license agreement

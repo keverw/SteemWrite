@@ -39,7 +39,7 @@
         },
         unlockIcon: function()
         {
-            bootbox.alert('Later...');
+            global.unlock();
         },
         close: function() {
             var remote = require('electron').remote;
