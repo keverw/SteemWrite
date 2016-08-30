@@ -41,7 +41,7 @@
             var totalAccounts = accountsList.length;
             var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
             var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
-            
+
             cb(null, {
                 hasAccs: ((totalAccounts > 0) ? true : false),
                 totalAccounts: totalAccounts,
@@ -109,7 +109,12 @@
 
             }
 
+        },
+        accountList: function(parameters, cb)
+        {
+            module.exports.loadAccounts(parameters, cb);
         }
+
     };
 
 }());

@@ -10,6 +10,7 @@
     function clearSettingsViewMeta()
     {
         settingsViewMeta = {
+            toView: '',
             loading: {},
             loaded: {},
             tabLastVisable: '',
@@ -70,6 +71,20 @@
 
         },
         settingTabHelpers: {
+            transitionView: function(fromView, toView)
+            {
+                settingsViewMeta.toView = toView;
+
+                $(fromView).fadeOut('fast', function()
+                {
+                    if (settingsViewMeta.toView == toView)
+                    {
+                        $(toView).fadeIn('fast');
+                    }
+
+                });
+
+            },
             switchedTabs: function(title, cssClass)
             {
                 var id = uuid.v1();
@@ -85,16 +100,16 @@
                 //Update Content
                 if (settingsViewMeta.tabLastVisable.length > 0)
                 {
-                    $('#settingsContent .' + settingsViewMeta.tabLastVisable).fadeOut('fast', function()
-                    {
-                        $('#settingsContent .loadingTab').fadeIn('fast');
-                    });
-
+                    module.exports.settingTabHelpers.transitionView('#settingsContent .' + settingsViewMeta.tabLastVisable, '#settingsContent .loadingTab');
                 }
 
                 settingsViewMeta.tabLastVisable = cssClass;
 
                 return id;
+            },
+            showTab: function()
+            {
+                module.exports.settingTabHelpers.transitionView('#settingsContent .loadingTab', '#settingsContent .' + settingsViewMeta.tabLastVisable);
             },
             whatChanged: function()
             {
@@ -148,7 +163,6 @@
                 {
                     if (changed.what.wsHost) //update wsHost
                     {
-                        console.log(changed.what.wsHost.val);
 
                         if (util.isWS(changed.what.wsHost.val))
                         {
@@ -185,13 +199,6 @@
                 }
 
                 return false;
-            },
-            showTab: function()
-            {
-                $('#settingsContent .loadingTab').fadeOut('fast', function()
-                {
-                    $('#settingsContent .' + settingsViewMeta.tabLastVisable).fadeIn('fast');
-                });
             },
             hideUpdateBTN: function()
             {
@@ -270,7 +277,50 @@
             accounts: function()
             {
                 var id = module.exports.settingTabHelpers.switchedTabs('Accounts', 'accounts');
-                bootbox.alert('accounts later');
+
+                if (settingsViewMeta.loading.accounts) //is loading, do nothing
+                {
+                    return;
+                }
+                else if (settingsViewMeta.loaded.accounts) //loaded already
+                {
+                    module.exports.settingTabHelpers.showTab();
+                    //module.exports.settingTabHelpers.showUpdateBTN();
+                }
+                else //not loaded or loading
+                {
+                    settingsViewMeta.loading.accounts = true;
+
+                    irpcRenderer.call('accounts.accountList', {}, function(err, result)
+                    {
+                        if (err)
+                        {
+                            console.log(err);
+                            bootbox.alert('Error loading accounts tab...');
+                            settingsViewMeta.loading.accounts = false;
+                        }
+                        else
+                        {
+                            $('#settingsContent .accounts').html(util.getViewHtml('settings/accountsTab', {
+
+                            }));
+
+                            //Display tab
+                            settingsViewMeta.loaded.accounts = true;
+                            settingsViewMeta.loading.accounts = false;
+
+                            if (settingsViewMeta.tabLastVisable == 'accounts')
+                            {
+                                module.exports.settingTabHelpers.showTab();
+                                //module.exports.settingTabHelpers.showUpdateBTN();
+                            }
+
+                        }
+
+                    });
+
+                }
+
             }
         },
         displaySettings: function(tabName)
