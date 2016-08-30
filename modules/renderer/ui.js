@@ -71,20 +71,6 @@
 
         },
         settingTabHelpers: {
-            transitionView: function(fromView, toView)
-            {
-                settingsViewMeta.toView = toView;
-
-                $(fromView).fadeOut('fast', function()
-                {
-                    if (settingsViewMeta.toView == toView)
-                    {
-                        $(toView).fadeIn('fast');
-                    }
-
-                });
-
-            },
             switchedTabs: function(title, cssClass)
             {
                 var id = uuid.v1();
@@ -98,18 +84,53 @@
                 $('.has-settings-menu-loaded .nav-tabs li.' + cssClass).addClass('active');
 
                 //Update Content
+                var toView = '#settingsContent .' + cssClass;
+                settingsViewMeta.toView = toView;
+
+                var fromView = '#settingsContent .' + settingsViewMeta.tabLastVisable;
                 if (settingsViewMeta.tabLastVisable.length > 0)
                 {
-                    module.exports.settingTabHelpers.transitionView('#settingsContent .' + settingsViewMeta.tabLastVisable, '#settingsContent .loadingTab');
+                    $(fromView).fadeOut('fast', function()
+                    {
+                        if (settingsViewMeta.toView == toView) //show new view
+                        {
+                            $(toView).fadeIn('fast');
+                        }
+
+                        if (settingsViewMeta.toView != fromView) //ready view for next time
+                        {
+                            $(fromView + ' .loading').show();
+                            $(fromView + ' .inside').hide();
+                        }
+
+                    });
+                }
+                else
+                {
+                    $(toView).fadeIn('fast');
                 }
 
                 settingsViewMeta.tabLastVisable = cssClass;
 
                 return id;
             },
-            showTab: function()
+            show: function(cssClass)
             {
-                module.exports.settingTabHelpers.transitionView('#settingsContent .loadingTab', '#settingsContent .' + settingsViewMeta.tabLastVisable);
+                var toView = '#settingsContent .' + cssClass;
+
+                if (settingsViewMeta.toView == toView)
+                {
+                    $(toView + ' .loading').fadeOut('fast', function()
+                    {
+                        if (settingsViewMeta.toView == toView) //show new view
+                        {
+                            $(toView + ' .inside').fadeIn('fast');
+                        }
+
+                    });
+
+                }
+
             },
             whatChanged: function()
             {
@@ -232,7 +253,7 @@
                 }
                 else if (settingsViewMeta.loaded.general) //loaded already
                 {
-                    module.exports.settingTabHelpers.showTab();
+                    module.exports.settingTabHelpers.show('general');
                     module.exports.settingTabHelpers.showUpdateBTN();
                 }
                 else //not loaded or loading
@@ -263,7 +284,7 @@
 
                             if (settingsViewMeta.tabLastVisable == 'general')
                             {
-                                module.exports.settingTabHelpers.showTab();
+                                module.exports.settingTabHelpers.show('general');
                                 module.exports.settingTabHelpers.showUpdateBTN();
                             }
 
@@ -284,7 +305,7 @@
                 }
                 else if (settingsViewMeta.loaded.accounts) //loaded already
                 {
-                    module.exports.settingTabHelpers.showTab();
+                    module.exports.settingTabHelpers.show('accounts');
                     //module.exports.settingTabHelpers.showUpdateBTN();
                 }
                 else //not loaded or loading
@@ -311,7 +332,7 @@
 
                             if (settingsViewMeta.tabLastVisable == 'accounts')
                             {
-                                module.exports.settingTabHelpers.showTab();
+                                module.exports.settingTabHelpers.show('accounts');
                                 //module.exports.settingTabHelpers.showUpdateBTN();
                             }
 

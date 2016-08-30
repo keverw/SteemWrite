@@ -1,9 +1,12 @@
-form.form-horizontal(onsubmit='return ui.settingTabHelpers.updateSettings();')
-  .form-group
-    label.col-sm-3.control-label(for='generalTabWSHostInput') Steem Node
-    .col-sm-9
-        .input-group
-          input#generalTabWSHostInput.form-control(type='text', placeholder='Steem Node', value=wsHost)
-          span.input-group-btn
-            button.btn.btn-default(type='button',onclick='ui.settingTab.general_setDefault()') Use Default
-         p.help-block.default Set the Steem Node Websocket Address. Requires application restart to apply after saving.
+.loading
+    img.loadingSpinner(src='./images/whiteLoader.svg')
+.inside(style='display: none;')
+    form.form-horizontal(onsubmit='return ui.settingTabHelpers.updateSettings();')
+      .form-group
+        label.col-sm-3.control-label(for='generalTabWSHostInput') Steem Node
+        .col-sm-9
+            .input-group
+              input#generalTabWSHostInput.form-control(type='text', placeholder='Steem Node', value=wsHost)
+              span.input-group-btn
+                button.btn.btn-default(type='button',onclick='ui.settingTab.general_setDefault()') Use Default
+             p.help-block.default Set the Steem Node Websocket Address. Requires application restart to apply after saving.
