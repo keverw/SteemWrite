@@ -6,9 +6,6 @@ global.appConfig = require('./appConfig.json');
 global.appConfig.appVersion = require('./package.json').version;
 global.lang = require('./lang/en.json');
 
-var app = require('electron').remote.app;
-global.userDataPath = app.getPath('userData');
-
 global.viewData = {
     viewName: '',
     viewMeta: {}
@@ -305,8 +302,11 @@ $(function()
         backdrop: 'static'
     });
 
-    isJQReady = true;
+    var app = require('electron').remote.app;
+    global.userDataPath = app.getPath('userData');
 
+    isJQReady = true;
+    
     isDBReady(function()
     {
         //check license agreement
