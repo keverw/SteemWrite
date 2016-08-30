@@ -15,7 +15,10 @@
     Also if encrypted but unauthed: not editing accounts list
     */
 
+    var saltRounds = 10;
+
     var bcrypt = require('bcrypt'),
+        clone = require('fast-clone'),
         kvs = require('./kvs.js');
 
     if (!global.accountsData)
@@ -32,6 +35,34 @@
             }
         };
 
+    }
+
+    function isLoadedAndUnlocked(cb)
+    {
+        if (global.accountsData.isLoaded)
+        {
+            if (global.accountsData.dataLocked)
+            {
+                cb(false, 'Accounts Data Record Locked');
+            }
+            else
+            {
+                cb(true);
+            }
+
+        }
+        else
+        {
+            cb(false, 'Accounts Data Not Loaded');
+        }
+
+    }
+
+    function updateStoredAccounts(storedData, oldPassword, newPassword, cb)
+    {
+        //if oldPassword is undefined, not encrypted yet
+
+        cb(); //temp cb
     }
 
     module.exports = {
@@ -113,6 +144,80 @@
         accountList: function(parameters, cb)
         {
             module.exports.loadAccounts(parameters, cb);
+        },
+        encryptCredentials: function(parameters, cb)
+        {
+            function doCB(err, info)
+            {
+                global.accountsData.dataLocked = false;
+                cb(err, info);
+            }
+
+            ////////////////////////////////////////////////
+            isLoadedAndUnlocked(function(ready, msg)
+            {
+                if (ready)
+                {
+                    global.accountsData.dataLocked = true;
+
+                    var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+
+                    if (isEncrypted)
+                    {
+                        doCB(null, {msg: 'Credentials Already Encrypted. Use change passphrase instead'});
+                    }
+                    else
+                    {
+                        ///copy the stored data from memory
+                        var storedData = clone(global.accountsData.stored);
+
+                        bcrypt.genSalt(saltRounds, function(err, salt)
+                        {
+                            if (err) doCB(err);
+
+                            bcrypt.hash(parameters.passphrase, salt, function(err, hash)
+                            {
+                                if (err) doCB(err);
+
+                                storedData.password = hash;
+
+                                updateStoredAccounts(storedData, undefined, parameters.passphrase, function(err)
+                                {
+                                    if (err) doCB(err);
+
+                                    //update KVS and local memory
+                                    var stringifed = JSON.stringify(storedData);
+
+                                    kvs.set({
+                                        k: 'accounts',
+                                        v: stringifed
+                                    }, function(err)
+                                    {
+                                        if (err) doCB(err);
+
+                                        global.accountsData.stored = storedData; //update stored data
+                                        global.accountsData.masterPass = parameters.passphrase; //update stored pass so unlocked
+                                        doCB();
+
+                                    });
+
+                                });
+
+                            });
+
+                        });
+
+                    }
+
+                }
+                else
+                {
+                    //reg callback as no need to unlock
+                    cb(null, {msg: msg});
+                }
+
+            });
+
         }
 
     };

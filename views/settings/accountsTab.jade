@@ -34,4 +34,10 @@
             td july@example.com
 
     .masterPasswordInfo
-        p="Master Password Info Meta"
+        .encryptdStatus.encryptdNot(style='display: none;')
+            p='Account Credentials are not currently encrypted.'
+            button.btn.btn-success(type='button', onclick='ui.accounts.encryptCredentials()') Encrypt Credentials
+        .encryptdStatus.encryptdLocked(style='display: none;')
+            p="encryptd and locked"
+        .encryptdStatus.encryptdUnlocked(style='display: none;')
+            p="encryptd and unlocked"

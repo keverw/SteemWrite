@@ -326,6 +326,26 @@
 
                             }));
 
+                            //Update UI encryptdStatus
+                            $('#settingsContent .accounts .encryptdStatus').hide();
+
+                            if (result.isEncrypted)
+                            {
+                                if (result.isUnlocked)
+                                {
+                                    $('#settingsContent .accounts .encryptdUnlocked').show();
+                                }
+                                else
+                                {
+                                    $('#settingsContent .accounts .encryptdLocked').show();
+                                }
+
+                            }
+                            else
+                            {
+                                $('#settingsContent .accounts .encryptdNot').show();
+                            }
+
                             //Display tab
                             settingsViewMeta.loaded.accounts = true;
                             settingsViewMeta.loading.accounts = false;
@@ -408,6 +428,106 @@
                 }
             }
 
+        },
+        accounts: {
+            encryptCredentials: function()
+            {
+                var encryptCredentials = '';
+
+                //Passphrase
+                bootbox.prompt({
+                    title: 'Encrypt Credentials - Enter Passphrase<p class"passphraseInfoText">Please use a passphrase of ten or more random characters, or eight or more worlds.</p>',
+                    inputType: 'password',
+                    callback: function(result)
+                    {
+                        if (typeof result !== 'undefined' && result !== null)
+                        {
+                            encryptCredentials = result;
+
+                            if (result.length > 0)
+                            {
+                                //Confirm
+                                bootbox.prompt({
+                                    title: 'Encrypt Credentials - Confirm Passphrase<p class"passphraseInfoText">Please use a passphrase of ten or more random characters, or eight or more worlds.</p>',
+                                    inputType: 'password',
+                                    callback: function(result)
+                                    {
+                                        if (typeof result !== 'undefined' && result !== null)
+                                        {
+
+                                            if (encryptCredentials === result)
+                                            {
+                                                var msg = '<b>Warning:</b> If you encrypt your credentials and lose your passphrase, you will NEED TO REENTER YOUR CREDENTIALS to continue using those accounts with this software.';
+                                                msg += '<br><br>Are you sure you wish to encrypt your credentials?';
+
+                                                bootbox.confirm({
+                                                    message: msg,
+                                                    callback: function(result)
+                                                    {
+                                                        if (result)
+                                                        {
+                                                            //put up loading spinner
+                                                            $.LoadingOverlay('show', {
+                                                                zIndex: 2000
+                                                            });
+
+                                                            //call encryptCredentials
+                                                            irpcRenderer.call('accounts.encryptCredentials', {
+                                                                passphrase: encryptCredentials
+                                                            }, function(err, result)
+                                                            {
+                                                                if (err)
+                                                                {
+                                                                    console.log(err);
+                                                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                                                    bootbox.alert('Error Encrypting Credentials...');
+                                                                }
+                                                                else
+                                                                {
+                                                                    if (result && typeof result == 'object' && typeof result.msg == 'string')
+                                                                    {
+                                                                        $.LoadingOverlay('hide'); //hide loading spinner
+                                                                        bootbox.alert(result.msg);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        $('#settingsContent .accounts .encryptdStatus').hide();
+                                                                        $('#settingsContent .accounts .encryptdUnlocked').show();
+                                                                        $.LoadingOverlay('hide'); //hide loading spinner
+                                                                    }
+
+                                                                }
+
+                                                            });
+
+                                                        }
+
+                                                    }
+                                                });
+
+                                            }
+                                            else
+                                            {
+                                                bootbox.alert('Passphrase and Confirm Passphrase do not match.');
+                                            }
+
+                                        }
+                                    }
+                                });
+
+                            }
+                            else
+                            {
+                                bootbox.alert('Passphrase is empty.');
+                            }
+
+                        }
+
+                    }
+
+                });
+
+            }
         },
         switchAccount: function(ele)
         {
