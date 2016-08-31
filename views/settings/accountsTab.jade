@@ -36,9 +36,14 @@
     .masterPasswordInfo
         .encryptdStatus.encryptdNot(style='display: none;')
             p='Account Credentials are not currently encrypted.'
-            button.btn.btn-success(type='button', onclick='ui.accounts.encryptCredentials()') Encrypt Credentials
+            .btn-group.btn-group-justified(role='group')
+                .btn-group(role='group')
+                    button.btn.btn-success(type='button', onclick='ui.accounts.encryptCredentials()') Encrypt Credentials
         .encryptdStatus.encryptdLocked(style='display: none;')
-            button.btn.btn-success(type='button', onclick='unlock()') Unlock
-            p="encryptd and locked"
+            .btn-group.btn-group-justified(role='group')
+                .btn-group(role='group')
+                    button.btn.btn-success(type='button', onclick='unlock()') Unlock
+                .btn-group(role='group')
+                    button.btn.btn-danger(type='button', onclick='ui.accounts.reset()') Remove Password
         .encryptdStatus.encryptdUnlocked(style='display: none;')
             p="encryptd and unlocked"

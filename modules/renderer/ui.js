@@ -527,6 +527,53 @@
 
                 });
 
+            },
+            reset: function()
+            {
+
+                bootbox.confirm('Are you sure you want to remove password? This will remove your encrypted credentials and you\'ll need to reenter them to continue using those accounts with this application.', function(result)
+                {
+                    if (result)
+                    {
+                        global.removeUnlockModal(); //remove any open unlock modals
+
+                        //put up loading spinner
+                        $.LoadingOverlay('show', {
+                            zIndex: 2000
+                        });
+
+                        irpcRenderer.call('accounts.reset', {}, function(err, result)
+                        {
+                            if (err)
+                            {
+                                console.log(err);
+                                $.LoadingOverlay('hide'); //hide loading spinner
+                                bootbox.alert('Error Resetting Credentials...');
+                            }
+                            else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                            {
+                                if (result.removed)
+                                {
+                                    $('#settingsContent .accounts .encryptdStatus').hide();
+                                    $('#settingsContent .accounts .encryptdNot').show();
+                                    $('#accountsLocked').hide();
+                                }
+                                
+                                bootbox.alert(result.msg);
+                                $.LoadingOverlay('hide'); //hide loading spinner
+                            }
+                            else
+                            {
+                                $.LoadingOverlay('hide'); //hide loading spinner
+                                bootbox.alert('Error Resetting Credentials...');
+                            }
+
+                        });
+
+                    }
+
+                });
+
             }
         },
         switchAccount: function(ele)

@@ -60,7 +60,20 @@
 
     function updateStoredAccounts(storedData, oldPassword, newPassword, cb)
     {
+        var mode = 'change'; //change stored credentials passphrase
+
         //if oldPassword is undefined, not encrypted yet
+        //if oldPassword and newPassword both are undefined - remove stored credentials
+        //if oldPassword and newPassword both are defined - change stored credentials passphrase
+
+        if (oldPassword === undefined && newPassword === undefined)
+        {
+            mode = 'remove'; //remove stored credentials
+        }
+        else if (oldPassword === undefined)
+        {
+            mode = 'encrypt'; //encrypt credentials
+        }
 
         cb(); //temp cb
     }
@@ -143,6 +156,7 @@
         },
         accountList: function(parameters, cb)
         {
+            //todo: load post counts maybe
             module.exports.loadAccounts(parameters, cb);
         },
         encryptCredentials: function(parameters, cb)
@@ -168,7 +182,7 @@
                     }
                     else
                     {
-                        ///copy the stored data from memory
+                        //copy the stored data from memory
                         var storedData = clone(global.accountsData.stored);
 
                         bcrypt.genSalt(saltRounds, function(err, salt)
@@ -260,6 +274,72 @@
             {
                 cb(null, {msg: 'Accounts Data Not Loaded'});
             }
+
+        },
+        reset: function(parameters, cb)
+        {
+            function doCB(err, info)
+            {
+                global.accountsData.dataLocked = false;
+                cb(err, info);
+            }
+
+            ////////////////////////////////////////////////
+            isLoadedAndUnlocked(function(ready, msg)
+            {
+                if (ready)
+                {
+                    global.accountsData.dataLocked = true;
+
+                    var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
+                    var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+
+                    if (isEncrypted)
+                    {
+                        if (isUnlocked)
+                        {
+                            doCB(null, {msg: 'Already unlocked'});
+                        }
+                        else
+                        {
+                            //copy the stored data from memory
+                            var storedData = clone(global.accountsData.stored);
+                            storedData.password = '';
+
+                            updateStoredAccounts(storedData, undefined, undefined, function(err)
+                            {
+                                if (err) doCB(err);
+
+                                //update KVS and local memory
+                                var stringifed = JSON.stringify(storedData);
+
+                                kvs.set({
+                                    k: 'accounts',
+                                    v: stringifed
+                                }, function(err)
+                                {
+                                    global.accountsData.stored = storedData; //update stored data
+                                    doCB(null, {removed: true, msg: 'Password Removed.'});
+                                });
+
+                            });
+
+                        }
+
+                    }
+                    else
+                    {
+                        doCB(null, {msg: 'Account Credentials are not currently encrypted.'});
+                    }
+
+                }
+                else
+                {
+                    //reg callback as no need to unlock
+                    cb(null, {msg: msg});
+                }
+
+            });
 
         }
 
