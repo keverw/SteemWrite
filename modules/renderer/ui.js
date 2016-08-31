@@ -584,7 +584,40 @@
                     {
                         if (typeof result !== 'undefined' && result !== null)
                         {
-                            bootbox.alert('later...');
+                            var passphrase = result;
+                            irpcRenderer.call('accounts.checkPassphrase', {
+                                passphrase: passphrase
+                            }, function(err, result)
+                            {
+                                if (err)
+                                {
+                                    console.log(err);
+                                    bootbox.alert('Error Checking Passphrase...');
+                                }
+                                else
+                                {
+                                    if (result && typeof result == 'object')
+                                    {
+                                        if (typeof result.msg == 'string')
+                                        {
+                                            bootbox.alert(result.msg);
+                                        }
+
+                                        if (result.isCorrect)
+                                        {
+                                            bootbox.alert('todo: Ask for new Passphrase');
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        bootbox.alert('Error Checking Passphrase...');
+                                    }
+
+                                }
+
+                            });
+
                         }
                     }
                 });
@@ -599,7 +632,40 @@
                     {
                         if (typeof result !== 'undefined' && result !== null)
                         {
-                            bootbox.alert('later...');
+                            var passphrase = result;
+                            irpcRenderer.call('accounts.checkPassphrase', {
+                                passphrase: passphrase
+                            }, function(err, result)
+                            {
+                                if (err)
+                                {
+                                    console.log(err);
+                                    bootbox.alert('Error Checking Passphrase...');
+                                }
+                                else
+                                {
+                                    if (result && typeof result == 'object')
+                                    {
+                                        if (typeof result.msg == 'string')
+                                        {
+                                            bootbox.alert(result.msg);
+                                        }
+
+                                        if (result.isCorrect)
+                                        {
+                                            bootbox.alert('todo: Remove Passphrase');
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        bootbox.alert('Error Checking Passphrase...');
+                                    }
+
+                                }
+
+                            });
+
                         }
                     }
                 });
