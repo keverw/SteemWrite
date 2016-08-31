@@ -142,11 +142,18 @@ global.updateBCStatus = function(info)
 
 };
 
+global.removeUnlockModal = function()
+{
+    $('.unlock-modal').next('div').remove();
+    $('.unlock-modal').remove();
+};
+
 global.unlock = function()
 {
     bootbox.prompt({
         title: 'Unlock',
         inputType: 'password',
+        className: 'unlock-modal',
         callback: function(result)
         {
             if (typeof result !== 'undefined' && result !== null)
@@ -157,6 +164,8 @@ global.unlock = function()
                         passphrase: result
                     }, function(err, result)
                     {
+                        global.removeUnlockModal(); //remove if others
+
                         if (err)
                         {
                             console.log(err);
