@@ -2,15 +2,15 @@
 {
 
     /*
-    1. if encrypted, app will ask for master password or can click later
+    1. if encrypted, app will ask for master passphrase or can click later
     2. top of the app will show an unlocked icon to enter it later. The accounts won't be possible to allow publishing/updating until unlocked.
 
     Preferences:
-    If not encrypted: Will let you set a master password if not one already, update KVS version, add accounts, etc
+    If not encrypted: Will let you set a master passphrase if not one already, update KVS version, add accounts, etc
 
-    If encrypted and authed: change password, add accounts, etc
+    If encrypted and authed: change passphrase, add accounts, etc
 
-    if encrypted and unauthed: remove the master password, and then UI will show accounts missing their password/posting key and not allow publishing/updating, etc as that account until they update it.
+    if encrypted and unauthed: remove the master passphrase, and then UI will show accounts missing their password/posting key and not allow publishing/updating, etc as that account until they update it.
 
     Also if encrypted but unauthed: not editing accounts list
     */
@@ -58,19 +58,20 @@
 
     }
 
-    function updateStoredAccounts(storedData, oldPassword, newPassword, cb)
+    function updateStoredAccounts(storedData, oldPassphrase, newPassphrase, cb)
     {
         var mode = 'change'; //change stored credentials passphrase
 
-        //if oldPassword is undefined, not encrypted yet
-        //if oldPassword and newPassword both are undefined - remove stored credentials
-        //if oldPassword and newPassword both are defined - change stored credentials passphrase
+        //if oldPassphrase is undefined, not encrypted yet
+        //if oldPassphrase and newPassphrase both are undefined - remove stored credentials
+        //if oldPassphrase and newPassphrase both are defined - change stored credentials passphrase
+        //if oldPassphrase and newPassphrase both are defined, but new one is a empty string - then unencrypt but keep credentials
 
-        if (oldPassword === undefined && newPassword === undefined)
+        if (oldPassphrase === undefined && newPassphrase === undefined)
         {
             mode = 'remove'; //remove stored credentials
         }
-        else if (oldPassword === undefined)
+        else if (oldPassphrase === undefined)
         {
             mode = 'encrypt'; //encrypt credentials
         }
@@ -187,17 +188,17 @@
 
                         bcrypt.genSalt(saltRounds, function(err, salt)
                         {
-                            if (err) doCB(err);
+                            if (err) return doCB(err);
 
                             bcrypt.hash(parameters.passphrase, salt, function(err, hash)
                             {
-                                if (err) doCB(err);
+                                if (err) return doCB(err);
 
                                 storedData.password = hash;
 
-                                updateStoredAccounts(storedData, undefined, parameters.passphrase, function(err)
+                                updateStoredAccounts(storedData, undefined, parameters.passphrase, function(err) //set passphrase
                                 {
-                                    if (err) doCB(err);
+                                    if (err) return doCB(err);
 
                                     //update KVS and local memory
                                     var stringifed = JSON.stringify(storedData);
@@ -207,7 +208,7 @@
                                         v: stringifed
                                     }, function(err)
                                     {
-                                        if (err) doCB(err);
+                                        if (err) return doCB(err);
 
                                         global.accountsData.stored = storedData; //update stored data
                                         global.accountsData.masterPass = parameters.passphrase; //update stored pass so unlocked
@@ -310,7 +311,7 @@
             {
                 cb(null, {msg: 'Accounts Data Not Loaded'});
             }
-            
+
         },
         reset: function(parameters, cb)
         {
@@ -342,9 +343,9 @@
                             var storedData = clone(global.accountsData.stored);
                             storedData.password = '';
 
-                            updateStoredAccounts(storedData, undefined, undefined, function(err)
+                            updateStoredAccounts(storedData, undefined, undefined, function(err) //remove credentials
                             {
-                                if (err) doCB(err);
+                                if (err) return doCB(err);
 
                                 //update KVS and local memory
                                 var stringifed = JSON.stringify(storedData);
@@ -360,6 +361,147 @@
 
                             });
 
+                        }
+
+                    }
+                    else
+                    {
+                        doCB(null, {msg: 'Account Credentials are not currently encrypted.'});
+                    }
+
+                }
+                else
+                {
+                    //reg callback as no need to unlock
+                    cb(null, {msg: msg});
+                }
+
+            });
+
+        },
+        changePassphrase: function(parameters, cb)
+        {
+            function doCB(err, info)
+            {
+                global.accountsData.dataLocked = false;
+                cb(err, info);
+            }
+
+            ////////////////////////////////////////////////
+            isLoadedAndUnlocked(function(ready, msg)
+            {
+                if (ready)
+                {
+                    global.accountsData.dataLocked = true;
+
+                    var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
+                    var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+
+                    if (isEncrypted)
+                    {
+                        if (isUnlocked)
+                        {
+                            bcrypt.compare(parameters.passphrase, global.accountsData.stored.password, function(err, res)
+                            {
+                                if (err) return doCB(err);
+
+                                if (res)
+                                {
+                                    doCB(null, {msg: 'todo: later'});
+                                }
+                                else
+                                {
+                                    doCB(null, {msg: 'Invalid Passphrase.'});
+                                }
+
+                            });
+
+                        }
+                        else
+                        {
+                            doCB(null, {msg: 'Account Credentials are not currently locked. Please unlock to use this.'});
+                        }
+
+                    }
+                    else
+                    {
+                        doCB(null, {msg: 'Account Credentials are not currently encrypted.'});
+                    }
+
+                }
+                else
+                {
+                    //reg callback as no need to unlock
+                    cb(null, {msg: msg});
+                }
+
+            });
+
+        },
+        removePassphrase: function(parameters, cb)
+        {
+            function doCB(err, info)
+            {
+                global.accountsData.dataLocked = false;
+                cb(err, info);
+            }
+
+            ////////////////////////////////////////////////
+            isLoadedAndUnlocked(function(ready, msg)
+            {
+                if (ready)
+                {
+                    global.accountsData.dataLocked = true;
+
+                    var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
+                    var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+
+                    if (isEncrypted)
+                    {
+                        if (isUnlocked)
+                        {
+
+                            bcrypt.compare(parameters.passphrase, global.accountsData.stored.password, function(err, res)
+                            {
+                                if (err) return doCB(err);
+
+                                if (res)
+                                {
+                                    //copy the stored data from memory
+                                    var storedData = clone(global.accountsData.stored);
+                                    storedData.password = '';
+
+                                    updateStoredAccounts(storedData, parameters.passphrase, '', function(err) //unencrypt credentials
+                                    {
+                                        if (err) return doCB(err);
+
+                                        //update KVS and local memory
+                                        var stringifed = JSON.stringify(storedData);
+
+                                        kvs.set({
+                                            k: 'accounts',
+                                            v: stringifed
+                                        }, function(err)
+                                        {
+                                            global.accountsData.stored = storedData; //update stored data
+                                            global.accountsData.masterPass = '';
+                                            doCB(null, {removed: true, msg: 'Passphrase Removed.'});
+                                        });
+
+                                    });
+
+                                }
+                                else
+                                {
+                                    doCB(null, {msg: 'Invalid Passphrase.'});
+                                }
+
+                            });
+
+                        }
+                        else
+                        {
+                            doCB(null, {msg: 'Account Credentials are not currently locked. Please unlock to use this.'});
                         }
 
                     }

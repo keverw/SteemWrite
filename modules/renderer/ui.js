@@ -531,7 +531,7 @@
             reset: function()
             {
 
-                bootbox.confirm('Are you sure you want to remove password? This will remove your encrypted credentials and you\'ll need to reenter them to continue using those accounts with this application.', function(result)
+                bootbox.confirm('Are you sure you want to reset passphrase? This will remove your encrypted credentials and you\'ll need to reenter them to continue using those accounts with this application.', function(result)
                 {
                     if (result)
                     {
@@ -548,7 +548,7 @@
                             {
                                 console.log(err);
                                 $.LoadingOverlay('hide'); //hide loading spinner
-                                bootbox.alert('Error Resetting Credentials...');
+                                bootbox.alert('Error Resetting Passphrase...');
                             }
                             else if (result && typeof result == 'object' && typeof result.msg == 'string')
                             {
@@ -565,7 +565,7 @@
                             else
                             {
                                 $.LoadingOverlay('hide'); //hide loading spinner
-                                bootbox.alert('Error Resetting Credentials...');
+                                bootbox.alert('Error Resetting Passphrase...');
                             }
 
                         });
@@ -653,7 +653,40 @@
 
                                         if (result.isCorrect)
                                         {
-                                            bootbox.alert('todo: Remove Passphrase');
+                                            //put up loading spinner
+                                            $.LoadingOverlay('show', {
+                                                zIndex: 2000
+                                            });
+
+                                            irpcRenderer.call('accounts.removePassphrase', {
+                                                passphrase: passphrase
+                                            }, function(err, result)
+                                            {
+                                                if (err)
+                                                {
+                                                    console.log(err);
+                                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                                    bootbox.alert('Error Removing Passphrase...');
+                                                }
+                                                else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                                                {
+                                                    if (result.removed)
+                                                    {
+                                                        $('#settingsContent .accounts .encryptdStatus').hide();
+                                                        $('#settingsContent .accounts .encryptdNot').show();
+                                                    }
+
+                                                    bootbox.alert(result.msg);
+                                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                                }
+                                                else
+                                                {
+                                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                                    bootbox.alert('Error Removing Passphrase...');
+                                                }
+
+                                            });
+
                                         }
 
                                     }
