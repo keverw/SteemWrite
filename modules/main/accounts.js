@@ -407,7 +407,45 @@
 
                                 if (res)
                                 {
-                                    doCB(null, {msg: 'todo: later'});
+                                    //copy the stored data from memory
+                                    var storedData = clone(global.accountsData.stored);
+
+                                    bcrypt.genSalt(saltRounds, function(err, salt)
+                                    {
+                                        if (err) return doCB(err);
+
+                                        bcrypt.hash(parameters.newPassphrase, salt, function(err, hash)
+                                        {
+                                            if (err) return doCB(err);
+
+                                            storedData.password = hash;
+
+                                            updateStoredAccounts(storedData, parameters.passphrase, parameters.newPassphrase, function(err) //change passphrase
+                                            {
+                                                if (err) return doCB(err);
+
+                                                //update KVS and local memory
+                                                var stringifed = JSON.stringify(storedData);
+
+                                                kvs.set({
+                                                    k: 'accounts',
+                                                    v: stringifed
+                                                }, function(err)
+                                                {
+                                                    if (err) return doCB(err);
+
+                                                    global.accountsData.stored = storedData; //update stored data
+                                                    global.accountsData.masterPass = parameters.newPassphrase; //update stored pass so unlocked
+
+                                                    doCB(null, {msg: 'Passphrase successfully changed'});
+                                                });
+
+                                            });
+
+                                        });
+
+                                    });
+
                                 }
                                 else
                                 {

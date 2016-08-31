@@ -578,7 +578,7 @@
             change: function()
             {
                 bootbox.prompt({
-                    title: 'Change Passphrase<p class"passphraseInfoText">Please use a passphrase of ten or more random characters, or eight or more worlds.</p>',
+                    title: 'Change Passphrase - Enter Current Passphrase',
                     inputType: 'password',
                     callback: function(result)
                     {
@@ -605,7 +605,82 @@
 
                                         if (result.isCorrect)
                                         {
-                                            bootbox.alert('todo: Ask for new Passphrase');
+                                            var newCredentials = '';
+
+                                            //Passphrase
+                                            bootbox.prompt({
+                                                title: 'New Passphrase<p class"passphraseInfoText">Please use a passphrase of ten or more random characters, or eight or more worlds.</p>',
+                                                inputType: 'password',
+                                                callback: function(result)
+                                                {
+                                                    if (typeof result !== 'undefined' && result !== null)
+                                                    {
+                                                        newCredentials = result;
+
+                                                        if (result.length > 0)
+                                                        {
+                                                            //Confirm
+                                                            bootbox.prompt({
+                                                                title: 'Confirm New Passphrase<p class"passphraseInfoText">Please use a passphrase of ten or more random characters, or eight or more worlds.</p>',
+                                                                inputType: 'password',
+                                                                callback: function(result)
+                                                                {
+                                                                    if (typeof result !== 'undefined' && result !== null)
+                                                                    {
+                                                                        if (newCredentials === result)
+                                                                        {
+                                                                            //put up loading spinner
+                                                                            $.LoadingOverlay('show', {
+                                                                                zIndex: 2000
+                                                                            });
+
+                                                                            //call changePassphrase
+                                                                            irpcRenderer.call('accounts.changePassphrase', {
+                                                                                passphrase: passphrase,
+                                                                                newPassphrase: newCredentials
+                                                                            }, function(err, result)
+                                                                            {
+                                                                                if (err)
+                                                                                {
+                                                                                    console.log(err);
+                                                                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                                                                    bootbox.alert('Error changing passphrase...');
+                                                                                }
+                                                                                else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                                                                                {
+                                                                                    bootbox.alert(result.msg);
+                                                                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                                                                    bootbox.alert('Error changing passphrase...');
+                                                                                }
+
+                                                                            });
+
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            bootbox.alert('New Passphrase and Confirm New Passphrase do not match.');
+                                                                        }
+
+                                                                    }
+
+                                                                }
+                                                            });
+
+                                                        }
+                                                        else
+                                                        {
+                                                            bootbox.alert('Passphrase is empty.');
+                                                        }
+
+                                                    }
+
+                                                }
+                                            });
+
                                         }
 
                                     }
