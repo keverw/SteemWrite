@@ -151,7 +151,7 @@ global.removeUnlockModal = function()
 global.unlock = function()
 {
     bootbox.prompt({
-        title: 'Unlock',
+        title: 'Unlock - Enter Passphrase',
         inputType: 'password',
         className: 'unlock-modal',
         callback: function(result)

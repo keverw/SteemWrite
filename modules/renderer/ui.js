@@ -558,7 +558,7 @@
                                     $('#settingsContent .accounts .encryptdNot').show();
                                     $('#accountsLocked').hide();
                                 }
-                                
+
                                 bootbox.alert(result.msg);
                                 $.LoadingOverlay('hide'); //hide loading spinner
                             }
@@ -572,6 +572,36 @@
 
                     }
 
+                });
+
+            },
+            change: function()
+            {
+                bootbox.prompt({
+                    title: 'Change Passphrase<p class"passphraseInfoText">Please use a passphrase of ten or more random characters, or eight or more worlds.</p>',
+                    inputType: 'password',
+                    callback: function(result)
+                    {
+                        if (typeof result !== 'undefined' && result !== null)
+                        {
+                            bootbox.alert('later...');
+                        }
+                    }
+                });
+
+            },
+            remove: function()
+            {
+                bootbox.prompt({
+                    title: 'Enter your passphrase to unencrypt account credentials',
+                    inputType: 'password',
+                    callback: function(result)
+                    {
+                        if (typeof result !== 'undefined' && result !== null)
+                        {
+                            bootbox.alert('later...');
+                        }
+                    }
                 });
 
             }

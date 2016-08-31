@@ -240,7 +240,11 @@
                 var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
                 var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
 
-                if (isEncrypted)
+                if (isUnlocked)
+                {
+                    cb(null, {msg: 'Already unlocked'});
+                }
+                else if (isEncrypted)
                 {
                     bcrypt.compare(parameters.passphrase, global.accountsData.stored.password, function(err, res)
                     {
@@ -260,10 +264,6 @@
                     });
 
                 }
-                else if (isUnlocked)
-                {
-                    cb(null, {msg: 'Already unlocked'});
-                }
                 else
                 {
                     cb(null, {msg: 'Account Credentials are not currently encrypted.'});
@@ -275,6 +275,42 @@
                 cb(null, {msg: 'Accounts Data Not Loaded'});
             }
 
+        },
+        checkPassphrase: function(parameters, cb)
+        {
+            if (global.accountsData.isLoaded)
+            {
+                var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+
+                if (isEncrypted)
+                {
+                    bcrypt.compare(parameters.passphrase, global.accountsData.stored.password, function(err, res)
+                    {
+                        if (err) return cb(err);
+
+                        if (res)
+                        {
+                            cb(null, {isCorrect: true});
+                        }
+                        else
+                        {
+                            cb(null, {msg: 'Invalid Passphrase.'});
+                        }
+
+                    });
+
+                }
+                else
+                {
+                    cb(null, {msg: 'Account Credentials are not currently encrypted.'});
+                }
+
+            }
+            else
+            {
+                cb(null, {msg: 'Accounts Data Not Loaded'});
+            }
+            
         },
         reset: function(parameters, cb)
         {
