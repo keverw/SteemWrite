@@ -21,7 +21,7 @@
         clone = require('fast-clone'),
         kvs = require('./kvs.js'),
         accountHelpers = require('./accountHelpers.js'),
-        util = require('./util.js');
+        util = require('../util.js');
 
     if (!global.accountsData)
     {

@@ -221,6 +221,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/tests\/updateStoredAccounts.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/tests\/updateStoredAccounts.js",
+		"outputAbbreviatedPath": "\/tests\/min\/updateStoredAccounts-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/thirdParty\/css\/bootstrap.css": {
 		"fileType": 16,
 		"ignore": 0,

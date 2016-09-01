@@ -1,7 +1,7 @@
 (function ()
 {
-    var util = require('./modules/util.js');
-    
+    var util = require('../util.js');
+
     module.exports = {
         isLoadedAndUnlocked: function(cb)
         {
