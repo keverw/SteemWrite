@@ -19,7 +19,9 @@
 
     var bcrypt = require('bcrypt'),
         clone = require('fast-clone'),
-        kvs = require('./kvs.js');
+        kvs = require('./kvs.js'),
+        accountHelpers = require('./accountHelpers.js'),
+        util = require('./util.js');
 
     if (!global.accountsData)
     {
@@ -35,48 +37,6 @@
             }
         };
 
-    }
-
-    function isLoadedAndUnlocked(cb)
-    {
-        if (global.accountsData.isLoaded)
-        {
-            if (global.accountsData.dataLocked)
-            {
-                cb(false, 'Accounts Data Record Locked');
-            }
-            else
-            {
-                cb(true);
-            }
-
-        }
-        else
-        {
-            cb(false, 'Accounts Data Not Loaded');
-        }
-
-    }
-
-    function updateStoredAccounts(storedData, oldPassphrase, newPassphrase, cb)
-    {
-        var mode = 'change'; //change stored credentials passphrase
-
-        //if oldPassphrase is undefined, not encrypted yet
-        //if oldPassphrase and newPassphrase both are undefined - remove stored credentials
-        //if oldPassphrase and newPassphrase both are defined - change stored credentials passphrase
-        //if oldPassphrase and newPassphrase both are defined, but new one is a empty string - then unencrypt but keep credentials
-
-        if (oldPassphrase === undefined && newPassphrase === undefined)
-        {
-            mode = 'remove'; //remove stored credentials
-        }
-        else if (oldPassphrase === undefined)
-        {
-            mode = 'encrypt'; //encrypt credentials
-        }
-
-        cb(); //temp cb
     }
 
     module.exports = {
@@ -169,7 +129,7 @@
             }
 
             ////////////////////////////////////////////////
-            isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -196,7 +156,7 @@
 
                                 storedData.password = hash;
 
-                                updateStoredAccounts(storedData, undefined, parameters.passphrase, function(err) //set passphrase
+                                accountHelpers.updateStoredAccounts(storedData, undefined, parameters.passphrase, function(err) //set passphrase
                                 {
                                     if (err) return doCB(err);
 
@@ -322,7 +282,7 @@
             }
 
             ////////////////////////////////////////////////
-            isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -343,7 +303,7 @@
                             var storedData = clone(global.accountsData.stored);
                             storedData.password = '';
 
-                            updateStoredAccounts(storedData, undefined, undefined, function(err) //remove credentials
+                            accountHelpers.updateStoredAccounts(storedData, undefined, undefined, function(err) //remove credentials
                             {
                                 if (err) return doCB(err);
 
@@ -388,7 +348,7 @@
             }
 
             ////////////////////////////////////////////////
-            isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -420,7 +380,7 @@
 
                                             storedData.password = hash;
 
-                                            updateStoredAccounts(storedData, parameters.passphrase, parameters.newPassphrase, function(err) //change passphrase
+                                            accountHelpers.updateStoredAccounts(storedData, parameters.passphrase, parameters.newPassphrase, function(err) //change passphrase
                                             {
                                                 if (err) return doCB(err);
 
@@ -485,7 +445,7 @@
             }
 
             ////////////////////////////////////////////////
-            isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -509,7 +469,7 @@
                                     var storedData = clone(global.accountsData.stored);
                                     storedData.password = '';
 
-                                    updateStoredAccounts(storedData, parameters.passphrase, '', function(err) //unencrypt credentials
+                                    accountHelpers.updateStoredAccounts(storedData, parameters.passphrase, '', function(err) //unencrypt credentials
                                     {
                                         if (err) return doCB(err);
 
