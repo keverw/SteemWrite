@@ -371,6 +371,17 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0
 		},
+	"\/views\/settings\/addAccountBox.jade": {
+		"compileDebug": 1,
+		"fileType": 512,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/views\/settings\/addAccountBox.jade",
+		"outputAbbreviatedPath": "\/views\/settings\/addAccountBox.html",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0
+		},
 	"\/views\/settings\/generalTab.jade": {
 		"compileDebug": 1,
 		"fileType": 512,

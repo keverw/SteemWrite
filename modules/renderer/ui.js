@@ -441,7 +441,7 @@
             },
             refreshAccountsListRemoved: function() //called when Resetting Passphrase is removed
             {
-                
+
             },
             encryptCredentials: function()
             {
@@ -797,6 +797,44 @@
         switchAccount: function(ele)
         {
             //alert($(ele).text());
+        },
+        manageAccounts: {
+            add: function()
+            {
+                var addAccountBox = bootbox.dialog({
+                    message: util.getViewHtml('settings/addAccountBox'),
+                    title: 'Add Account',
+                    closeButton: false,
+                    className: 'has-add-account-box',
+                    buttons: {
+                        cancel: {
+                            label: 'Cancel',
+                            className: 'btn-danger',
+                            callback: function()
+                            {
+                                addAccountBox.modal('hide');
+                            }
+                        },
+                        continue: {
+                            label: 'Continue',
+                            className: 'btn-success',
+                            callback: function()
+                            {
+                                bootbox.alert('later');
+                                return false;
+                            }
+                        }
+                    }
+                });
+
+                //Fake the close button
+                $('.has-add-account-box .modal-header').prepend('<button type="button" class="close" aria-hidden="true">&times;</button>');
+                $('.has-add-account-box .modal-header .close').click(function()
+                {
+                    addAccountBox.modal('hide');
+                });
+
+            }
         },
         mainContentHolder: {
             view: function() //returns the view to write to
