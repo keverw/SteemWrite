@@ -8,7 +8,7 @@
     };
 
     module.exports = {
-        getTotal: Object.keys(cmds).length, //how many things you plan todo
+        getTotal: Object.keys(cmds).length, //how many things you plan on doing
         migrate: function(doneCB)
         {
             async.eachOfSeries(cmds, function(value, key, callback)
