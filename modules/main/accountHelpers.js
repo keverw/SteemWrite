@@ -23,6 +23,29 @@
             }
 
         },
+        hasAuth: function(authJSON)
+        {
+            var info = {
+                has: false,
+                data: {}
+            };
+
+            try {
+                var data = JSON.parse(authJSON);
+
+                if (data.password)
+                {
+                    info.has = true;
+                    info.data = data;
+                }
+
+            } catch (err)
+            {
+                console.log(err);
+            }
+
+            return info;
+        },
         updateStoredAccounts: function(storedData, oldPassphrase, newPassphrase, cb)
         {
             var emptyOBJ = JSON.stringify({});
@@ -48,10 +71,12 @@
                 if (storedData.accounts.hasOwnProperty(acc))
                 {
 
+                    //update record
                     if (mode == 'encrypt')
                     {
                         if (storedData.accounts[acc].encrypted) return cb(new Error('Encrypted Already'));
 
+                        storedData.accounts[acc].hasAuth = module.exports.hasAuth(storedData.accounts[acc].auth).has;
                         storedData.accounts[acc].auth = util.encrypt(storedData.accounts[acc].auth, newPassphrase);
                         storedData.accounts[acc].encrypted = true;
                     }
@@ -60,6 +85,7 @@
                         if (storedData.accounts[acc].encrypted)
                         {
                             var decryptedString = util.decrypt(storedData.accounts[acc].auth, oldPassphrase);
+                            storedData.accounts[acc].hasAuth = module.exports.hasAuth(decryptedString).has;
 
                             if (newPassphrase.length > 0)
                             {
@@ -81,6 +107,7 @@
                     }
                     else if (mode == 'remove')
                     {
+                        storedData.accounts[acc].hasAuth = false;
                         storedData.accounts[acc].auth = emptyOBJ;
                         storedData.accounts[acc].encrypted = false;
                     }

@@ -16,6 +16,7 @@ var authStr = JSON.stringify({password: 'bar'});
 global.accountsData.stored.accounts.foo = {
     username: 'foo',
     encrypted: false,
+    hasAuth: true,
     auth: authStr
 };
 
