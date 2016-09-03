@@ -322,9 +322,9 @@
                         }
                         else
                         {
-                            $('#settingsContent .accounts').html(util.getViewHtml('settings/accountsTab', {
+                            $('#settingsContent .accounts').html(util.getViewHtml('settings/accountsTab'));
 
-                            }));
+                            module.exports.accounts.refreshAccountsList(result);
 
                             //Update UI encryptdStatus
                             $('#settingsContent .accounts .encryptdStatus').hide();
@@ -430,6 +430,19 @@
 
         },
         accounts: {
+            refreshAccountsList: function(info)
+            {
+                $('#accountsListTbody').html(util.getViewHtml('settings/accountList', {
+                    accountsList: info.accountsList,
+                    hasCredentials: info.hasCredentials,
+                    draftPostCounts: info.draftPostCounts
+                }));
+
+            },
+            refreshAccountsListRemoved: function() //called when Resetting Passphrase is removed
+            {
+                
+            },
             encryptCredentials: function()
             {
                 var encryptCredentials = '';
@@ -557,6 +570,7 @@
                                     $('#settingsContent .accounts .encryptdStatus').hide();
                                     $('#settingsContent .accounts .encryptdNot').show();
                                     $('#accountsLocked').hide();
+                                    module.exports.accounts.refreshAccountsListRemoved();
                                 }
 
                                 bootbox.alert(result.msg);

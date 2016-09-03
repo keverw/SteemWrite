@@ -203,10 +203,11 @@ global.unlock = function()
 
 function showMainUI(currentLayerID, loadAccountsResult)
 {
+		
     var menuMeta = {
-        hasAccs: loadAccounts.hasAccs,
-        accountsList: loadAccounts.accountsList,
-        lastAcc: loadAccounts.lastAcc
+        hasAccs: loadAccountsResult.hasAccs,
+        accountsList: loadAccountsResult.accountsList,
+        lastAcc: loadAccountsResult.lastAcc
     };
 
     var viewHolder = ui.mainContentHolder.view();
@@ -214,7 +215,7 @@ function showMainUI(currentLayerID, loadAccountsResult)
     //update view
     if (loadAccountsResult.hasAccs)
     {
-        $('#menuDropdownName').text(menuMeta.lastAcc);
+	    $('#menuDropdownName').text(menuMeta.lastAcc);
 
         //todo: update default screen with drafts, etc of account
         //todo: load posts...

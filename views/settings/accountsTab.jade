@@ -4,50 +4,34 @@
     table.table
       thead
         tr
-          th Firstname
-          th Lastname
-          th Email
-      tbody
-        tr
-          td John
-          td Doe
-          td john@example.com
-        tr
-          td Mary
-          td Moe
-          td mary@example.com mary@example.com
-        tr
-            td July
-            td Dooley
-            td july@example.com
-        tr
-            td John
-            td Doe
-            td john@example.comjohn@example.comjohn@example.comjohn@example.comjohn@example.comjohn@example.com
-        tr
-            td Mary
-            td Moe
-            td mary@example.com
-        tr
-            td July
-            td Dooley
-            td july@example.com
+          th Username
+          th Drafts
+          th Actions
+      tbody#accountsListTbody
+      
+    .encryptdStatus.encryptdNot.encryptdUnlocked
+        .btn-group.btn-group-justified(role='group')
+            .btn-group(role='group')
+                button.btn.btn-success(type='button', onclick='')
+                    span.glyphicon.glyphicon-plus-sign
+                    !{'  '}
+                    |Add Account
 
     .masterPassphraseInfo
         .encryptdStatus.encryptdNot(style='display: none;')
             b='Account Credentials are not currently encrypted.'
             .btn-group.btn-group-justified(role='group')
                 .btn-group(role='group')
-                    button.btn.btn-success(type='button', onclick='ui.accounts.encryptCredentials()') Encrypt Credentials
+                    button.btn.btn-success(type='button', onclick='ui.accounts.encryptCredentials()')='Encrypt Credentials'
         .encryptdStatus.encryptdLocked(style='display: none;')
             .btn-group.btn-group-justified(role='group')
                 .btn-group(role='group')
-                    button.btn.btn-danger(type='button', onclick='ui.accounts.reset()') Reset Passphrase
+                    button.btn.btn-danger(type='button', onclick='ui.accounts.reset()')='Reset Passphrase'
                 .btn-group(role='group')
-                    button.btn.btn-success(type='button', onclick='unlock()') Unlock
+                    button.btn.btn-success(type='button', onclick='unlock()')='Unlock'
         .encryptdStatus.encryptdUnlocked(style='display: none;')
             .btn-group.btn-group-justified(role='group')
                 .btn-group(role='group')
-                    button.btn.btn-danger(type='button', onclick='ui.accounts.remove()') Remove Passphrase
+                    button.btn.btn-danger(type='button', onclick='ui.accounts.remove()')='Remove Passphrase'
                 .btn-group(role='group')
-                    button.btn.btn-info(type='button', onclick='ui.accounts.change()') Change Passphrase
+                    button.btn.btn-info(type='button', onclick='ui.accounts.change()')='Change Passphrase'

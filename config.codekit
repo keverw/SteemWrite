@@ -349,6 +349,17 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0
 		},
+	"\/views\/settings\/accountList.jade": {
+		"compileDebug": 1,
+		"fileType": 512,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/views\/settings\/accountList.jade",
+		"outputAbbreviatedPath": "\/views\/settings\/accountList.html",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0
+		},
 	"\/views\/settings\/accountsTab.jade": {
 		"compileDebug": 1,
 		"fileType": 512,

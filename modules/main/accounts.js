@@ -31,8 +31,8 @@
             masterPass: '', //loaded in memory
             stored: { //this is what's stored in KVS as JSON
                 password: '', //bcrypt stored password for validation if encrption enabled
-                lastAcc: '',
-                accounts: {} //key be the username, holding object with: username, auth: json string of object holding password or posting key?
+                lastAcc: '', //last account used username as user inputed
+                accounts: {} //key be the username lowercase, holding object with: username as user inputed, hasAuth, encrypted, auth: json string of object holding password or posting key?
                 //if not encrypted, just plain JSON else encrypted JSON
             }
         };
@@ -44,13 +44,50 @@
         {
             var accountsList = Object.keys(global.accountsData.stored.accounts);
             var totalAccounts = accountsList.length;
+            var hasAccs = ((totalAccounts > 0) ? true : false);
+
+            ///////// Check if accounts have credentials
+            var hasCredentials = {};
+
+            for (var acc in accountsList)
+            {
+                if (accountsList.hasOwnProperty(acc))
+                {
+                    hasCredentials[accountsList[acc]] = false;
+
+                    if (global.accountsData.stored.accounts[accountsList[acc]] && global.accountsData.stored.accounts[accountsList[acc]].hasAuth)
+                    {
+                        hasCredentials[accountsList[acc]] = true;
+                    }
+                    
+                }
+
+            }
+
+            ///////// load draft post counts
+            var draftPostCounts = {};
+
+            for (var acc2 in accountsList)
+            {
+                if (accountsList.hasOwnProperty(acc2))
+                {
+                    draftPostCounts[accountsList[acc2]] = 0;
+                }
+
+            }
+
+            //todo: query db
+
+            /////////
             var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
             var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
 
             cb(null, {
-                hasAccs: ((totalAccounts > 0) ? true : false),
+                hasAccs: hasAccs,
                 totalAccounts: totalAccounts,
                 accountsList: accountsList,
+                hasCredentials: hasCredentials,
+                draftPostCounts: draftPostCounts,
                 lastAcc: global.accountsData.stored.lastAcc,
                 isEncrypted: isEncrypted,
                 isUnlocked: isUnlocked,
@@ -117,7 +154,6 @@
         },
         accountList: function(parameters, cb)
         {
-            //todo: load post counts maybe
             module.exports.loadAccounts(parameters, cb);
         },
         encryptCredentials: function(parameters, cb)
