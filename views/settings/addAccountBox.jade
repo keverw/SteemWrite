@@ -1,1 +1,11 @@
-|Later...
+form.form-horizontal(onsubmit='return ui.manageAccountsHelpers.addAccountContinueBTN();')
+    .form-group
+        label.col-sm-3.control-label(for='addAccountUsername') Username
+        .col-sm-9
+            input#addAccountUsername.form-control(type='text', placeholder='Username')
+    .form-group
+        label.col-sm-3.control-label(for='addAccountPassword') Password
+        .col-sm-9
+            input#addAccountPassword.form-control(type='password', placeholder='Password')
+
+    input(type='submit', style='position: absolute; height: 0px; width: 0px; border: none; padding: 0px;', hidefocus='true', tabindex='-1')

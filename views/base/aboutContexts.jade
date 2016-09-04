@@ -6,10 +6,10 @@ if global.appConfig.dev
     div.poweredBy
         div.poweredByLabel Powered By
         ul
-          li Electron #{process.versions.electron}
-          li Node #{process.versions.node}
-          li Chromium #{process.versions.chrome}
-          li V8 #{process.versions.v8}
-          li userDataPath
-            | 
-            code #{global.userDataPath}
+            li Electron #{process.versions.electron}
+            li Node #{process.versions.node}
+            li Chromium #{process.versions.chrome}
+            li V8 #{process.versions.v8}
+            li userDataPath
+                !{'  '}
+                code #{global.userDataPath}
