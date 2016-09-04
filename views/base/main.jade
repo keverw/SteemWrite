@@ -1,31 +1,30 @@
 nav.navbar.navbar-default.navbar-fixed-top(role='navigation')
-  #editorMode.navbar-center
-    ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
-      li
-        a(style='text-decoration: none;', href='#') Visual
-      li
-        a(style='text-decoration: none;', href='#') Markdown
-      li
-        a(style='text-decoration: none;', href='#') Preview
-  ul.nav.navbar-nav.navbar-left
-      li
-        div(id="bcStatus", class="led led-yellow", data-toggle='tooltip', data-placement='right', title='Connecting...', onclick='ui.restartIcon()')
-            #bcRestartIcon(style='display: none;')
-                span.glyphicon.glyphicon-repeat(aria-hidden='true')
-      li#accountsLocked(style='display: none;', onclick='ui.unlockIcon()')
-        span.glyphicon.glyphicon-lock(aria-hidden='true')
-      li
-        a(href='#')
-            b(style='font-size: 17px;') SteemWriter
-        
-  ul.nav.navbar-nav.navbar-right
-    li.dropdown
-      a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
-        span#menuDropdownName
-        | &nbsp;
-        span.caret
-      ul.dropdown-menu#menuDropdownItems
-        
+    #editorMode.navbar-center
+        ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
+            li
+                a(style='text-decoration: none;', href='#') Visual
+            li
+                a(style='text-decoration: none;', href='#') Markdown
+            li
+                a(style='text-decoration: none;', href='#') Preview
+    ul.nav.navbar-nav.navbar-left
+        li
+            div(id="bcStatus", class="led led-yellow", data-toggle='tooltip', data-placement='right', title='Connecting...', onclick='ui.restartIcon()')
+                #bcRestartIcon(style='display: none;')
+                    span.glyphicon.glyphicon-repeat(aria-hidden='true')
+        li#accountsLocked(style='display: none;', onclick='ui.unlockIcon()')
+            span.glyphicon.glyphicon-lock(aria-hidden='true')
+        li
+            a(href='#')
+                b(style='font-size: 17px;') SteemWriter
+
+    ul.nav.navbar-nav.navbar-right
+        li.dropdown
+            a.dropdown-toggle(href='#', data-toggle='dropdown', role='button', aria-haspopup='true', aria-expanded='false')
+                span#menuDropdownName
+                | &nbsp;
+                span.caret
+            ul.dropdown-menu#menuDropdownItems
+
 .container.container-noPadding
     #mainContentHolder
-    

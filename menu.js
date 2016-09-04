@@ -1,9 +1,9 @@
 (function()
 {
-	//note: If this is ever translated in the future - replace the role: ones with what's in menu-item-roles.js in the electron-master
-	//note: Then translate each label
+    //note: If this is ever translated in the future - replace the role: ones with what's in menu-item-roles.js in the electron-master
+    //note: Then translate each label
 
-	var Menu = require('electron').Menu;
+    var Menu = require('electron').Menu;
 
     function displayDialog(focusedWindow, dialogName)
     {
@@ -46,107 +46,107 @@
 
     }
 
-	function getEditMenu() //Edit Menu
-	{
-		var editMenu = {
-			label: 'Edit',
-			submenu: [
-			{
-				role: 'undo'
+    function getEditMenu() //Edit Menu
+    {
+        var editMenu = {
+            label: 'Edit',
+            submenu: [
+                {
+                    role: 'undo'
 			},
-			{
-				role: 'redo'
+                {
+                    role: 'redo'
 			},
-			{
-				type: 'separator'
+                {
+                    type: 'separator'
 			},
-			{
-				role: 'cut'
+                {
+                    role: 'cut'
 			},
-			{
-				role: 'copy'
+                {
+                    role: 'copy'
 			},
-			{
-				role: 'paste'
+                {
+                    role: 'paste'
 			},
-			{
-				role: 'pasteandmatchstyle'
+                {
+                    role: 'pasteandmatchstyle'
 			},
-			{
-				role: 'delete'
+                {
+                    role: 'delete'
 			},
-			{
-				role: 'selectall'
+                {
+                    role: 'selectall'
 			}]
-		};
+        };
 
-		if (process.platform === 'darwin')
-		{
-			editMenu.submenu.push(
-			{
-				type: 'separator'
-			},
-			{
-				label: 'Speech',
-				submenu: [
-				{
-					role: 'startspeaking'
+        if (process.platform === 'darwin')
+        {
+            editMenu.submenu.push(
+            {
+                type: 'separator'
+            },
+            {
+                label: 'Speech',
+                submenu: [
+                    {
+                        role: 'startspeaking'
 				},
-				{
-					role: 'stopspeaking'
+                    {
+                        role: 'stopspeaking'
 				}]
-			});
-		}
+            });
+        }
 
-		return editMenu;
-	}
+        return editMenu;
+    }
 
-	function getViewMenu() //View Menu
-	{
-		var viewMenu = {
-			label: 'View',
-			submenu: []
-		};
+    function getViewMenu() //View Menu
+    {
+        var viewMenu = {
+            label: 'View',
+            submenu: []
+        };
 
-		if (global.appConfig.dev)
-		{
-			viewMenu.submenu.push(
-			{
-				label: 'Reload',
-				accelerator: 'CmdOrCtrl+R',
-				click: function click(item, focusedWindow)
-				{
-					if (focusedWindow) focusedWindow.reload();
-				}
-			},
-			{
-				label: 'Toggle Developer Tools',
-				accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
-				click: function click(item, focusedWindow)
-				{
-					if (focusedWindow) focusedWindow.webContents.toggleDevTools();
-				}
-			},
-			{
-				type: 'separator'
-			});
+        if (global.appConfig.dev)
+        {
+            viewMenu.submenu.push(
+            {
+                label: 'Reload',
+                accelerator: 'CmdOrCtrl+R',
+                click: function click(item, focusedWindow)
+                {
+                    if (focusedWindow) focusedWindow.reload();
+                }
+            },
+            {
+                label: 'Toggle Developer Tools',
+                accelerator: process.platform === 'darwin' ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+                click: function click(item, focusedWindow)
+                {
+                    if (focusedWindow) focusedWindow.webContents.toggleDevTools();
+                }
+            },
+            {
+                type: 'separator'
+            });
 
-		}
+        }
 
-		viewMenu.submenu.push(
-		{
-			role: 'togglefullscreen'
-		});
+        viewMenu.submenu.push(
+        {
+            role: 'togglefullscreen'
+        });
 
-		return viewMenu;
-	}
+        return viewMenu;
+    }
 
-	function getFileMenu() //File Menu
-	{
-		var fileMenu = {
-			label: 'File',
-			submenu: []
-		};
+    function getFileMenu() //File Menu
+    {
+        var fileMenu = {
+            label: 'File',
+            submenu: []
+        };
 
         if (process.platform !== 'darwin') //add settings menu on non Mac
         {
@@ -159,147 +159,147 @@
                 }
             });
         }
-        
-		if (process.platform !== 'darwin') //add exit on non Mac
-		{
-			fileMenu.submenu.push(
+
+        if (process.platform !== 'darwin') //add exit on non Mac
+        {
+            fileMenu.submenu.push(
             {
                 type: 'separator'
             },
-			{
-				role: 'quit'
-			});
-		}
+            {
+                role: 'quit'
+            });
+        }
 
-		return fileMenu;
-	}
+        return fileMenu;
+    }
 
-	function getWindowMenu() //Window Menu
-	{
-		return {
-			role: 'window',
-			submenu: [
-			{
-				label: 'Minimize',
-				accelerator: 'CmdOrCtrl+M',
-				role: 'minimize'
+    function getWindowMenu() //Window Menu
+    {
+        return {
+            role: 'window',
+            submenu: [
+                {
+                    label: 'Minimize',
+                    accelerator: 'CmdOrCtrl+M',
+                    role: 'minimize'
 			},
-			{
-				label: 'Zoom',
-				role: 'zoom'
+                {
+                    label: 'Zoom',
+                    role: 'zoom'
 			}]
-		};
+        };
 
-	}
+    }
 
-	function getHelpMenu(appName) //Help Menu
-	{
-		var helpMenu = {
-			role: 'help',
-			submenu: []
-		};
+    function getHelpMenu(appName) //Help Menu
+    {
+        var helpMenu = {
+            role: 'help',
+            submenu: []
+        };
 
-		helpMenu.submenu.push(
-		{
-			label: 'Learn More',
-			click: function click()
-			{
-				require('electron').shell.openExternal('http://electron.atom.io');
-			}
-		});
+        helpMenu.submenu.push(
+        {
+            label: 'Learn More',
+            click: function click()
+            {
+                require('electron').shell.openExternal('http://electron.atom.io');
+            }
+        });
 
-		if (process.platform !== 'darwin') //Add about on non Mac platforms
-		{
-			helpMenu.submenu.push(
+        if (process.platform !== 'darwin') //Add about on non Mac platforms
+        {
+            helpMenu.submenu.push(
                 {
                     type: 'separator'
                 },
                 getAboutMenuItem(appName)
             );
-		}
+        }
 
-		return helpMenu;
-	}
+        return helpMenu;
+    }
 
-	module.exports = {
-		init: function(app)
-		{
+    module.exports = {
+        init: function(app)
+        {
             var appName = app.getName();
 
-			var template = [];
+            var template = [];
 
-			//File Menu
-			if (process.platform !== 'darwin') //not currently used on OS X
-			{
-				template.push(getFileMenu()); //add file menu
-			}
+            //File Menu
+            if (process.platform !== 'darwin') //not currently used on OS X
+            {
+                template.push(getFileMenu()); //add file menu
+            }
 
-			template.push(getEditMenu()); //add edit menu
+            template.push(getEditMenu()); //add edit menu
 
-			//View Menu
-			template.push(getViewMenu()); //add view menu
+            //View Menu
+            template.push(getViewMenu()); //add view menu
 
-			//Window Menu
-			if (process.platform === 'darwin')
-			{
-				template.push(getWindowMenu());
-			}
+            //Window Menu
+            if (process.platform === 'darwin')
+            {
+                template.push(getWindowMenu());
+            }
 
-			//Help Menu
-			template.push(getHelpMenu(appName));
+            //Help Menu
+            template.push(getHelpMenu(appName));
 
-			//Mac Menu Adjustments
-			if (process.platform === 'darwin')
-			{
-				template.unshift(
-				{
-					label: appName,
-					submenu: [getAboutMenuItem(appName),
-                    {
-						type: 'separator'
-					},
-                    {
-                        label: 'Preferences…',
-                        accelerator: 'CmdOrCtrl+,',
-                        click: function click(item, focusedWindow)
+            //Mac Menu Adjustments
+            if (process.platform === 'darwin')
+            {
+                template.unshift(
+                {
+                    label: appName,
+                    submenu: [getAboutMenuItem(appName),
                         {
-                            displayDialog(focusedWindow, 'settings');
-                        }
+                            type: 'separator'
+					},
+                        {
+                            label: 'Preferences…',
+                            accelerator: 'CmdOrCtrl+,',
+                            click: function click(item, focusedWindow)
+                            {
+                                displayDialog(focusedWindow, 'settings');
+                            }
                     },
-					{
-						type: 'separator'
+                        {
+                            type: 'separator'
 					},
-					{
-						role: 'services',
-						submenu: []
+                        {
+                            role: 'services',
+                            submenu: []
 					},
-					{
-						type: 'separator'
+                        {
+                            type: 'separator'
 					},
-					{
-						role: 'hide'
+                        {
+                            role: 'hide'
 					},
-					{
-						role: 'hideothers'
+                        {
+                            role: 'hideothers'
 					},
-					{
-						role: 'unhide'
+                        {
+                            role: 'unhide'
 					},
-					{
-						type: 'separator'
+                        {
+                            type: 'separator'
 					},
-					{
-						role: 'quit'
+                        {
+                            role: 'quit'
 					}]
-				});
+                });
 
-			}
+            }
 
-			// Set the menu
-			var menu = Menu.buildFromTemplate(template);
-			Menu.setApplicationMenu(menu);
+            // Set the menu
+            var menu = Menu.buildFromTemplate(template);
+            Menu.setApplicationMenu(menu);
 
-		}
-	};
+        }
+    };
 
 })();

@@ -7,7 +7,7 @@ var electron = require('electron');
 var app = electron.app;
 
 function makeSingleInstance() {
-    return app.makeSingleInstance(function () {
+    return app.makeSingleInstance(function() {
         if (global.mainWindow) {
             if (global.mainWindow.isMinimized()) global.mainWindow.restore();
             global.mainWindow.focus();
@@ -29,7 +29,7 @@ global.isAppClosing = false;
 if (global.appConfig.dev)
 {
     require('electron-reload')(__dirname, {
-      electron: require('electron-prebuilt')
+        electron: require('electron-prebuilt')
     });
 }
 
@@ -79,7 +79,10 @@ var irpcMain = irpc.main();
 
 irpcMain.addFunction('closeWithError', function(parameters, cb)
 {
-    cb(null, {ok: true});
+    cb(null, {
+        ok: true
+    });
+
     global.closeWithError(parameters.err);
 });
 
@@ -87,14 +90,23 @@ var doRelaunch = false;
 irpcMain.addFunction('relaunch', function(parameters, cb)
 {
     doRelaunch = true;
-    cb(null, {ok: true});
-    app.relaunch({args: process.argv.slice(1) + ['--relaunch']});
+    cb(null, {
+        ok: true
+    });
+
+    app.relaunch({
+        args: process.argv.slice(1) + ['--relaunch']
+    });
+
     app.quit();
 });
 
 irpcMain.addFunction('quit', function(parameters, cb)
 {
-    cb(null, {ok: true});
+    cb(null, {
+        ok: true
+    });
+
     app.quit();
 });
 
@@ -167,9 +179,9 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
             apis: ['database_api', 'login_api', 'network_broadcast_api'],
             url: wsHost,
             statusCallback: function(e) //possibly open, closed, error
-            {
-                bcAlertUI(e);
-            }
+                {
+                    bcAlertUI(e);
+                }
         }, true);
 
         global.bc.initPromise.then(function(res)
@@ -179,10 +191,13 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
 
             // Pulse the websocket every 20 seconds for block number 1, just to make
             // sure the websocket doesn't disconnect.
-            setInterval(function(){
-                global.bc.database_api().exec('get_block', [1]).then(function(res) {
+            setInterval(function()
+            {
+                global.bc.database_api().exec('get_block', [1]).then(function(res)
+                {
                     //console.log('database_api res', res);
-                }).catch(function(e) {
+                }).catch(function(e)
+                {
                     //console.log('database_api res', e);
                 });
 
@@ -219,15 +234,15 @@ global.createWindow = function()
         minHeight: 500
     });
 
-  // and load the index.html of the app.
-  global.mainWindow.loadURL('file://' + __dirname + '/index.html');
+    // and load the index.html of the app.
+    global.mainWindow.loadURL('file://' + __dirname + '/index.html');
 
-  // Open the DevTools.
-  //mainWindow.webContents.openDevTools();
+    // Open the DevTools.
+    //mainWindow.webContents.openDevTools();
 
-  // Emitted when the window is closed.
-  global.mainWindow.on('closed', function()
-  {
+    // Emitted when the window is closed.
+    global.mainWindow.on('closed', function()
+    {
         // Dereference the window object, usually you would store windows
         // in an array if your app supports multi windows, this is the time
         // when you should delete the corresponding element.
@@ -262,12 +277,12 @@ app.on('window-all-closed', function()
 {
     if (global.isAppReady && !global.isAppClosing)
     {
-      // On OS X it is common for applications and their menu bar
-      // to stay active until the user quits explicitly with Cmd + Q
-      if (process.platform !== 'darwin')
-      {
-        app.quit();
-      }
+        // On OS X it is common for applications and their menu bar
+        // to stay active until the user quits explicitly with Cmd + Q
+        if (process.platform !== 'darwin')
+        {
+            app.quit();
+        }
 
     }
 
@@ -302,7 +317,9 @@ function doClose()
 
                 if (doRelaunch)
                 {
-                    app.relaunch({args: process.argv.slice(1) + ['--relaunch']});
+                    app.relaunch({
+                        args: process.argv.slice(1) + ['--relaunch']
+                    });
                 }
 
                 app.quit();
@@ -314,7 +331,9 @@ function doClose()
 
             if (doRelaunch)
             {
-                app.relaunch({args: process.argv.slice(1) + ['--relaunch']});
+                app.relaunch({
+                    args: process.argv.slice(1) + ['--relaunch']
+                });
             }
 
             app.quit(); //close later
@@ -354,7 +373,7 @@ app.on('activate', function()
         // dock icon is clicked and there are no other windows open.
         if (global.mainWindow === null)
         {
-          global.createWindow();
+            global.createWindow();
         }
 
     }

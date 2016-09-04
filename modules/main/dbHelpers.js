@@ -1,4 +1,4 @@
-(function ()
+(function()
 {
     //1_init.js is the intial database
     //then for migrations change applicationDBVer to the lastest version in appConfig.json
@@ -18,7 +18,7 @@
     global.didMigrateCheck = false;
     global.isMigrateingDone = false;
     global.dbMeta = {
-        appDBVer: global.appConfig.applicationDBVer,  //app DB ver num
+        appDBVer: global.appConfig.applicationDBVer, //app DB ver num
         userDBVer: -1, //user app db num
         dbTask: '', //i for init, u for upgrading
         totalSteps: 0, //progress bar - total steps
@@ -118,6 +118,7 @@
 
     //note: when user is wanting to close... finsh up step and then stop - use global.isAppClosing to detect it then set global.isMigrateingDone to true to allow closing
     var didCalculateProgress = false;
+
     function dbMigrate()
     {
         setTimeout(function()
@@ -150,7 +151,7 @@
                     }
                     else
                     {
-                        var nextVersion = global.dbMeta.userDBVer+1;
+                        var nextVersion = global.dbMeta.userDBVer + 1;
 
                         //Calculate Progress
                         if (!didCalculateProgress)
@@ -163,7 +164,7 @@
                             for (var i = nextVersion; i <= global.dbMeta.appDBVer; i++)
                             {
                                 global.dbMeta.totalSteps++; //adds the step it needs to do
-                                global.dbMeta.totalSteps = global.dbMeta.totalSteps + require(migrationsPath + '/' + i  + '.js').getTotal; //total count of what needs to be done
+                                global.dbMeta.totalSteps = global.dbMeta.totalSteps + require(migrationsPath + '/' + i + '.js').getTotal; //total count of what needs to be done
                             }
 
                         }

@@ -12,7 +12,10 @@ global.accountsData = {
     }
 };
 
-var authStr = JSON.stringify({password: 'bar'});
+var authStr = JSON.stringify({
+    password: 'bar'
+});
+
 global.accountsData.stored.accounts.foo = {
     username: 'foo',
     encrypted: false,
@@ -22,45 +25,45 @@ global.accountsData.stored.accounts.foo = {
 
 console.log('As is: ', global.accountsData.stored);
 accountHelpers.updateStoredAccounts(global.accountsData.stored, undefined, 'lol', function(err) //set passphrase
-{
-    if (err) console.log(err);
-    if (!err)
     {
-        console.log('set passphrase', global.accountsData.stored);
-
-        accountHelpers.updateStoredAccounts(global.accountsData.stored, 'lol', 'lmao', function(err) //change passphrase
+        if (err) console.log(err);
+        if (!err)
         {
-            if (err) console.log(err);
+            console.log('set passphrase', global.accountsData.stored);
 
-            if (!err)
-            {
-                console.log('change passphrase', global.accountsData.stored);
-
-                accountHelpers.updateStoredAccounts(global.accountsData.stored, 'lmao', '', function(err) //unencrypt credentials
+            accountHelpers.updateStoredAccounts(global.accountsData.stored, 'lol', 'lmao', function(err) //change passphrase
                 {
                     if (err) console.log(err);
+
                     if (!err)
                     {
-                        console.log('unencrypt credentials', global.accountsData.stored);
+                        console.log('change passphrase', global.accountsData.stored);
 
-                        accountHelpers.updateStoredAccounts(global.accountsData.stored, undefined, undefined, function(err) //remove credentials
-                        {
-                            if (err) console.log(err);
-                            if (!err)
+                        accountHelpers.updateStoredAccounts(global.accountsData.stored, 'lmao', '', function(err) //unencrypt credentials
                             {
-                                console.log('remove credentials', global.accountsData.stored);
-                            }
+                                if (err) console.log(err);
+                                if (!err)
+                                {
+                                    console.log('unencrypt credentials', global.accountsData.stored);
 
-                        });
+                                    accountHelpers.updateStoredAccounts(global.accountsData.stored, undefined, undefined, function(err) //remove credentials
+                                        {
+                                            if (err) console.log(err);
+                                            if (!err)
+                                            {
+                                                console.log('remove credentials', global.accountsData.stored);
+                                            }
+
+                                        });
+
+                                }
+
+                            });
 
                     }
 
                 });
 
-            }
+        }
 
-        });
-
-    }
-
-});
+    });

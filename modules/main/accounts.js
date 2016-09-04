@@ -1,4 +1,4 @@
-(function ()
+(function()
 {
 
     /*
@@ -59,7 +59,7 @@
                     {
                         hasCredentials[accountsList[acc]] = true;
                     }
-                    
+
                 }
 
             }
@@ -175,7 +175,9 @@
 
                     if (isEncrypted)
                     {
-                        doCB(null, {msg: 'Credentials Already Encrypted. Use change passphrase instead'});
+                        doCB(null, {
+                            msg: 'Credentials Already Encrypted. Use change passphrase instead'
+                        });
                     }
                     else
                     {
@@ -193,26 +195,26 @@
                                 storedData.password = hash;
 
                                 accountHelpers.updateStoredAccounts(storedData, undefined, parameters.passphrase, function(err) //set passphrase
-                                {
-                                    if (err) return doCB(err);
-
-                                    //update KVS and local memory
-                                    var stringifed = JSON.stringify(storedData);
-
-                                    kvs.set({
-                                        k: 'accounts',
-                                        v: stringifed
-                                    }, function(err)
                                     {
                                         if (err) return doCB(err);
 
-                                        global.accountsData.stored = storedData; //update stored data
-                                        global.accountsData.masterPass = parameters.passphrase; //update stored pass so unlocked
-                                        doCB();
+                                        //update KVS and local memory
+                                        var stringifed = JSON.stringify(storedData);
+
+                                        kvs.set({
+                                            k: 'accounts',
+                                            v: stringifed
+                                        }, function(err)
+                                        {
+                                            if (err) return doCB(err);
+
+                                            global.accountsData.stored = storedData; //update stored data
+                                            global.accountsData.masterPass = parameters.passphrase; //update stored pass so unlocked
+                                            doCB();
+
+                                        });
 
                                     });
-
-                                });
 
                             });
 
@@ -224,7 +226,9 @@
                 else
                 {
                     //reg callback as no need to unlock
-                    cb(null, {msg: msg});
+                    cb(null, {
+                        msg: msg
+                    });
                 }
 
             });
@@ -239,7 +243,9 @@
 
                 if (isUnlocked)
                 {
-                    cb(null, {msg: 'Already unlocked'});
+                    cb(null, {
+                        msg: 'Already unlocked'
+                    });
                 }
                 else if (isEncrypted)
                 {
@@ -250,26 +256,34 @@
                         if (res)
                         {
                             global.accountsData.masterPass = parameters.passphrase;
-                            cb(null, {isUnlocked: true, msg: 'Unlocked'});
+                            cb(null, {
+                                isUnlocked: true,
+                                msg: 'Unlocked'
+                            });
                         }
                         else
                         {
-                            cb(null, {msg: 'Invalid Passphrase.'});
+                            cb(null, {
+                                msg: 'Invalid Passphrase.'
+                            });
                         }
-
 
                     });
 
                 }
                 else
                 {
-                    cb(null, {msg: 'Account Credentials are not currently encrypted.'});
+                    cb(null, {
+                        msg: 'Account Credentials are not currently encrypted.'
+                    });
                 }
 
             }
             else
             {
-                cb(null, {msg: 'Accounts Data Not Loaded'});
+                cb(null, {
+                    msg: 'Accounts Data Not Loaded'
+                });
             }
 
         },
@@ -287,11 +301,15 @@
 
                         if (res)
                         {
-                            cb(null, {isCorrect: true});
+                            cb(null, {
+                                isCorrect: true
+                            });
                         }
                         else
                         {
-                            cb(null, {msg: 'Invalid Passphrase.'});
+                            cb(null, {
+                                msg: 'Invalid Passphrase.'
+                            });
                         }
 
                     });
@@ -299,13 +317,17 @@
                 }
                 else
                 {
-                    cb(null, {msg: 'Account Credentials are not currently encrypted.'});
+                    cb(null, {
+                        msg: 'Account Credentials are not currently encrypted.'
+                    });
                 }
 
             }
             else
             {
-                cb(null, {msg: 'Accounts Data Not Loaded'});
+                cb(null, {
+                    msg: 'Accounts Data Not Loaded'
+                });
             }
 
         },
@@ -331,7 +353,9 @@
                     {
                         if (isUnlocked)
                         {
-                            doCB(null, {msg: 'Already unlocked'});
+                            doCB(null, {
+                                msg: 'Already unlocked'
+                            });
                         }
                         else
                         {
@@ -340,36 +364,43 @@
                             storedData.password = '';
 
                             accountHelpers.updateStoredAccounts(storedData, undefined, undefined, function(err) //remove credentials
-                            {
-                                if (err) return doCB(err);
-
-                                //update KVS and local memory
-                                var stringifed = JSON.stringify(storedData);
-
-                                kvs.set({
-                                    k: 'accounts',
-                                    v: stringifed
-                                }, function(err)
                                 {
-                                    global.accountsData.stored = storedData; //update stored data
-                                    doCB(null, {removed: true, msg: 'Password Removed.'});
-                                });
+                                    if (err) return doCB(err);
 
-                            });
+                                    //update KVS and local memory
+                                    var stringifed = JSON.stringify(storedData);
+
+                                    kvs.set({
+                                        k: 'accounts',
+                                        v: stringifed
+                                    }, function(err)
+                                    {
+                                        global.accountsData.stored = storedData; //update stored data
+                                        doCB(null, {
+                                            removed: true,
+                                            msg: 'Password Removed.'
+                                        });
+                                    });
+
+                                });
 
                         }
 
                     }
                     else
                     {
-                        doCB(null, {msg: 'Account Credentials are not currently encrypted.'});
+                        doCB(null, {
+                            msg: 'Account Credentials are not currently encrypted.'
+                        });
                     }
 
                 }
                 else
                 {
                     //reg callback as no need to unlock
-                    cb(null, {msg: msg});
+                    cb(null, {
+                        msg: msg
+                    });
                 }
 
             });
@@ -417,26 +448,28 @@
                                             storedData.password = hash;
 
                                             accountHelpers.updateStoredAccounts(storedData, parameters.passphrase, parameters.newPassphrase, function(err) //change passphrase
-                                            {
-                                                if (err) return doCB(err);
-
-                                                //update KVS and local memory
-                                                var stringifed = JSON.stringify(storedData);
-
-                                                kvs.set({
-                                                    k: 'accounts',
-                                                    v: stringifed
-                                                }, function(err)
                                                 {
                                                     if (err) return doCB(err);
 
-                                                    global.accountsData.stored = storedData; //update stored data
-                                                    global.accountsData.masterPass = parameters.newPassphrase; //update stored pass so unlocked
+                                                    //update KVS and local memory
+                                                    var stringifed = JSON.stringify(storedData);
 
-                                                    doCB(null, {msg: 'Passphrase successfully changed'});
+                                                    kvs.set({
+                                                        k: 'accounts',
+                                                        v: stringifed
+                                                    }, function(err)
+                                                    {
+                                                        if (err) return doCB(err);
+
+                                                        global.accountsData.stored = storedData; //update stored data
+                                                        global.accountsData.masterPass = parameters.newPassphrase; //update stored pass so unlocked
+
+                                                        doCB(null, {
+                                                            msg: 'Passphrase successfully changed'
+                                                        });
+                                                    });
+
                                                 });
-
-                                            });
 
                                         });
 
@@ -445,7 +478,9 @@
                                 }
                                 else
                                 {
-                                    doCB(null, {msg: 'Invalid Passphrase.'});
+                                    doCB(null, {
+                                        msg: 'Invalid Passphrase.'
+                                    });
                                 }
 
                             });
@@ -453,20 +488,26 @@
                         }
                         else
                         {
-                            doCB(null, {msg: 'Account Credentials are not currently locked. Please unlock to use this.'});
+                            doCB(null, {
+                                msg: 'Account Credentials are not currently locked. Please unlock to use this.'
+                            });
                         }
 
                     }
                     else
                     {
-                        doCB(null, {msg: 'Account Credentials are not currently encrypted.'});
+                        doCB(null, {
+                            msg: 'Account Credentials are not currently encrypted.'
+                        });
                     }
 
                 }
                 else
                 {
                     //reg callback as no need to unlock
-                    cb(null, {msg: msg});
+                    cb(null, {
+                        msg: msg
+                    });
                 }
 
             });
@@ -506,28 +547,33 @@
                                     storedData.password = '';
 
                                     accountHelpers.updateStoredAccounts(storedData, parameters.passphrase, '', function(err) //unencrypt credentials
-                                    {
-                                        if (err) return doCB(err);
-
-                                        //update KVS and local memory
-                                        var stringifed = JSON.stringify(storedData);
-
-                                        kvs.set({
-                                            k: 'accounts',
-                                            v: stringifed
-                                        }, function(err)
                                         {
-                                            global.accountsData.stored = storedData; //update stored data
-                                            global.accountsData.masterPass = '';
-                                            doCB(null, {removed: true, msg: 'Passphrase Removed.'});
-                                        });
+                                            if (err) return doCB(err);
 
-                                    });
+                                            //update KVS and local memory
+                                            var stringifed = JSON.stringify(storedData);
+
+                                            kvs.set({
+                                                k: 'accounts',
+                                                v: stringifed
+                                            }, function(err)
+                                            {
+                                                global.accountsData.stored = storedData; //update stored data
+                                                global.accountsData.masterPass = '';
+                                                doCB(null, {
+                                                    removed: true,
+                                                    msg: 'Passphrase Removed.'
+                                                });
+                                            });
+
+                                        });
 
                                 }
                                 else
                                 {
-                                    doCB(null, {msg: 'Invalid Passphrase.'});
+                                    doCB(null, {
+                                        msg: 'Invalid Passphrase.'
+                                    });
                                 }
 
                             });
@@ -535,20 +581,26 @@
                         }
                         else
                         {
-                            doCB(null, {msg: 'Account Credentials are not currently locked. Please unlock to use this.'});
+                            doCB(null, {
+                                msg: 'Account Credentials are not currently locked. Please unlock to use this.'
+                            });
                         }
 
                     }
                     else
                     {
-                        doCB(null, {msg: 'Account Credentials are not currently encrypted.'});
+                        doCB(null, {
+                            msg: 'Account Credentials are not currently encrypted.'
+                        });
                     }
 
                 }
                 else
                 {
                     //reg callback as no need to unlock
-                    cb(null, {msg: msg});
+                    cb(null, {
+                        msg: msg
+                    });
                 }
 
             });

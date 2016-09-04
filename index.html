@@ -1,37 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <title>SteemWriter</title>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-    <link href="./thirdParty/css/bootstrap.css" rel="stylesheet">
-    <link href="./thirdParty/css/led.css" rel="stylesheet">
-    <link href="./css/app.css" rel="stylesheet">
-    <link href="./css/non-responsive.css" rel="stylesheet">
-  </head>
-  <body style="background: #272b30">
-      <div id="loadingScreen" style="width: 400px;text-align: center;margin-left: auto;margin-right: auto;margin-top: 8%;">
-        <div class="container container-noPadding">
-          <img src="./images/whiteLoader.svg"> <!-- Thanks http://loading.io/  -->
-          <h1 style="display: none;"></h1>
-          <div class="progress" style="display: none;margin-top: 25px;margin-bottom: 25px;">
-            <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
-          </div>
-          <h4 style="display: none;"></h4>
+        <title>SteemWriter</title>
 
+        <link href="./thirdParty/css/bootstrap.css" rel="stylesheet">
+        <link href="./thirdParty/css/led.css" rel="stylesheet">
+        <link href="./css/app.css" rel="stylesheet">
+        <link href="./css/non-responsive.css" rel="stylesheet">
+    </head>
+
+    <body style="background: #272b30">
+        <div id="loadingScreen" style="width: 400px;text-align: center;margin-left: auto;margin-right: auto;margin-top: 8%;">
+            <div class="container container-noPadding">
+                <img src="./images/whiteLoader.svg">
+                <!-- Thanks http://loading.io/  -->
+                <h1 style="display: none;"></h1>
+                <div class="progress" style="display: none;margin-top: 25px;margin-bottom: 25px;">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;">0%</div>
+                </div>
+                <h4 style="display: none;"></h4>
+
+            </div>
         </div>
-      </div>
-      <div id="licenseView" style="display: none;"></div>
-      <div id="appView" style="display: none;"></div>
-    <!-- Bootstrap core JavaScript
+        <div id="licenseView" style="display: none;"></div>
+        <div id="appView" style="display: none;"></div>
+        <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script src="./thirdParty/js/jquery-3.1.0.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
-    <script src="./thirdParty/js/bootstrap.min.js"></script>
-    <script src="./thirdParty/js/bootbox.min.js"></script>
-    <script src="./thirdParty/js/loadingoverlay.min.js"></script>
-    <script src="./renderer.js"></script>
-  </body>
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="./thirdParty/js/jquery-3.1.0.min.js" onload="window.$ = window.jQuery = module.exports;"></script>
+        <script src="./thirdParty/js/bootstrap.min.js"></script>
+        <script src="./thirdParty/js/bootbox.min.js"></script>
+        <script src="./thirdParty/js/loadingoverlay.min.js"></script>
+        <script src="./renderer.js"></script>
+    </body>
+
 </html>

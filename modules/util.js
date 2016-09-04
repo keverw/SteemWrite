@@ -1,4 +1,4 @@
-(function ()
+(function()
 {
     var crypto = require('crypto'),
         fs = require('fs'),
@@ -34,7 +34,7 @@
         {
             var alt = {};
 
-            Object.getOwnPropertyNames(error).forEach(function (key) {
+            Object.getOwnPropertyNames(error).forEach(function(key) {
                 if (error[key] && typeof error[key] == 'object')
                 {
                     alt[key] = module.toObject(error[key]);

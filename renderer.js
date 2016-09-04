@@ -33,7 +33,7 @@ context.activate();
 if (global.appConfig.dev)
 {
     var debugMenu = require('debug-menu');
-    debugMenu.install();  // activate context menu
+    debugMenu.install(); // activate context menu
 }
 
 //End Debug Menu
@@ -129,15 +129,15 @@ global.updateBCStatus = function(info)
 
     if (info.status == 'open') //green
     {
-        $('#bcStatus').attr('class','led led-green').attr('title', 'Connected to ' + global.bcNode);
+        $('#bcStatus').attr('class', 'led led-green').attr('title', 'Connected to ' + global.bcNode);
     }
     else if (info.status == 'closed') //yellow
     {
-        $('#bcStatus').attr('class','led led-yellow').attr('title', 'Connecting...');
+        $('#bcStatus').attr('class', 'led led-yellow').attr('title', 'Connecting...');
     }
     else if (info.status == 'error') //red
     {
-        $('#bcStatus').attr('class','led led-red').attr('title', 'Error');
+        $('#bcStatus').attr('class', 'led led-red').attr('title', 'Error');
     }
 
 };
@@ -203,7 +203,7 @@ global.unlock = function()
 
 function showMainUI(currentLayerID, loadAccountsResult)
 {
-		
+
     var menuMeta = {
         hasAccs: loadAccountsResult.hasAccs,
         accountsList: loadAccountsResult.accountsList,
@@ -215,7 +215,7 @@ function showMainUI(currentLayerID, loadAccountsResult)
     //update view
     if (loadAccountsResult.hasAccs)
     {
-	    $('#menuDropdownName').text(menuMeta.lastAcc);
+        $('#menuDropdownName').text(menuMeta.lastAcc);
 
         //todo: update default screen with drafts, etc of account
         //todo: load posts...
@@ -252,7 +252,9 @@ function showMainUI(currentLayerID, loadAccountsResult)
 
     $('#' + currentLayerID).fadeOut('fast', function()
     {
-        $('body').tooltip({selector: '[data-toggle=tooltip]'});
+        $('body').tooltip({
+            selector: '[data-toggle=tooltip]'
+        });
         $('#appView').fadeIn('fast');
     });
 
@@ -320,7 +322,7 @@ ipc.on('display-dialog', function(event, msg)
             ///////////////////// JQ is ready
             if (msg == 'about')
             {
-                if(!$('.has-about-menu-loaded').length)
+                if (!$('.has-about-menu-loaded').length)
                 {
                     bootbox.dialog({
                         message: util.getViewHtml('base/aboutContexts'),
@@ -330,8 +332,8 @@ ipc.on('display-dialog', function(event, msg)
                         className: 'has-about-menu-loaded',
                         buttons: {
                             ok: {
-                              label: 'OK',
-                              className: 'btn-primary'
+                                label: 'OK',
+                                className: 'btn-primary'
                             }
                         }
                     });
@@ -374,7 +376,7 @@ $(function()
     {
         //check license agreement
         irpcRenderer.call('kvs.read', {
-        	k: 'licenseVer'
+            k: 'licenseVer'
         }, function(err, result)
         {
             if (err) return global.closeWithError(err);
