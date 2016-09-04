@@ -121,6 +121,67 @@
             }
 
             cb();
+        },
+        canAccessAccounts: function(cb)
+        {
+            var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+            var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
+
+            if (isEncrypted && !isUnlocked)
+            {
+                cb(false, 'Please unlock your encrypted credentials first.'); //need to unlock - bad
+            }
+            else
+            {
+                cb(true); //not encrypted or unlocked - good
+            }
+
+        },
+        accessAccountsReady: function(orignalCB, cb)
+        {
+            //this function handles if accessing accounts is ready and handles the locking part
+            //if it's ready cb will be called with a doneCB function to call when done
+            //else orignalCB will be called with an error
+
+            function doneCB(err, info)
+            {
+                global.accountsData.dataLocked = false;
+                orignalCB(err, info);
+            }
+
+            ////////////////////////////////////////////////
+            module.exports.isLoadedAndUnlocked(function(ready, msg)
+            {
+                if (ready)
+                {
+                    global.accountsData.dataLocked = true;
+
+                    module.exports.canAccessAccounts(function(ready, msg)
+                    {
+                        if (ready) return cb(doneCB);
+
+                        doneCB(null, {
+                            msg: msg
+                        });
+
+                    });
+
+                }
+                else
+                {
+                    //orignal callback as no need to unlock
+                    orignalCB(null, {
+                        msg: msg
+                    });
+
+                }
+
+            });
+
+        },
+        addAccount: function()
+        {
+            //todo: ...
         }
 
     };
