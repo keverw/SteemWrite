@@ -165,7 +165,7 @@
             }
 
             ////////////////////////////////////////////////
-            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndDataUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -225,7 +225,7 @@
                 }
                 else
                 {
-                    //reg callback as no need to unlock
+                    //regular callback as no need to unlock
                     cb(null, {
                         msg: msg
                     });
@@ -340,7 +340,7 @@
             }
 
             ////////////////////////////////////////////////
-            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndDataUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -397,7 +397,7 @@
                 }
                 else
                 {
-                    //reg callback as no need to unlock
+                    //regular callback as no need to unlock
                     cb(null, {
                         msg: msg
                     });
@@ -415,7 +415,7 @@
             }
 
             ////////////////////////////////////////////////
-            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndDataUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -504,7 +504,7 @@
                 }
                 else
                 {
-                    //reg callback as no need to unlock
+                    //regular callback as no need to unlock
                     cb(null, {
                         msg: msg
                     });
@@ -522,7 +522,7 @@
             }
 
             ////////////////////////////////////////////////
-            accountHelpers.isLoadedAndUnlocked(function(ready, msg)
+            accountHelpers.isLoadedAndDataUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
@@ -597,7 +597,7 @@
                 }
                 else
                 {
-                    //reg callback as no need to unlock
+                    //regular callback as no need to unlock
                     cb(null, {
                         msg: msg
                     });
