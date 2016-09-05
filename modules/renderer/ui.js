@@ -858,8 +858,9 @@
             }
         },
         mainContentHolder: {
-            view: function() //returns the view to write to
+            view: function()
                 {
+                //returns the view to write to
                     var id = uuid.v1().replace(/-/g, '');
                     var viewHolderID = 'mainContent_' + id;
 
@@ -867,8 +868,9 @@
 
                     return $('#' + viewHolderID);
                 },
-            ready: function($viewHolderSelector, cb) //view that is transitioned to
+            ready: function($viewHolderSelector, cb)
                 {
+                //$viewHolderSelector is view that is transitioned to
                     var id = $viewHolderSelector.attr('id');
 
                     if (id)

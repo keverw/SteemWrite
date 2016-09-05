@@ -178,10 +178,11 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
             idleThreshold: 0,
             apis: ['database_api', 'login_api', 'network_broadcast_api'],
             url: wsHost,
-            statusCallback: function(e) //possibly open, closed, error
-                {
-                    bcAlertUI(e);
-                }
+            statusCallback: function(e)
+            {
+                //possibly errors strings: open, closed, error
+                bcAlertUI(e);
+            }
         }, true);
 
         global.bc.initPromise.then(function(res)
