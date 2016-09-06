@@ -224,7 +224,7 @@ function updateMenuUI(info)
 
 var noAccountsAddedToken = '$$$_NO_ACCOUNTS_ADDED_$$$'; //Can never be set since usernames are auto lowercased
 
-function updateMainUI(info)
+global.updateMainUI = function(info)
 {
     updateMenuUI(info);
 
@@ -234,6 +234,7 @@ function updateMainUI(info)
     {
         //updateMainView is set to true if global.viewData.lastAcc is no longer in info.accountsList
 
+        //todo: code this
     }
     else //lastAcc stored in the UI is empty
     {
@@ -266,7 +267,7 @@ function updateMainUI(info)
         ui.mainContentHolder.ready(viewHolder);
     }
 
-}
+};
 
 function showMainUI(currentLayerID, loadAccountsResult)
 {
@@ -284,7 +285,7 @@ function showMainUI(currentLayerID, loadAccountsResult)
     }
 
     //update main ui
-    updateMainUI(loadAccountsResult);
+    global.updateMainUI(loadAccountsResult);
 
     //fade to main view
     $('#' + currentLayerID).fadeOut('fast', function()
