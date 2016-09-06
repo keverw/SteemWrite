@@ -201,39 +201,75 @@ global.unlock = function()
 
 };
 
-function showMainUI(currentLayerID, loadAccountsResult)
+function updateMenuUI(info)
 {
-
     var menuMeta = {
-        hasAccs: loadAccountsResult.hasAccs,
-        accountsList: loadAccountsResult.accountsList,
-        lastAcc: loadAccountsResult.lastAcc
+        hasAccs: info.hasAccs,
+        accountsList: info.accountsList,
+        lastAcc: info.lastAcc
     };
-
-    var viewHolder = ui.mainContentHolder.view();
-
-    //update view
-    if (loadAccountsResult.hasAccs)
-    {
-        $('#menuDropdownName').text(menuMeta.lastAcc);
-
-        //todo: update default screen with drafts, etc of account
-        //todo: load posts...
-    }
-    else //update default screen with a prompt to add accounts
-    {
-        $('#menuDropdownName').text('Accounts');
-        viewHolder.html(util.getViewHtml('base/noAccountsView'));
-
-        $('#noAccountsView').click(function(e)
-        {
-            ui.openSettings('accounts');
-        });
-
-    }
 
     $('#menuDropdownItems').html(util.getViewHtml('base/menuDropdown', menuMeta));
 
+    if (info.hasAccs)
+    {
+        $('#menuDropdownName').text(menuMeta.lastAcc);
+    }
+    else
+    {
+        $('#menuDropdownName').text('Accounts');
+    }
+
+}
+
+var noAccountsAddedToken = '$$$_NO_ACCOUNTS_ADDED_$$$'; //Can never be set since usernames are auto lowercased
+
+function updateMainUI(info)
+{
+    updateMenuUI(info);
+
+    var updateMainView = false;
+
+    if (global.viewData.lastAcc === 'string' && global.viewData.lastAcc != noAccountsAddedToken) //is defined, check if still in account list
+    {
+        //updateMainView is set to true if global.viewData.lastAcc is no longer in info.accountsList
+
+    }
+    else //lastAcc stored in the UI is empty
+    {
+        updateMainView = true;
+    }
+
+    if (updateMainView)
+    {
+        var viewHolder = ui.mainContentHolder.view();
+
+        if (info.hasAccs)
+        {
+            //todo: update default screen with drafts, etc of last account
+            //todo: load posts...
+        }
+        else //update default screen with a prompt to add accounts
+        {
+            global.viewData.lastAcc = noAccountsAddedToken;
+
+            viewHolder.html(util.getViewHtml('base/noAccountsView'));
+
+            $('#noAccountsView').click(function(e)
+            {
+                ui.openSettings('accounts');
+            });
+
+        }
+
+        //transition to displaying view
+        ui.mainContentHolder.ready(viewHolder);
+    }
+
+}
+
+function showMainUI(currentLayerID, loadAccountsResult)
+{
     //handle if locked...
     if (loadAccountsResult.isLocked)
     {
@@ -247,14 +283,16 @@ function showMainUI(currentLayerID, loadAccountsResult)
         $('#accountsLocked').hide();
     }
 
-    //transition to displaying view
-    ui.mainContentHolder.ready(viewHolder);
+    //update main ui
+    updateMainUI(loadAccountsResult);
 
+    //fade to main view
     $('#' + currentLayerID).fadeOut('fast', function()
     {
         $('body').tooltip({
             selector: '[data-toggle=tooltip]'
         });
+
         $('#appView').fadeIn('fast');
     });
 
