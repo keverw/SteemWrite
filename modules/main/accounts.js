@@ -375,6 +375,8 @@
                                         v: stringifed
                                     }, function(err)
                                     {
+                                        if (err) return doCB(err);
+
                                         global.accountsData.stored = storedData; //update stored data
                                         doCB(null, {
                                             removed: true,
@@ -558,6 +560,8 @@
                                                 v: stringifed
                                             }, function(err)
                                             {
+                                                if (err) return doCB(err);
+
                                                 global.accountsData.stored = storedData; //update stored data
                                                 global.accountsData.masterPass = '';
                                                 doCB(null, {
