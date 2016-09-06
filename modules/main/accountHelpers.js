@@ -181,9 +181,63 @@
             });
 
         },
-        addAccount: function()
+        checkSteemLogin: function(username, password, cb)
         {
-            //todo: ...
+            //cb is: err, status, login
+            //status codes:
+            //notfound - account matching the username was not found
+            //badlogin - wrong password
+            //good - login was successful
+
+            if (global.bcReady)
+            {
+
+                global.bc.database_api().exec('get_accounts', [[username]])
+                    .then(function(res)
+                    {
+                        if (res.length > 0)
+                        {
+                            var account = res[0];
+
+                            var Login = require('steemjs-lib').Login;
+                            var login = new Login();
+                            login.setRoles(['posting', 'active']);
+
+                            if (login.checkKeys({
+                                    accountName: username,
+                                    password: password,
+                                    auths: {
+                                        active: account.active.key_auths,
+                                        posting: account.posting.key_auths
+                                    }
+                                }))
+                            {
+                                cb(null, 'good', login);
+                            }
+                            else
+                            {
+                                cb(null, 'badlogin');
+                            }
+
+                        }
+                        else
+                        {
+                            cb(null, 'notfound');
+                        }
+
+                    })
+                    .catch(function(e)
+                    {
+                        cb(e);
+                    });
+
+            }
+            else
+            {
+                cb(new Error('Blockchain not ready yet'));
+            }
+
+        },
         }
 
     };
