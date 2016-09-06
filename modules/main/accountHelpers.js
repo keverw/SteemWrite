@@ -238,6 +238,71 @@
             }
 
         },
+        addAccount: function(username, password, cb)
+        {
+            var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+            username = username.toLowerCase();
+
+            if (typeof global.accountsData.stored[username] == 'object')
+            {
+                cb(null, 'already');
+            }
+            else
+            {
+                module.exports.checkSteemLogin(username, password, function(err, status, login)
+                {
+                    if (err) cb(err);
+
+                    if (status == 'notfound' || status == 'badlogin')
+                    {
+                        cb(null, status);
+                    }
+                    else if (status == 'good')
+                    {
+                        var authStr = JSON.stringify({
+                            password: password
+                        });
+
+                        if (isEncrypted) authStr = util.encrypt(authStr, global.accountsData.masterPass);
+
+                        //Copy storedData before modifying
+                        var storedData = clone(global.accountsData.stored);
+
+                        //Add to storage
+                        storedData.accounts[username] = {
+                            username: username,
+                            encrypted: isEncrypted,
+                            hasAuth: true,
+                            auth: authStr
+                        };
+
+                        //no lastAcc set, update
+                        if (storedData.lastAcc.length === 0) storedData.lastAcc = username;
+
+                        //update KVS and local memory
+                        var stringifed = JSON.stringify(storedData);
+
+                        kvs.set({
+                            k: 'accounts',
+                            v: stringifed
+                        }, function(err)
+                        {
+                            if (err) return cb(err);
+
+                            global.accountsData.stored = storedData; //update stored data
+                            cb(null, 'added');
+                        });
+
+                    }
+                    else
+                    {
+                        cb(null, 'unknown');
+                    }
+
+                });
+
+            }
+
         }
 
     };

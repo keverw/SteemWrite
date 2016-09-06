@@ -551,28 +551,28 @@
 
                                     //unencrypt credentials
                                     accountHelpers.updateStoredAccounts(storedData, parameters.passphrase, '', function(err)
+                                    {
+                                        if (err) return doCB(err);
+
+                                        //update KVS and local memory
+                                        var stringifed = JSON.stringify(storedData);
+
+                                        kvs.set({
+                                            k: 'accounts',
+                                            v: stringifed
+                                        }, function(err)
                                         {
                                             if (err) return doCB(err);
 
-                                            //update KVS and local memory
-                                            var stringifed = JSON.stringify(storedData);
-
-                                            kvs.set({
-                                                k: 'accounts',
-                                                v: stringifed
-                                            }, function(err)
-                                            {
-                                                if (err) return doCB(err);
-
-                                                global.accountsData.stored = storedData; //update stored data
-                                                global.accountsData.masterPass = '';
-                                                doCB(null, {
-                                                    removed: true,
-                                                    msg: 'Passphrase Removed.'
-                                                });
+                                            global.accountsData.stored = storedData; //update stored data
+                                            global.accountsData.masterPass = '';
+                                            doCB(null, {
+                                                removed: true,
+                                                msg: 'Passphrase Removed.'
                                             });
-
                                         });
+
+                                    });
 
                                 }
                                 else
@@ -607,6 +607,87 @@
                     cb(null, {
                         msg: msg
                     });
+                }
+
+            });
+
+        },
+        addAccount: function(parameters, cb)
+        {
+            accountHelpers.accessAccountsReady(cb, function(doneCB)
+            {
+                if (parameters.username && typeof parameters.username == 'string' && parameters.username.length > 0)
+                {
+                    if (parameters.password && typeof parameters.password == 'string' && parameters.password.length > 0)
+                    {
+                        accountHelpers.addAccount(parameters.username, parameters.password, function(err, status)
+                        {
+                            if (err) return doneCB(err);
+
+                            if (status == 'already')
+                            {
+                                doneCB(null, {
+                                    msg: 'Account was already added to this application'
+                                });
+                            }
+                            else if (status == 'notfound')
+                            {
+                                doneCB(null, {
+                                    msg: 'No account matching given username'
+                                });
+                            }
+                            else if (status == 'badlogin')
+                            {
+                                doneCB(null, {
+                                    msg: 'Incorrect Password'
+                                });
+                            }
+                            else if (status == 'added')
+                            {
+                                var replyObj = {
+                                    status: 'added',
+                                    msg: 'Account was added'
+                                };
+
+                                module.exports.basicInfo({}, function(err, result)
+                                {
+                                    if (!err)
+                                    {
+                                        replyObj.basicInfo = result;
+                                    }
+
+                                    doneCB(null, replyObj);
+                                });
+
+                            }
+                            else if (status == 'unknown')
+                            {
+                                doneCB(null, {
+                                    msg: 'Unknown Error'
+                                });
+                            }
+                            else
+                            {
+                                doneCB(new Error('Unknown Status - ' + status));
+                            }
+
+                        });
+
+                    }
+                    else
+                    {
+                        doneCB(null, {
+                            msg: 'Password is empty.'
+                        });
+                    }
+
+                }
+                else
+                {
+                    doneCB(null, {
+                        msg: 'Username is empty.'
+                    });
+
                 }
 
             });

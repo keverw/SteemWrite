@@ -443,11 +443,11 @@
 
             },
             refreshAccountsListRemoved: function()
-                {
+            {
                 //called when Resetting and Passphrase is removed
 
 
-                },
+            },
             encryptCredentials: function()
             {
                 var encryptCredentials = '';
@@ -816,8 +816,54 @@
                     zIndex: 2000
                 });
 
+                irpcRenderer.call('accounts.addAccount',
+                {
+                    username: username,
+                    password: password
+                }, function(err, result)
+                {
+                    if (err)
+                    {
+                        console.log(err);
+                        $.LoadingOverlay('hide'); //hide loading spinner
 
-                bootbox.alert('addAccountContinueBTN clicked or form submited');
+                        var msg = 'Error Adding Account...';
+
+                        if (typeof err == 'object' && err.message)
+                        {
+                            msg += '<br><br>' + err.message;
+                        }
+
+                        bootbox.alert({
+                            message: msg,
+                            className: 'allow-copy'
+                        });
+                    }
+                    else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                    {
+                        if (result.basicInfo)
+                        {
+                            module.exports.accounts.refreshAccountsList(result.basicInfo); //update tab view
+                            global.updateMainUI(result.basicInfo); //update main ui
+                        }
+
+                        if (result.status == 'added')
+                        {
+                            //hide add account dialog
+                            settingsViewMeta.dialogs.addAccountBox.modal('hide');
+                        }
+
+                        bootbox.alert(result.msg);
+                        $.LoadingOverlay('hide'); //hide loading spinner
+                    }
+                    else
+                    {
+                        $.LoadingOverlay('hide'); //hide loading spinner
+                        bootbox.alert('Error Adding Account...');
+                    }
+
+                });
+
                 return false;
             }
         },
@@ -862,55 +908,55 @@
         },
         mainContentHolder: {
             view: function()
-                {
+            {
                 //returns the view to write to
-                    var id = uuid.v1().replace(/-/g, '');
-                    var viewHolderID = 'mainContent_' + id;
+                var id = uuid.v1().replace(/-/g, '');
+                var viewHolderID = 'mainContent_' + id;
 
-                    $('#mainContentHolder').prepend('<div id="' + viewHolderID + '" class="viewHolder" style="display: none;"></div>');
+                $('#mainContentHolder').prepend('<div id="' + viewHolderID + '" class="viewHolder" style="display: none;"></div>');
 
-                    return $('#' + viewHolderID);
-                },
+                return $('#' + viewHolderID);
+            },
             ready: function($viewHolderSelector, cb)
-                {
+            {
                 //$viewHolderSelector is view that is transitioned to
-                    var id = $viewHolderSelector.attr('id');
+                var id = $viewHolderSelector.attr('id');
 
-                    if (id)
+                if (id)
+                {
+                    var selector = '#' + id;
+
+                    if ($(selector).is(':visible'))
                     {
-                        var selector = '#' + id;
-
-                        if ($(selector).is(':visible'))
-                        {
-                            if (typeof cb == 'function') cb('already'); //already visible
-                        }
-                        else
-                        {
-                            var views = $('#mainContentHolder .viewHolder:not(' + selector + ')');
-
-                            if (views.length > 0)
-                            {
-                                views.fadeOut('fast', function()
-                                {
-                                    $(selector).fadeIn('fast');
-                                    if (typeof cb == 'function') cb('show'); //ui was shown
-                                }).remove();
-                            }
-                            else
-                            {
-                                $(selector).fadeIn('fast');
-                                if (typeof cb == 'function') cb('show'); //ui was shown
-                            }
-
-                        }
-
+                        if (typeof cb == 'function') cb('already'); //already visible
                     }
                     else
                     {
-                        if (typeof cb == 'function') cb(false); //not found
+                        var views = $('#mainContentHolder .viewHolder:not(' + selector + ')');
+
+                        if (views.length > 0)
+                        {
+                            views.fadeOut('fast', function()
+                            {
+                                $(selector).fadeIn('fast');
+                                if (typeof cb == 'function') cb('show'); //ui was shown
+                            }).remove();
+                        }
+                        else
+                        {
+                            $(selector).fadeIn('fast');
+                            if (typeof cb == 'function') cb('show'); //ui was shown
+                        }
+
                     }
 
                 }
+                else
+                {
+                    if (typeof cb == 'function') cb(false); //not found
+                }
+
+            }
         }
 
     };
