@@ -34,6 +34,12 @@ a[href^="https://"] {
     /* Technically not supported in Electron yet */
 }
 
+//copy rule for dialogs
+.allow-copy .bootbox-body {
+    -webkit-user-select: text;
+    user-select: text;
+}
+
 .navbar-center {
     position: absolute;
     width: 100%;
@@ -92,6 +98,10 @@ a[href^="https://"] {
 
 .modal-backdrop {
     height: 100% !important;
+}
+
+.bootbox-body {
+    word-wrap: break-word;
 }
 
 /*License Screen*/

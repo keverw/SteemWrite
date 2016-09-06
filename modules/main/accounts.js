@@ -76,6 +76,7 @@
 
             }
 
+            //todo: should include scheduled posts too
             //todo: query db
 
             /////////
@@ -548,7 +549,8 @@
                                     var storedData = clone(global.accountsData.stored);
                                     storedData.password = '';
 
-                                    accountHelpers.updateStoredAccounts(storedData, parameters.passphrase, '', function(err) //unencrypt credentials
+                                    //unencrypt credentials
+                                    accountHelpers.updateStoredAccounts(storedData, parameters.passphrase, '', function(err)
                                         {
                                             if (err) return doCB(err);
 

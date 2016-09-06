@@ -18,7 +18,8 @@
             fields: {
                 general: {},
                 accounts: {}
-            }
+            },
+            dialogs: {} //store references to open dialogs
         };
 
     }
@@ -441,8 +442,10 @@
                 }));
 
             },
-            refreshAccountsListRemoved: function() //called when Resetting Passphrase is removed
+            refreshAccountsListRemoved: function()
                 {
+                //called when Resetting and Passphrase is removed
+
 
                 },
             encryptCredentials: function()
@@ -822,7 +825,7 @@
         {
             add: function()
             {
-                var addAccountBox = bootbox.dialog({
+                settingsViewMeta.dialogs.addAccountBox = bootbox.dialog({
                     message: util.getViewHtml('settings/addAccountBox'),
                     title: 'Add Account',
                     closeButton: false,
@@ -833,7 +836,7 @@
                             className: 'btn-danger',
                             callback: function()
                             {
-                                addAccountBox.modal('hide');
+                                settingsViewMeta.dialogs.addAccountBox.modal('hide');
                             }
                         },
                         continue: {
@@ -852,7 +855,7 @@
                 $('.has-add-account-box .modal-header').prepend('<button type="button" class="close" aria-hidden="true">&times;</button>');
                 $('.has-add-account-box .modal-header .close').click(function()
                 {
-                    addAccountBox.modal('hide');
+                    settingsViewMeta.dialogs.addAccountBox.modal('hide');
                 });
 
             }

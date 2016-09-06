@@ -1,9 +1,11 @@
 (function()
 {
-    var util = require('../util.js');
+    var util = require('../util.js'),
+        kvs = require('./kvs.js'),
+        clone = require('fast-clone');
 
     module.exports = {
-        isLoadedAndUnlocked: function(cb)
+        isLoadedAndDataUnlocked: function(cb)
         {
             if (global.accountsData.isLoaded)
             {
@@ -150,7 +152,7 @@
             }
 
             ////////////////////////////////////////////////
-            module.exports.isLoadedAndUnlocked(function(ready, msg)
+            module.exports.isLoadedAndDataUnlocked(function(ready, msg)
             {
                 if (ready)
                 {
