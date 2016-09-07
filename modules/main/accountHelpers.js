@@ -3,7 +3,15 @@
     var util = require('../util.js'),
         kvs = require('./kvs.js'),
         clone = require('fast-clone'),
+        _ = require('underscore'),
         postHelpers = require('./postHelpers.js');
+
+    function order(unordered) //http://stackoverflow.com/a/30693905/458642 order keys in ABC order
+    {
+        return _.object(_.sortBy(_.pairs(unordered), function(o) {
+            return o[0];
+        }));
+    }
 
     module.exports = {
         isLoadedAndDataUnlocked: function(cb)
@@ -276,6 +284,8 @@
                             hasAuth: true,
                             auth: authStr
                         };
+
+                        order(storedData.accounts); //order to be ABC order
 
                         //no lastAcc set, update
                         if (storedData.lastAcc.length === 0) storedData.lastAcc = username;
