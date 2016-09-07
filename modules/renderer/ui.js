@@ -957,9 +957,8 @@
 
                 if (typeof user == 'string')
                 {
-                    bootbox.alert('edit login info...');
+                    bootbox.alert('edit later...');
                 }
-
             },
             remove: function(ele)
             {
@@ -967,7 +966,34 @@
 
                 if (typeof user == 'string')
                 {
-                    bootbox.alert('remove login info...');
+                    irpcRenderer.call('accounts.removeAccount', {
+                        username: user
+                    }, function(err, result) {
+                        if (err)
+                        {
+                            console.log(err);
+                            $.LoadingOverlay('hide'); //hide loading spinner
+                            bootbox.alert('Error Removing Account...');
+                        }
+                        else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                        {
+                            if (result.basicInfo)
+                            {
+                                module.exports.accounts.refreshAccountsList(result.basicInfo); //update tab view
+                                global.updateMainUI(result.basicInfo); //update main ui
+                            }
+
+                            bootbox.alert(result.msg);
+                            $.LoadingOverlay('hide'); //hide loading spinner
+                        }
+                        else
+                        {
+                            $.LoadingOverlay('hide'); //hide loading spinner
+                            bootbox.alert('Error Removing Account...');
+                        }
+
+                    });
+
                 }
 
             }

@@ -66,26 +66,26 @@
             }
 
             postHelpers.countPosts(accountsList, function(err, result)
-                {
+            {
                 if (err) return err;
 
-            var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
-            var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
+                var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+                var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
 
-            cb(null, {
-                hasAccs: hasAccs,
-                totalAccounts: totalAccounts,
-                accountsList: accountsList,
-                hasCredentials: hasCredentials,
+                cb(null, {
+                    hasAccs: hasAccs,
+                    totalAccounts: totalAccounts,
+                    accountsList: accountsList,
+                    hasCredentials: hasCredentials,
                     draftPostCounts: result.draftPostCounts,
                     scheduledPostCounts: result.scheduledPostCounts,
-                lastAcc: global.accountsData.stored.lastAcc,
-                isEncrypted: isEncrypted,
-                isUnlocked: isUnlocked,
-                isLocked: ((isEncrypted && (!isUnlocked)) ? true : false),
-                dataLocked: global.accountsData.dataLocked,
-                isLoaded: global.accountsData.isLoaded
-            });
+                    lastAcc: global.accountsData.stored.lastAcc,
+                    isEncrypted: isEncrypted,
+                    isUnlocked: isUnlocked,
+                    isLocked: ((isEncrypted && (!isUnlocked)) ? true : false),
+                    dataLocked: global.accountsData.dataLocked,
+                    isLoaded: global.accountsData.isLoaded
+                });
 
             });
 
@@ -736,6 +736,68 @@
                 else
                 {
                     cb(new Error('Unknown Status - ' + status));
+                }
+
+            });
+
+        },
+        removeAccount: function(parameters, cb)
+        {
+            accountHelpers.accessAccountsReady(cb, function(doneCB)
+            {
+                if (parameters.username && typeof parameters.username == 'string' && parameters.username.length > 0)
+                {
+                    accountHelpers.removeAccount(parameters.username, function(err, status)
+                    {
+                        if (err) return cb(err);
+
+                        if (status == 'notadded')
+                        {
+                            cb(null, {
+                                msg: 'Account is not currently added'
+                            });
+                        }
+                        else if (status == 'hasdrafts')
+                        {
+                            cb(null, {
+                                msg: 'AAccount has unpublished drafts and cannot be removed at this time.'
+                            });
+                        }
+                        else if (status == 'has_scheduled')
+                        {
+                            cb(null, {
+                                msg: 'Account has scheduled posts and cannot be removed at this time.'
+                            });
+                        }
+                        else if (status == 'removed')
+                        {
+                            var replyObj = {
+                                msg: 'Account was removed'
+                            };
+
+                            module.exports.basicInfo({}, function(err, result)
+                            {
+                                if (!err)
+                                {
+                                    replyObj.basicInfo = result;
+                                }
+
+                                doneCB(null, replyObj);
+                            });
+
+                        }
+                        else
+                        {
+                            cb(new Error('Unknown Status - ' + status));
+                        }
+                    });
+
+                }
+                else
+                {
+                    doneCB(null, {
+                        msg: 'Username is undefined.'
+                    });
                 }
 
             });

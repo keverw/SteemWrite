@@ -2,7 +2,8 @@
 {
     var util = require('../util.js'),
         kvs = require('./kvs.js'),
-        clone = require('fast-clone');
+        clone = require('fast-clone'),
+        postHelpers = require('./postHelpers.js');
 
     module.exports = {
         isLoadedAndDataUnlocked: function(cb)
@@ -386,6 +387,79 @@
             else
             {
                 cb(null, 'notloaded');
+            }
+
+        },
+        removeAccount: function(username, cb)
+        {
+            //cb - err, status
+
+            username = username.toLowerCase();
+
+            if (typeof global.accountsData.stored.accounts[username] == 'object')
+            {
+                //account found - check post counts
+                postHelpers.countPostsByUser(username, function(err, meta)
+                {
+                    if (err) return cb(err);
+
+                    if (meta.drafts > 0)
+                    {
+                        cb(null, 'hasdrafts');
+                    }
+                    else if (meta.scheduled > 0)
+                    {
+                        cb(null, 'has_scheduled');
+                    }
+                    else
+                    {
+                        //actually can remove the account at this point
+
+                        //Copy storedData before modifying
+                        var storedData = clone(global.accountsData.stored);
+
+                        //remove from storage
+                        delete storedData.accounts[username];
+
+                        //if current lastAcc
+                        if (storedData.lastAcc == username)
+                        {
+                            var accountsList = Object.keys(storedData.accounts);
+                            var totalAccounts = accountsList.length;
+
+                            if (totalAccounts > 0)
+                            {
+                                storedData.lastAcc = accountsList[0]; //first account found
+                            }
+                            else
+                            {
+                                storedData.lastAcc = ''; //no other accounts
+                            }
+
+                        }
+
+                        //update KVS and local memory
+                        var stringifed = JSON.stringify(storedData);
+
+                        kvs.set({
+                            k: 'accounts',
+                            v: stringifed
+                        }, function(err)
+                        {
+                            if (err) return cb(err);
+
+                            global.accountsData.stored = storedData; //update stored data
+                            cb(null, 'removed');
+                        });
+
+                    }
+
+                });
+
+            }
+            else
+            {
+                cb(null, 'notadded');
             }
 
         }
