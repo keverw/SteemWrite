@@ -11,6 +11,9 @@ each val in accountsList
         td
             .btn-group.btn-group-justified(role='group')
                 .btn-group(role='group')
+                    button.btn.btn-success(type='button', data-user=val, onclick='ui.manageAccounts.check(this)')
+                        span.glyphicon.glyphicon-refresh
+                .btn-group(role='group')
                     button.btn.btn-info(type='button', onclick='')
                         span.glyphicon.glyphicon-edit
                 .btn-group(role='group')

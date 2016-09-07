@@ -692,6 +692,62 @@
 
             });
 
+        },
+        checkAccount: function(parameters, cb)
+        {
+            accountHelpers.useAccount(parameters.username, ['posting', 'active'], function(err, status, login)
+            {
+                if (err) return cb(err);
+
+                if (status == 'notloaded')
+                {
+                    cb(null, {
+                        msg: 'Accounts Data Not Loaded'
+                    });
+                }
+                else if (status == 'locked')
+                {
+                    cb(null, {
+                        msg: 'Please unlock your encrypted credentials first'
+                    });
+                }
+                else if (status == 'notadded')
+                {
+                    cb(null, {
+                        msg: 'Account is not currently added'
+                    });
+                }
+                else if (status == 'noauth')
+                {
+                    cb(null, {
+                        msg: 'Account authentication credentials not found. Please edit the password saved for this account.'
+                    });
+                }
+                else if (status == 'notfound')
+                {
+                    cb(null, {
+                        msg: 'No account matching given username'
+                    });
+                }
+                else if (status == 'badlogin')
+                {
+                    cb(null, {
+                        msg: 'Incorrect Password'
+                    });
+                }
+                else if (status == 'good')
+                {
+                    cb(null, {
+                        msg: 'Account authentication credentials were successfully validated!'
+                    });
+                }
+                else
+                {
+                    cb(new Error('Unknown Status - ' + status));
+                }
+
+            });
+
         }
 
     };

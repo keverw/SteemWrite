@@ -904,6 +904,51 @@
                     settingsViewMeta.dialogs.addAccountBox.modal('hide');
                 });
 
+            },
+            check: function(ele)
+            {
+                var user = $(ele).attr('data-user');
+
+                if (typeof user == 'string')
+                {
+                    //put up loading spinner
+                    $.LoadingOverlay('show', {
+                        zIndex: 2000
+                    });
+
+                    irpcRenderer.call('accounts.checkAccount', {
+                        username: user
+                    }, function(err, result)
+                    {
+                        if (err)
+                        {
+                            console.log(err);
+                            $.LoadingOverlay('hide'); //hide loading spinner
+
+                            var msg = 'Error Checking Account...';
+
+                            if (typeof err == 'object' && err.message)
+                            {
+                                msg += '<br><br>' + err.message;
+                            }
+
+                            bootbox.alert(msg);
+                        }
+                        else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                        {
+                            bootbox.alert(result.msg);
+                            $.LoadingOverlay('hide'); //hide loading spinner
+                        }
+                        else
+                        {
+                            $.LoadingOverlay('hide'); //hide loading spinner
+                            bootbox.alert('Error Checking Account...');
+                        }
+
+                    });
+
+                }
+
             }
         },
         mainContentHolder: {

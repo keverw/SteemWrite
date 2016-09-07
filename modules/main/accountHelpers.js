@@ -243,7 +243,7 @@
             var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
             username = username.toLowerCase();
 
-            if (typeof global.accountsData.stored[username] == 'object')
+            if (typeof global.accountsData.stored.accounts[username] == 'object')
             {
                 cb(null, 'already');
             }
@@ -301,6 +301,91 @@
 
                 });
 
+            }
+
+        },
+        useAccount: function(username, role, cb)
+        {
+            //cb is: err, status, login
+            //statuses:
+            //notloaded - account data not loaded
+            //locked - is encrypted but not unlocked - "Please unlock your encrypted credentials first"
+            //notadded - account not currently added
+            //noauth - auth removed due to reset or missing that type of key
+            //notfound - account matching the username was not found
+            //badlogin - wrong password
+            //good - login was successful
+
+            if (global.accountsData.isLoaded)
+            {
+                module.exports.canAccessAccounts(function(ready, msg)
+                {
+                    if (ready)
+                    {
+                        //check for username
+                        username = username.toLowerCase();
+
+                        if (typeof global.accountsData.stored.accounts[username] == 'object')
+                        {
+                            if (global.accountsData.stored.accounts[username].hasAuth)
+                            {
+                                var authLoaded = false;
+                                var authObj = {};
+
+                                if (global.accountsData.stored.accounts[username].encrypted)
+                                {
+
+                                    try {
+                                        authObj = JSON.parse(util.decrypt(global.accountsData.stored.accounts[username].auth, global.accountsData.masterPass));
+                                        authLoaded = true;
+                                    } catch (err)
+                                    {
+                                        return cb(err);
+                                    }
+
+                                }
+                                else
+                                {
+
+                                    try {
+                                        authObj = JSON.parse(global.accountsData.stored.accounts[username].auth);
+                                        authLoaded = true;
+                                    } catch (err)
+                                    {
+                                        return cb(err);
+                                    }
+
+                                }
+
+                                if (authLoaded)
+                                {
+                                    module.exports.checkSteemLogin(username, authObj.password, cb);
+                                }
+
+                            }
+                            else
+                            {
+                                cb(null, 'noauth');
+                            }
+
+                        }
+                        else
+                        {
+                            cb(null, 'notadded');
+                        }
+
+                    }
+                    else
+                    {
+                        cb(null, 'locked');
+                    }
+
+                });
+
+            }
+            else
+            {
+                cb(null, 'notloaded');
             }
 
         }
