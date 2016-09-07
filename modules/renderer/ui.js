@@ -950,6 +950,26 @@
 
                 }
 
+            },
+            edit: function(ele)
+            {
+                var user = $(ele).attr('data-user');
+
+                if (typeof user == 'string')
+                {
+                    bootbox.alert('edit login info...');
+                }
+
+            },
+            remove: function(ele)
+            {
+                var user = $(ele).attr('data-user');
+
+                if (typeof user == 'string')
+                {
+                    bootbox.alert('remove login info...');
+                }
+
             }
         },
         mainContentHolder: {
