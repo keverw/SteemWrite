@@ -76,8 +76,19 @@
 
             }
 
-            //todo: should include scheduled posts too
-            //todo: query db
+            ///////// load scheduled post counts
+            var scheduledPostCounts = {};
+
+            for (var acc3 in accountsList)
+            {
+                if (accountsList.hasOwnProperty(acc3))
+                {
+                    scheduledPostCounts[accountsList[acc3]] = 0;
+                }
+
+            }
+
+            //todo: query db for draft's and scheduled
 
             /////////
             var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
@@ -89,6 +100,7 @@
                 accountsList: accountsList,
                 hasCredentials: hasCredentials,
                 draftPostCounts: draftPostCounts,
+                scheduledPostCounts: scheduledPostCounts,
                 lastAcc: global.accountsData.stored.lastAcc,
                 isEncrypted: isEncrypted,
                 isUnlocked: isUnlocked,

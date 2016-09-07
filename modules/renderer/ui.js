@@ -438,7 +438,8 @@
                 $('#accountsListTbody').html(util.getViewHtml('settings/accountList', {
                     accountsList: info.accountsList,
                     hasCredentials: info.hasCredentials,
-                    draftPostCounts: info.draftPostCounts
+                    draftPostCounts: info.draftPostCounts,
+                    scheduledPostCounts: info.scheduledPostCounts
                 }));
 
             },
