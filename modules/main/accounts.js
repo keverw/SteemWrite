@@ -21,6 +21,7 @@
         clone = require('fast-clone'),
         kvs = require('./kvs.js'),
         accountHelpers = require('./accountHelpers.js'),
+        postHelpers = require('./postHelpers.js'),
         util = require('../util.js');
 
     if (!global.accountsData)
@@ -64,33 +65,10 @@
 
             }
 
-            ///////// load draft post counts
-            var draftPostCounts = {};
-
-            for (var acc2 in accountsList)
-            {
-                if (accountsList.hasOwnProperty(acc2))
+            postHelpers.countPosts(accountsList, function(err, result)
                 {
-                    draftPostCounts[accountsList[acc2]] = 0;
-                }
+                if (err) return err;
 
-            }
-
-            ///////// load scheduled post counts
-            var scheduledPostCounts = {};
-
-            for (var acc3 in accountsList)
-            {
-                if (accountsList.hasOwnProperty(acc3))
-                {
-                    scheduledPostCounts[accountsList[acc3]] = 0;
-                }
-
-            }
-
-            //todo: query db for draft's and scheduled
-
-            /////////
             var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
             var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
 
@@ -99,14 +77,16 @@
                 totalAccounts: totalAccounts,
                 accountsList: accountsList,
                 hasCredentials: hasCredentials,
-                draftPostCounts: draftPostCounts,
-                scheduledPostCounts: scheduledPostCounts,
+                    draftPostCounts: result.draftPostCounts,
+                    scheduledPostCounts: result.scheduledPostCounts,
                 lastAcc: global.accountsData.stored.lastAcc,
                 isEncrypted: isEncrypted,
                 isUnlocked: isUnlocked,
                 isLocked: ((isEncrypted && (!isUnlocked)) ? true : false),
                 dataLocked: global.accountsData.dataLocked,
                 isLoaded: global.accountsData.isLoaded
+            });
+
             });
 
         },

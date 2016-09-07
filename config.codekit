@@ -177,6 +177,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/main\/postHelpers.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/main\/postHelpers.js",
+		"outputAbbreviatedPath": "\/modules\/main\/min\/postHelpers-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/renderer\/ui.js": {
 		"fileType": 64,
 		"ignore": 1,
