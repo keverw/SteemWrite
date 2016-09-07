@@ -2,9 +2,9 @@ each val in accountsList
     tr
         td
             if hasCredentials[val]
-                span.glyphicon.glyphicon-lock(style='display: none;')
+                span.glyphicon.glyphicon-lock(style='display: none;', data-toggle='tooltip', data-placement='bottom', title='Credentials need reentered')
             else
-                span.glyphicon.glyphicon-lock
+                span.glyphicon.glyphicon-lock(data-toggle='tooltip', data-placement='bottom', title='Credentials need reentered')
 
             =val
         td=draftPostCounts[val]
@@ -12,11 +12,11 @@ each val in accountsList
         td
             .btn-group.btn-group-justified(role='group')
                 .btn-group(role='group')
-                    button.btn.btn-success(type='button', data-user=val, onclick='ui.manageAccounts.check(this)')
+                    button.btn.btn-success(type='button', data-user=val, onclick='ui.manageAccounts.check(this)', data-toggle='tooltip', data-placement='bottom', title='Check Credentials')
                         span.glyphicon.glyphicon-refresh
                 .btn-group(role='group')
-                    button.btn.btn-info(type='button', data-user=val, onclick='ui.manageAccounts.edit(this)')
+                    button.btn.btn-info(type='button', data-user=val, onclick='ui.manageAccounts.edit(this)', data-toggle='tooltip', data-placement='bottom', title='Edit Login Credentials')
                         span.glyphicon.glyphicon-edit
                 .btn-group(role='group')
-                    button.btn.btn-danger(type='button', data-user=val, onclick='ui.manageAccounts.remove(this)')
+                    button.btn.btn-danger(type='button', data-user=val, onclick='ui.manageAccounts.remove(this)', data-toggle='tooltip', data-placement='bottom', title='Remove Account')
                         span.glyphicon.glyphicon-minus-sign

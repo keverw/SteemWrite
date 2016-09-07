@@ -446,7 +446,7 @@
             refreshAccountsListRemoved: function()
             {
                 //called when Resetting and Passphrase is removed
-
+                $('#accountsListTbody .glyphicon-lock').show();
 
             },
             encryptCredentials: function()
