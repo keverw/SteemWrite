@@ -329,26 +329,6 @@
 
                             module.exports.accounts.refreshAccountsList(result);
 
-                            //Update UI encryptdStatus
-                            $('#settingsContent .accounts .encryptdStatus').hide();
-
-                            if (result.isEncrypted)
-                            {
-                                if (result.isUnlocked)
-                                {
-                                    $('#settingsContent .accounts .encryptdUnlocked').show();
-                                }
-                                else
-                                {
-                                    $('#settingsContent .accounts .encryptdLocked').show();
-                                }
-
-                            }
-                            else
-                            {
-                                $('#settingsContent .accounts .encryptdNot').show();
-                            }
-
                             //Display tab
                             settingsViewMeta.loaded.accounts = true;
                             settingsViewMeta.loading.accounts = false;
@@ -441,6 +421,26 @@
                     draftPostCounts: info.draftPostCounts,
                     scheduledPostCounts: info.scheduledPostCounts
                 }));
+
+                //Update UI encryptdStatus
+                $('#settingsContent .accounts .encryptdStatus').hide();
+
+                if (info.isEncrypted)
+                {
+                    if (info.isUnlocked)
+                    {
+                        $('#settingsContent .accounts .encryptdUnlocked').show();
+                    }
+                    else
+                    {
+                        $('#settingsContent .accounts .encryptdLocked').show();
+                    }
+
+                }
+                else
+                {
+                    $('#settingsContent .accounts .encryptdNot').show();
+                }
 
             },
             refreshAccountsListRemoved: function()
