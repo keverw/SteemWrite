@@ -9,7 +9,7 @@ each val in accountsList
             =val
         td=draftPostCounts[val]
         td=scheduledPostCounts[val]
-        td
+        td.encryptdStatus.encryptdNot.encryptdUnlocked(style='display: none;')
             .btn-group.btn-group-justified(role='group')
                 .btn-group(role='group')
                     button.btn.btn-success(type='button', data-user=val, onclick='ui.manageAccounts.check(this)', data-toggle='tooltip', data-placement='bottom', title='Check Credentials')

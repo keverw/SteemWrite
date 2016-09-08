@@ -966,30 +966,38 @@
 
                 if (typeof user == 'string')
                 {
-                    irpcRenderer.call('accounts.removeAccount', {
-                        username: user
-                    }, function(err, result) {
-                        if (err)
+                    bootbox.confirm("Are you sure want to remove this account?", function(result)
+                    {
+                        if (result)
                         {
-                            console.log(err);
-                            $.LoadingOverlay('hide'); //hide loading spinner
-                            bootbox.alert('Error Removing Account...');
-                        }
-                        else if (result && typeof result == 'object' && typeof result.msg == 'string')
-                        {
-                            if (result.basicInfo)
-                            {
-                                module.exports.accounts.refreshAccountsList(result.basicInfo); //update tab view
-                                global.updateMainUI(result.basicInfo); //update main ui
-                            }
+                            irpcRenderer.call('accounts.removeAccount', {
+                                username: user
+                            }, function(err, result) {
+                                if (err)
+                                {
+                                    console.log(err);
+                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                    bootbox.alert('Error Removing Account...');
+                                }
+                                else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                                {
+                                    if (result.basicInfo)
+                                    {
+                                        module.exports.accounts.refreshAccountsList(result.basicInfo); //update tab view
+                                        global.updateMainUI(result.basicInfo); //update main ui
+                                    }
 
-                            bootbox.alert(result.msg);
-                            $.LoadingOverlay('hide'); //hide loading spinner
-                        }
-                        else
-                        {
-                            $.LoadingOverlay('hide'); //hide loading spinner
-                            bootbox.alert('Error Removing Account...');
+                                    bootbox.alert(result.msg);
+                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                }
+                                else
+                                {
+                                    $.LoadingOverlay('hide'); //hide loading spinner
+                                    bootbox.alert('Error Removing Account...');
+                                }
+
+                            });
+
                         }
 
                     });
