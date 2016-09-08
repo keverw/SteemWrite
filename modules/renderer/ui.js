@@ -957,7 +957,67 @@
 
                 if (typeof user == 'string')
                 {
-                    bootbox.alert('edit later...');
+                    settingsViewMeta.dialogs.editAccPassBox = bootbox.prompt({
+                        title: 'Enter new password',
+                        inputType: 'password',
+                        callback: function(result)
+                        {
+                            if (typeof result !== 'undefined' && result !== null)
+                            {
+                                //put up loading spinner
+                                $.LoadingOverlay('show', {
+                                    zIndex: 2000
+                                });
+
+                                irpcRenderer.call('accounts.editAccountPassword', {
+                                    username: user,
+                                    password: result
+                                }, function(err, result)
+                                {
+                                    if (err)
+                                    {
+                                        console.log(err);
+                                        $.LoadingOverlay('hide'); //hide loading spinner
+
+                                        var msg = 'Error Editing Account Password...';
+
+                                        if (typeof err == 'object' && err.message)
+                                        {
+                                            msg += '<br><br>' + err.message;
+                                        }
+
+                                        bootbox.alert(msg);
+                                    }
+                                    else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                                    {
+                                        if (result.basicInfo)
+                                        {
+                                            module.exports.accounts.refreshAccountsList(result.basicInfo); //update tab view
+                                            global.updateMainUI(result.basicInfo); //update main ui
+                                        }
+
+                                        if (result.status == 'changed')
+                                        {
+                                            settingsViewMeta.dialogs.editAccPassBox.modal('hide');
+                                        }
+
+                                        bootbox.alert(result.msg);
+                                        $.LoadingOverlay('hide'); //hide loading spinner
+                                    }
+                                    else
+                                    {
+                                        $.LoadingOverlay('hide'); //hide loading spinner
+                                        bootbox.alert('Error Editing Account Password...');
+                                    }
+
+                                });
+
+                                return false;
+
+                            }
+                        }
+                    });
+
                 }
             },
             remove: function(ele)

@@ -472,6 +472,68 @@
                 cb(null, 'notadded');
             }
 
+        },
+        editAccountPassword: function(username, password, cb)
+        {
+            //cb - err, status
+
+            var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+            username = username.toLowerCase();
+
+            if (typeof global.accountsData.stored.accounts[username] == 'object')
+            {
+                module.exports.checkSteemLogin(username, password, function(err, status, login)
+                {
+                    if (err) cb(err);
+
+                    if (status == 'notfound' || status == 'badlogin')
+                    {
+                        cb(null, status);
+                    }
+                    else if (status == 'good')
+                    {
+                        var authStr = JSON.stringify({
+                            password: password
+                        });
+
+                        if (isEncrypted) authStr = util.encrypt(authStr, global.accountsData.masterPass);
+
+                        //Copy storedData before modifying
+                        var storedData = clone(global.accountsData.stored);
+
+                        //Update storage
+                        storedData.accounts[username].encrypted = isEncrypted;
+                        storedData.accounts[username].hasAuth = true;
+                        storedData.accounts[username].auth = authStr;
+
+                        //update KVS and local memory
+                        var stringifed = JSON.stringify(storedData);
+
+                        kvs.set({
+                            k: 'accounts',
+                            v: stringifed
+                        }, function(err)
+                        {
+                            if (err) return cb(err);
+
+                            global.accountsData.stored = storedData; //update stored data
+                            cb(null, 'changed');
+                        });
+
+                    }
+                    else
+                    {
+                        cb(null, 'unknown');
+                    }
+
+                });
+
+            }
+            else
+            {
+                cb(null, 'notadded');
+            }
+
         }
 
     };
