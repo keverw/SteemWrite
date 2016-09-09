@@ -3,7 +3,7 @@
     var crypto = require('crypto'),
         fs = require('fs'),
         path = require('path'),
-        jade = require('jade'),
+        pug = require('pug'),
         url = require('url'),
         _ = require('underscore');
 
@@ -26,8 +26,8 @@
         },
         getViewHtml: function(name, locals)
         {
-            var tplPath = path.join(__dirname, '../views', name + '.jade');
-            var fn = jade.compile(fs.readFileSync(tplPath, 'utf-8'));
+            var tplPath = path.join(__dirname, '../views', name + '.pug');
+            var fn = pug.compile(fs.readFileSync(tplPath, 'utf-8'));
             return fn(locals);
         },
         toObject: function(error)
