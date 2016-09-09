@@ -802,7 +802,13 @@
         },
         switchAccount: function(ele)
         {
-            //alert($(ele).text());
+            var user = $(ele).text();
+
+            if (typeof user == 'string' && user.length > 0)
+            {
+                alert($(ele).text());
+            }
+
         },
         manageAccountsHelpers:
         {

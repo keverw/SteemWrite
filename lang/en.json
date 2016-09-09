@@ -1,6 +1,6 @@
 {
     "loadingScreen": {
-        "loading": "Loading SteemWriter...",
+        "loading": "Loading SteemWrite...",
         "init": "Initiating Database...",
         "upgrade": "Upgrading Database - %s..."
     },
