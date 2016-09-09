@@ -253,12 +253,14 @@ global.updateMainUI = function(info)
         if (info.hasAccs)
         {
             global.viewData.lastAcc = info.lastAcc;
+            global.viewData.currentAcc = info.lastAcc;
 
             //todo: update default screen with drafts, etc
         }
         else //update default screen with a prompt to add accounts
         {
             global.viewData.lastAcc = noAccountsAddedToken;
+            global.viewData.currentAcc = '';
 
             viewHolder.html(util.getViewHtml('base/noAccountsView'));
 
@@ -267,12 +269,6 @@ global.updateMainUI = function(info)
                 ui.openSettings('accounts');
             });
 
-        }
-
-        //update currentAcc
-        if (global.viewData.lastAcc.length > 0)
-        {
-            global.viewData.currentAcc = (global.viewData.lastAcc == noAccountsAddedToken) ? '' : global.viewData.lastAcc;
         }
 
         //transition to displaying view
