@@ -19,6 +19,8 @@ var nodeUtil = require('util'); //Node.js utils
 var irpc = require('electron-irpc');
 var irpcRenderer = irpc.renderer();
 
+var postsView = require('./modules/renderer/views/posts.js');
+
 var fs = require('fs');
 
 //Edit context menus
@@ -254,8 +256,7 @@ global.updateMainUI = function(info)
         {
             global.viewData.lastAcc = info.lastAcc;
             global.viewData.currentAcc = info.lastAcc;
-
-            //todo: update default screen with drafts, etc
+            postsView.init(viewHolder, info.lastAcc);
         }
         else //update default screen with a prompt to add accounts
         {

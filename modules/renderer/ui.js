@@ -1107,6 +1107,8 @@
         mainContentHolder: {
             view: function()
             {
+                $('#navMiddleButtons').hide(); //hide main nav buttons
+
                 //returns the view to write to
                 var id = uuid.v1().replace(/-/g, '');
                 var viewHolderID = 'mainContent_' + id;
