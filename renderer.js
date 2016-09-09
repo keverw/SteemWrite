@@ -8,7 +8,9 @@ global.lang = require('./lang/en.json');
 
 global.viewData = {
     viewName: '',
-    viewMeta: {}
+    viewMeta: {
+        currentAcc: ''
+    }
 };
 
 var ui = require('./modules/renderer/ui.js');
@@ -265,6 +267,12 @@ global.updateMainUI = function(info)
                 ui.openSettings('accounts');
             });
 
+        }
+
+        //update currentAcc
+        if (global.viewData.lastAcc.length > 0)
+        {
+            global.viewData.currentAcc = (global.viewData.lastAcc == noAccountsAddedToken) ? '' : global.viewData.lastAcc;
         }
 
         //transition to displaying view
