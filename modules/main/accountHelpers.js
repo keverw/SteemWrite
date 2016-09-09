@@ -534,6 +534,48 @@
                 cb(null, 'notadded');
             }
 
+        },
+        switchAccount: function(username, cb)
+        {
+            //cb - err, status
+            username = username.toLowerCase();
+
+            if (typeof global.accountsData.stored.accounts[username] == 'object')
+            {
+                if (global.accountsData.stored.lastAcc == username)
+                {
+                    cb(null, 'alreadyswitched');
+                }
+                else
+                {
+                    //Copy storedData before modifying
+                    var storedData = clone(global.accountsData.stored);
+
+                    //update to account they switched to
+                    storedData.lastAcc = username;
+
+                    //update KVS and local memory
+                    var stringifed = JSON.stringify(storedData);
+
+                    kvs.set({
+                        k: 'accounts',
+                        v: stringifed
+                    }, function(err)
+                    {
+                        if (err) return cb(err);
+
+                        global.accountsData.stored = storedData; //update stored data
+                        cb(null, 'switched');
+                    });
+
+                }
+
+            }
+            else
+            {
+                cb(null, 'notadded');
+            }
+
         }
 
     };

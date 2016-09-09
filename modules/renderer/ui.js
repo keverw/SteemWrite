@@ -806,7 +806,39 @@
 
             if (typeof user == 'string' && user.length > 0)
             {
-                alert($(ele).text());
+                //put up loading spinner
+                $.LoadingOverlay('show',
+                {
+                    zIndex: 2000
+                });
+
+                irpcRenderer.call('accounts.switchAccount', {
+                    username: user
+                }, function(err, result) {
+                    if (err)
+                    {
+                        console.log(err);
+                        $.LoadingOverlay('hide'); //hide loading spinner
+                        bootbox.alert('Error Switching Accounts...');
+                    }
+                    else if (result && typeof result == 'object' && typeof result.msg == 'string')
+                    {
+                        if (result.basicInfo)
+                        {
+                            global.updateMainUI(result.basicInfo); //update main ui
+                        }
+
+                        bootbox.alert(result.msg);
+                        $.LoadingOverlay('hide'); //hide loading spinner
+                    }
+                    else
+                    {
+                        $.LoadingOverlay('hide'); //hide loading spinner
+                        bootbox.alert('Error Switching Accounts...');
+                    }
+
+                });
+
             }
 
         },

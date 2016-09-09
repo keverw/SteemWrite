@@ -753,19 +753,19 @@
 
                         if (status == 'notadded')
                         {
-                            cb(null, {
+                            doneCB(null, {
                                 msg: 'Account is not currently added'
                             });
                         }
                         else if (status == 'hasdrafts')
                         {
-                            cb(null, {
+                            doneCB(null, {
                                 msg: 'AAccount has unpublished drafts and cannot be removed at this time.'
                             });
                         }
                         else if (status == 'has_scheduled')
                         {
-                            cb(null, {
+                            doneCB(null, {
                                 msg: 'Account has scheduled posts and cannot be removed at this time.'
                             });
                         }
@@ -788,7 +788,7 @@
                         }
                         else
                         {
-                            cb(new Error('Unknown Status - ' + status));
+                            doneCB(new Error('Unknown Status - ' + status));
                         }
                     });
 
@@ -817,7 +817,7 @@
 
                             if (status == 'notadded')
                             {
-                                cb(null, {
+                                doneCB(null, {
                                     msg: 'Account is not currently added'
                                 });
                             }
@@ -882,6 +882,63 @@
                 }
 
             });
+        },
+        switchAccount: function(parameters, cb)
+        {
+            accountHelpers.accessAccountsReady(cb, function(doneCB)
+            {
+                if (parameters.username && typeof parameters.username == 'string' && parameters.username.length > 0)
+                {
+                    accountHelpers.switchAccount(parameters.username, function(err, status)
+                    {
+                        if (err) return cb(err);
+
+                        if (status == 'notadded')
+                        {
+                            doneCB(null, {
+                                msg: 'Account is not currently added'
+                            });
+                        }
+                        else if (status == 'switched')
+                        {
+                            var replyObj = {
+                                msg: 'Switched Accounts'
+                            };
+
+                            module.exports.basicInfo({}, function(err, result)
+                            {
+                                if (!err)
+                                {
+                                    replyObj.basicInfo = result;
+                                }
+
+                                doneCB(null, replyObj);
+                            });
+
+                        }
+                        else if (status == 'alreadyswitched')
+                        {
+                            doneCB(null, {
+                                msg: 'Already switched to that account'
+                            });
+                        }
+                        else
+                        {
+                            doneCB(new Error('Unknown Status - ' + status));
+                        }
+
+                    });
+
+                }
+                else
+                {
+                    doneCB(null, {
+                        msg: 'Username is undefined.'
+                    });
+                }
+
+            });
+
         }
 
     };
