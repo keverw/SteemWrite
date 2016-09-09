@@ -232,9 +232,12 @@ global.updateMainUI = function(info)
 
     if (global.viewData.lastAcc === 'string' && global.viewData.lastAcc != noAccountsAddedToken) //is defined, check if still in account list
     {
-        //updateMainView is set to true if global.viewData.lastAcc is no longer in info.accountsList
+        //global.viewData.lastAcc is no longer in account list, update main view
+        if (info.accountsList.indexOf(global.viewData.lastAcc) === -1)
+        {
+            updateMainView = true;
+        }
 
-        //todo: code this
     }
     else //lastAcc stored in the UI is empty
     {
@@ -247,8 +250,9 @@ global.updateMainUI = function(info)
 
         if (info.hasAccs)
         {
-            //todo: update default screen with drafts, etc of last account
-            //todo: load posts...
+            global.viewData.lastAcc = info.lastAcc;
+
+            //todo: update default screen with drafts, etc
         }
         else //update default screen with a prompt to add accounts
         {
