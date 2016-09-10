@@ -7,3 +7,5 @@ ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
         a(style='text-decoration: none;', href='#') Scheduled
     li(class=(current == 'drafts') ? 'draftstab active' : 'draftstab', onclick='postsView.loadPosts("drafts")')
         a(style='text-decoration: none;', href='#') Drafts
+    li(class=(current == 'trash') ? 'trashtab active' : 'trashtab', onclick='postsView.loadPosts("trash")')
+        a(style='text-decoration: none;', href='#') Trash

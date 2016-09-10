@@ -34,7 +34,7 @@
         },
         loadPosts: function(type)
         {
-            //all, published, scheduled, drafts
+            //all, published, scheduled, drafts, trash
             alert('loadPosts ' + type);
         }
 
