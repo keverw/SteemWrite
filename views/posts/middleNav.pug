@@ -1,9 +1,9 @@
 ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
-    li
-        a(style='text-decoration: none;', href='#') All
-    li
-        a(style='text-decoration: none;', href='#') Published
-    li
+    li(class=(current == 'all') ? 'alltab active' : 'alltab')
+        a(style='text-decoration: none;', onclick='postsView.loadPosts("all")') All
+    li(class=(current == 'published') ? 'publishedtab active' : 'publishedtab')
+        a(style='text-decoration: none;', onclick='postsView.loadPosts("published")') Published
+    li(class=(current == 'scheduled') ? 'scheduledtab active' : 'scheduledtab', onclick='postsView.loadPosts("scheduled")')
         a(style='text-decoration: none;', href='#') Scheduled
-    li
+    li(class=(current == 'drafts') ? 'draftstab active' : 'draftstab', onclick='postsView.loadPosts("drafts")')
         a(style='text-decoration: none;', href='#') Drafts

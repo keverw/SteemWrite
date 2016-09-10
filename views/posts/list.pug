@@ -4,14 +4,13 @@
             .thumbnail
                 img(src='./images/newpost.svg')
                 .caption
-                    h4
+                    h4.text-center
                         ='New Post'
 
                     p.desc
                     p.tags
-                    p
-                        a.btn.btn-primary(href='#', role='button') Button
-                        a.btn.btn-default(href='#', role='button') Button
+                    p.text-center
+                        a.btn.btn-info(href='#', role='button') Create New Post
 
         each post in posts
             .col-sm-6.col-md-3

@@ -885,7 +885,7 @@
         },
         switchAccount: function(parameters, cb)
         {
-            accountHelpers.accessAccountsReady(cb, function(doneCB)
+            accountHelpers.accessDataReadyUnencrypted(cb, function(doneCB)
             {
                 if (parameters.username && typeof parameters.username == 'string' && parameters.username.length > 0)
                 {

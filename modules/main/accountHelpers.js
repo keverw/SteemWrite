@@ -190,6 +190,36 @@
             });
 
         },
+        accessDataReadyUnencrypted: function(orignalCB, cb)
+        {
+            //same as accessAccountsReady but doesn't check if unencrypted
+
+            function doneCB(err, info)
+            {
+                global.accountsData.dataLocked = false;
+                orignalCB(err, info);
+            }
+
+            ////////////////////////////////////////////////
+            module.exports.isLoadedAndDataUnlocked(function(ready, msg)
+            {
+                if (ready)
+                {
+                    global.accountsData.dataLocked = true;
+                    cb(doneCB);
+                }
+                else
+                {
+                    //orignal callback as no need to unlock
+                    orignalCB(null, {
+                        msg: msg
+                    });
+
+                }
+
+            });
+
+        },
         checkSteemLogin: function(username, password, cb)
         {
             //cb is: err, status, login

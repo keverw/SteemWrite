@@ -24,11 +24,18 @@
             //todo: load in base tpl
 
             //todo: then load in counts, posts, etc
-            $('#navMiddleButtons').html(util.getViewHtml('posts/middleNav', {})).show();
-            //todo: set the current tab as active 
+            $('#navMiddleButtons').html(util.getViewHtml('posts/middleNav', {
+                current: 'all'
+            })).show();
+            //todo: set the current tab as active
 
 
 
+        },
+        loadPosts: function(type)
+        {
+            //all, published, scheduled, drafts
+            alert('loadPosts ' + type);
         }
 
     };
