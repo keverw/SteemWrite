@@ -15,6 +15,27 @@
 
     }
 
+    //////////////////////////////
+    function isProcessing(username)
+    {
+        username = username.toLowerCase();
+        return _.contains(global.bcSyncingMeta.processing, username);
+    }
+
+    function processingAdd(username)
+    {
+        username = username.toLowerCase();
+        global.bcSyncingMeta.processing.push(username);
+    }
+
+    function processingRemove(username)
+    {
+        username = username.toLowerCase();
+        global.bcSyncingMeta.processing = _.without(global.bcSyncingMeta.processing, username);
+    }
+
+    //////////////////////////////
+
     module.exports = {
         init: function(cb)
         {
@@ -166,7 +187,10 @@
         syncAccount: function(mode, account, from, limit, cb)
         {
             //use global.bcSyncingMeta
-        }
+        },
+        isProcessing: isProcessing,
+        processingAdd: processingAdd,
+        processingRemove: processingRemove
     };
 
 }());

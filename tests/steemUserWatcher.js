@@ -27,8 +27,8 @@ steemUserWatcher.init(function(err)
     //
     // console.log(global.bcSyncingMeta.stored.users);
 
-    steemUserWatcher.watchAccount('keverw', ['posts', 'updater']);
-    console.log(global.bcSyncingMeta.stored.users);
+    // steemUserWatcher.watchAccount('keverw', ['posts', 'updater']);
+    // console.log(global.bcSyncingMeta.stored.users);
 
     //test remove:
     // steemUserWatcher.unwatchAccount('keverw', ['posts']);
@@ -37,6 +37,16 @@ steemUserWatcher.init(function(err)
     // steemUserWatcher.unwatchAccount('keverw', ['updater']);
     // console.log(global.bcSyncingMeta.stored.users);
 
-    steemUserWatcher.unwatchAccount('keverw', ['posts', 'updater']);
-    console.log(global.bcSyncingMeta.stored.users);
+    // steemUserWatcher.unwatchAccount('keverw', ['posts', 'updater']);
+    // console.log(global.bcSyncingMeta.stored.users);
+
+    //test processing tracking functions
+    console.log(steemUserWatcher.isProcessing('keverw'));
+    steemUserWatcher.processingAdd('keverw');
+
+    console.log(steemUserWatcher.isProcessing('keverw'));
+    steemUserWatcher.processingRemove('keverw');
+
+    console.log(steemUserWatcher.isProcessing('keverw'));
+
 });
