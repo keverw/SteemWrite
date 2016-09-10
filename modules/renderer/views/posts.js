@@ -1,7 +1,7 @@
 (function()
 {
     module.exports = {
-        init: function(viewHolder, username)
+        load: function(viewHolder, username)
         {
             // viewHolder.html(util.getViewHtml('posts/loading', {
             //     username: username

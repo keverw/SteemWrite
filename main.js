@@ -34,7 +34,8 @@ if (global.appConfig.dev)
 }
 
 var kvs = require('./modules/main/kvs.js'),
-    accounts = require('./modules/main/accounts.js');
+    accounts = require('./modules/main/accounts.js'),
+    steemUserWatcher = require('./modules/main/steemUserWatcher.js');
 
 global.db = null; //SQLite3 connection
 global.bc = null; //BC connection
@@ -160,54 +161,61 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
     if (bcConnLock) return;
     bcConnLock = true;
 
-    //connect
-    var steemClient = require('steem-rpc').Client;
-
-    kvs.read({
-        k: 'wsNode'
-    }, function(err, result)
+    //init steemUserWatcher
+    steemUserWatcher.init(function(err)
     {
         if (err) global.closeWithError(parameters.err);
 
-        var wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
-        global.bcNode = wsHost;
+        //connect to websocket node
+        var steemClient = require('steem-rpc').Client;
 
-        /////////////////////////////////////////////
-        global.bc = steemClient.get({
-            maxReconnectAttempts: null, //unlimited reconnect attempts
-            idleThreshold: 0,
-            apis: ['database_api', 'login_api', 'network_broadcast_api'],
-            url: wsHost,
-            statusCallback: function(e)
-            {
-                //possibly errors strings: open, closed, error
-                bcAlertUI(e);
-            }
-        }, true);
-
-        global.bc.initPromise.then(function(res)
+        kvs.read({
+            k: 'wsNode'
+        }, function(err, result)
         {
-            global.bcReady = true;
-            console.log("*** Connected to", res, "***");
+            if (err) global.closeWithError(parameters.err);
 
-            // Pulse the websocket every 20 seconds for block number 1, just to make
-            // sure the websocket doesn't disconnect.
-            setInterval(function()
+            var wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
+            global.bcNode = wsHost;
+
+            /////////////////////////////////////////////
+            global.bc = steemClient.get({
+                maxReconnectAttempts: null, //unlimited reconnect attempts
+                idleThreshold: 0,
+                apis: ['database_api', 'login_api', 'network_broadcast_api'],
+                url: wsHost,
+                statusCallback: function(e)
+                {
+                    //possibly errors strings: open, closed, error
+                    bcAlertUI(e);
+                }
+            }, true);
+
+            global.bc.initPromise.then(function(res)
             {
-                global.bc.database_api().exec('get_block', [1]).then(function(res)
-                {
-                    //console.log('database_api res', res);
-                }).catch(function(e)
-                {
-                    //console.log('database_api res', e);
-                });
+                global.bcReady = true;
+                console.log("*** Connected to", res, "***");
 
-            }, 20000);
+                // Pulse the websocket every 20 seconds for block number 1, just to make
+                // sure the websocket doesn't disconnect.
+                setInterval(function()
+                {
+                    global.bc.database_api().exec('get_block', [1]).then(function(res)
+                    {
+                        //console.log('database_api res', res);
+                    }).catch(function(e)
+                    {
+                        //console.log('database_api res', e);
+                    });
 
-        }).catch(function(err)
-        {
-            console.log('Connection error:', err);
-            bcAlertUI('error');
+                }, 20000);
+
+            }).catch(function(err)
+            {
+                console.log('Connection error:', err);
+                bcAlertUI('error');
+            });
+
         });
 
     });

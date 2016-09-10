@@ -256,7 +256,7 @@ global.updateMainUI = function(info)
         {
             global.viewData.lastAcc = info.lastAcc;
             global.viewData.currentAcc = info.lastAcc;
-            postsView.init(viewHolder, info.lastAcc);
+            postsView.load(viewHolder, info.lastAcc);
         }
         else //update default screen with a prompt to add accounts
         {
