@@ -84,7 +84,26 @@
     }
 
     //////////////////////////////
+    function _syncAccount(reqMeta, cb)
+    {
+        //cb - err, status, reqID
+        console.log(reqMeta);
+        if (isProcessingReqID(reqMeta.reqID))
+        {
+            //sync data for account
 
+            //     //old function sig: syncAccount: function(mode, account, from, limit, cb)
+            //     //...
+
+        }
+        else
+        {
+            cb(null, 'canceled', reqMeta.reqID);
+        }
+
+    }
+
+    //Exported API
     module.exports = {
         init: function(cb)
         {
@@ -259,7 +278,7 @@
         },
         syncAccount: function(username, cb, onDoneCB)
         {
-            //cb - err, status
+            //cb - err, status, reqID(only if status == 'processing-started')
             username = username.toLowerCase();
 
             if (global.bcSyncingMeta.stored.users[username]) //added
@@ -274,17 +293,11 @@
                     var id = processingAdd(username);
 
                     var originalReq = clone(global.bcSyncingMeta.stored.users[username]);
+                    originalReq.reqID = id;
+                    originalReq.username = username;
 
-                    if (cb) cb(null, 'processing-started'); //no return since processing more after
-
-                    //sync data for account
-                    if (isProcessingReqID(id))
-                    {
-                        console.log(originalReq);
-                        //old function sig: syncAccount: function(mode, account, from, limit, cb)
-                        //...
-                    }
-
+                    if (cb) cb(null, 'processing-started', id); //no return since processing more after
+                    _syncAccount(originalReq, onDoneCB);
                 }
 
             }
