@@ -141,6 +141,88 @@
 
     }
 
+    function _watchAccount(doSync, username, modes, cb, doneCB)
+    {
+        username = username.toLowerCase();
+        modes = _.uniq(modes);
+
+        var doSave = false;
+
+        if (global.bcSyncingMeta.stored.users[username]) //already
+        {
+            var wasChanged = false;
+
+            for (var key in modes)
+            {
+                if (modes.hasOwnProperty(key))
+                {
+
+                    if (!_.contains(global.bcSyncingMeta.stored.users[username].modes, modes[key]))
+                    {
+                        global.bcSyncingMeta.stored.users[username].modes.push(modes[key]);
+                        wasChanged = true;
+                    }
+
+                }
+
+            }
+
+            if (wasChanged)
+            {
+                doSave = true;
+                module.exports.setAccountLastID(username, -1);
+                processingRemoveUser(username); //different modes were added, stop processing for that user
+            }
+
+        }
+        else //not added
+        {
+            //-1 means not checked yet
+            global.bcSyncingMeta.stored.users[username] = {
+                lastID: -1,
+                lastCheckedTime: -1,
+                modes: modes
+            };
+
+            doSave = true;
+        }
+
+        //watchAccount
+        //_watchAccount(false, username, modes, cb);
+
+        //watchAccountAndSync
+        //_watchAccount(true, username, modes, cb, doneCB);
+
+        //handle saving/cb
+        if (doSave)
+        {
+            saveBcSyncingMeta(function(err)
+            {
+                if (err) return cb(err);
+
+                if (doSync)
+                {
+                    module.exports.syncAccount(username, cb, doneCB);
+                }
+
+            });
+
+        }
+        else
+        {
+            if (doSync)
+            {
+                module.exports.syncAccount(username, cb, doneCB);
+            }
+            else
+            {
+                if (cb) cb();
+            }
+
+        }
+
+    }
+
     //Exported API
     module.exports = {
         init: function(cb)
@@ -190,66 +272,11 @@
         },
         watchAccount: function(username, modes, cb)
         {
-            username = username.toLowerCase();
-            modes = _.uniq(modes);
-
-            var doSave = false;
-
-            if (global.bcSyncingMeta.stored.users[username]) //already
-            {
-                var wasChanged = false;
-
-                for (var key in modes)
-                {
-                    if (modes.hasOwnProperty(key))
-                    {
-
-                        if (!_.contains(global.bcSyncingMeta.stored.users[username].modes, modes[key]))
-                        {
-                            global.bcSyncingMeta.stored.users[username].modes.push(modes[key]);
-                            wasChanged = true;
-                        }
-
-                    }
-
-                }
-
-                if (wasChanged)
-                {
-                    doSave = true;
-                    module.exports.setAccountLastID(username, -1);
-                    processingRemoveUser(username); //different modes were added, stop processing for that user
-                }
-
-            }
-            else //not added
-            {
-                //-1 means not checked yet
-                global.bcSyncingMeta.stored.users[username] = {
-                    lastID: -1,
-                    lastCheckedTime: -1,
-                    modes: modes
-                };
-
-                doSave = true;
-
-            }
-
-            //handle saving/cb
-            if (doSave)
-            {
-                saveBcSyncingMeta(function(err)
-                {
-                    if (cb) cb(err);
-                    module.exports.syncAccount(username);
-                });
-            }
-            else
-            {
-                if (cb) cb();
-                module.exports.syncAccount(username);
-            }
-
+            _watchAccount(false, username, modes, cb);
+        },
+        watchAccountAndSync: function(username, modes, cb, doneCB)
+        {
+            _watchAccount(true, username, modes, cb, doneCB);
         },
         unwatchAccount: function(username, modes, cb)
         {

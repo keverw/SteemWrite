@@ -18,9 +18,14 @@ steemUserWatcher.init(function(err)
 {
     if (err) console.log(err);
 
-    steemUserWatcher.watchAccount('keverw', ['posts'], function(err)
+    //steemUserWatcher.watchAccount('keverw', ['posts']);
+
+    steemUserWatcher.watchAccountAndSync('keverw', ['posts'], function(err, status, reqID)
     {
-        if (err) console.log(err);
+        console.log(err, status, reqID);
+    }, function(err, status, reqID)
+    {
+        console.log('done cb', err, status, reqID);
     });
     //
     // console.log(global.bcSyncingMeta.stored.users);
