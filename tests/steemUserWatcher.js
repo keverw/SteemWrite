@@ -18,8 +18,10 @@ steemUserWatcher.init(function(err)
 {
     if (err) console.log(err);
 
-
-    // steemUserWatcher.watchAccount('keverw', ['posts']);
+    steemUserWatcher.watchAccount('keverw', ['posts'], function(err)
+    {
+        if (err) console.log(err);
+    });
     //
     // console.log(global.bcSyncingMeta.stored.users);
     //
@@ -41,18 +43,18 @@ steemUserWatcher.init(function(err)
     // console.log(global.bcSyncingMeta.stored.users);
 
     //test processing tracking functions
-    console.log(steemUserWatcher.isProcessingUser('keverw'));
-    console.log(steemUserWatcher.isProcessingReqID('d9d7c573-db53-4e9b-ad83-36a6f546bea8'));
-
-    //add req
-    var id = steemUserWatcher.processingAdd('keverw');
-
-    console.log(steemUserWatcher.isProcessingUser('keverw'));
-    console.log(steemUserWatcher.isProcessingReqID(id));
-
-    steemUserWatcher.processingRemoveUser('keverw');
-
-    console.log(steemUserWatcher.isProcessingUser('keverw'));
-    console.log(steemUserWatcher.isProcessingReqID(id));
+    // console.log(steemUserWatcher.isProcessingUser('keverw'));
+    // console.log(steemUserWatcher.isProcessingReqID('d9d7c573-db53-4e9b-ad83-36a6f546bea8'));
+    //
+    // //add req
+    // var id = steemUserWatcher.processingAdd('keverw');
+    //
+    // console.log(steemUserWatcher.isProcessingUser('keverw'));
+    // console.log(steemUserWatcher.isProcessingReqID(id));
+    //
+    // steemUserWatcher.processingRemoveUser('keverw');
+    //
+    // console.log(steemUserWatcher.isProcessingUser('keverw'));
+    // console.log(steemUserWatcher.isProcessingReqID(id));
 
 });

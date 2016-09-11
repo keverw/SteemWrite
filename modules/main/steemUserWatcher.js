@@ -2,7 +2,8 @@
 {
     var _ = require('underscore'),
         uuid = require('node-uuid'),
-        kvs = require('./kvs.js');
+        kvs = require('./kvs.js'),
+        clone = require('fast-clone');
 
     function saveBcSyncingMeta(cb)
     {
@@ -182,14 +183,14 @@
             {
                 saveBcSyncingMeta(function(err)
                 {
-                    if (cb) return cb(err);
-
+                    if (cb) cb(err);
                     module.exports.syncAccount(username);
                 });
             }
             else
             {
-                if (cb) return cb();
+                if (cb) cb();
+                module.exports.syncAccount(username);
             }
 
         },
@@ -256,10 +257,42 @@
             }
 
         },
-        syncAccount: function(username, cb)
+        syncAccount: function(username, cb, onDoneCB)
         {
-            //syncAccount: function(mode, account, from, limit, cb)
-            //use global.bcSyncingMeta
+            //cb - err, status
+            username = username.toLowerCase();
+
+            if (global.bcSyncingMeta.stored.users[username]) //added
+            {
+
+                if (isProcessingUser(username))
+                {
+                    if (cb) return cb(null, 'processing-already');
+                }
+                else
+                {
+                    var id = processingAdd(username);
+
+                    var originalReq = clone(global.bcSyncingMeta.stored.users[username]);
+
+                    if (cb) cb(null, 'processing-started'); //no return since processing more after
+
+                    //sync data for account
+                    if (isProcessingReqID(id))
+                    {
+                        console.log(originalReq);
+                        //old function sig: syncAccount: function(mode, account, from, limit, cb)
+                        //...
+                    }
+
+                }
+
+            }
+            else //account not added
+            {
+                if (cb) return cb(null, 'notfound');
+            }
+
         },
         isProcessingUser: isProcessingUser,
         isProcessingReqID: isProcessingReqID,
