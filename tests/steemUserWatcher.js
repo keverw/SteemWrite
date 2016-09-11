@@ -41,12 +41,18 @@ steemUserWatcher.init(function(err)
     // console.log(global.bcSyncingMeta.stored.users);
 
     //test processing tracking functions
-    // console.log(steemUserWatcher.isProcessing('keverw'));
-    // steemUserWatcher.processingAdd('keverw');
-    //
-    // console.log(steemUserWatcher.isProcessing('keverw'));
-    // steemUserWatcher.processingRemove('keverw');
-    //
-    // console.log(steemUserWatcher.isProcessing('keverw'));
+    console.log(steemUserWatcher.isProcessingUser('keverw'));
+    console.log(steemUserWatcher.isProcessingReqID('d9d7c573-db53-4e9b-ad83-36a6f546bea8'));
+
+    //add req
+    var id = steemUserWatcher.processingAdd('keverw');
+
+    console.log(steemUserWatcher.isProcessingUser('keverw'));
+    console.log(steemUserWatcher.isProcessingReqID(id));
+
+    steemUserWatcher.processingRemoveUser('keverw');
+
+    console.log(steemUserWatcher.isProcessingUser('keverw'));
+    console.log(steemUserWatcher.isProcessingReqID(id));
 
 });

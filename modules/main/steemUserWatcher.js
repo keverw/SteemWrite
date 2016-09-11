@@ -1,6 +1,7 @@
 (function()
 {
     var _ = require('underscore'),
+        uuid = require('node-uuid'),
         kvs = require('./kvs.js');
 
     function saveBcSyncingMeta(cb)
@@ -16,22 +17,69 @@
     }
 
     //////////////////////////////
-    function isProcessing(username)
+    function isProcessingUser(username)
     {
         username = username.toLowerCase();
-        return _.contains(global.bcSyncingMeta.processing, username);
+        return (global.bcSyncingMeta.processingAccounts[username]) ? true : false;
+    }
+
+    function isProcessingReqID(reqID)
+    {
+        return (global.bcSyncingMeta.processingIDToAccount[reqID]) ? true : false;
     }
 
     function processingAdd(username)
     {
         username = username.toLowerCase();
-        global.bcSyncingMeta.processing.push(username);
+
+        var reqID = uuid.v4();
+
+        if (typeof global.bcSyncingMeta.processingAccounts[username] != 'object')
+        {
+            global.bcSyncingMeta.processingAccounts[username] = [];
+        }
+
+        global.bcSyncingMeta.processingAccounts[username].push(reqID);
+        global.bcSyncingMeta.processingIDToAccount[reqID] = username;
+
+        return reqID;
     }
 
-    function processingRemove(username)
+    function processingRemoveUser(username)
     {
         username = username.toLowerCase();
-        global.bcSyncingMeta.processing = _.without(global.bcSyncingMeta.processing, username);
+
+        if (isProcessingUser(username))
+        {
+            for (var key in global.bcSyncingMeta.processingAccounts[username])
+            {
+                if (global.bcSyncingMeta.processingAccounts[username].hasOwnProperty(key))
+                {
+                    processingRemoveReqID(global.bcSyncingMeta.processingAccounts[username][key]);
+                }
+
+            }
+
+        }
+
+    }
+
+    function processingRemoveReqID(reqID)
+    {
+        if (global.bcSyncingMeta.processingIDToAccount[reqID])
+        {
+            var username = global.bcSyncingMeta.processingIDToAccount[reqID];
+
+            global.bcSyncingMeta.processingAccounts[username] = _.without(global.bcSyncingMeta.processingAccounts[username], reqID); //remove ID from array for account
+            delete global.bcSyncingMeta.processingIDToAccount[reqID]; //remove ID from ID to username map
+
+            //if account array is empty, delete the array for the username
+            if (global.bcSyncingMeta.processingAccounts[username].length === 0)
+            {
+                delete global.bcSyncingMeta.processingAccounts[username];
+            }
+        }
+
     }
 
     //////////////////////////////
@@ -41,7 +89,8 @@
         {
             global.bcSyncingMeta = {
                 loaded: false,
-                processing: [], //accounts currently being processed
+                processingAccounts: {}, //accounts currently being processed
+                processingIDToAccount: {}, //req IDs to account map
                 stored: {
                     users: { //each user is key lowername name holding a object with: lastID, modes, lastCheckedTime
 
@@ -111,7 +160,7 @@
                 {
                     doSave = true;
                     module.exports.setAccountLastID(username, -1);
-                    processingRemove(username); //diffrent modes were added, stop processing
+                    processingRemoveUser(username); //different modes were added, stop processing for that user
                 }
 
             }
@@ -180,7 +229,7 @@
                 if (wasChanged)
                 {
                     doSave = true;
-                    processingRemove(username); //modes were removed, stop processing
+                    processingRemoveUser(username); //modes were removed, stop processing for that user
                 }
 
             }
@@ -212,9 +261,11 @@
             //syncAccount: function(mode, account, from, limit, cb)
             //use global.bcSyncingMeta
         },
-        isProcessing: isProcessing,
+        isProcessingUser: isProcessingUser,
+        isProcessingReqID: isProcessingReqID,
         processingAdd: processingAdd,
-        processingRemove: processingRemove
+        processingRemoveUser: processingRemoveUser,
+        processingRemoveReqID: processingRemoveReqID
     };
 
 }());
