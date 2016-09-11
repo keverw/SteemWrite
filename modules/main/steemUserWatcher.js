@@ -7,7 +7,7 @@
     {
         kvs.set({
             k: 'watchedUsers',
-            v: global.bcSyncingMeta.stored
+            v: JSON.stringify(global.bcSyncingMeta.stored)
         }, function(err)
         {
             cb(err);
@@ -43,7 +43,7 @@
                 loaded: false,
                 processing: [], //accounts currently being processed
                 stored: {
-                    users: { //each user is key lowername name holding a object with: lastID, modes, lastChecked
+                    users: { //each user is key lowername name holding a object with: lastID, modes, lastCheckedTime
 
                     }
                 }
@@ -110,7 +110,8 @@
                 if (wasChanged)
                 {
                     doSave = true;
-                    //todo: if wasChanged is true, we need to cancel processing(if processing)
+                    module.exports.setAccountLastID(username, -1);
+                    processingRemove(username); //diffrent modes were added, stop processing
                 }
 
             }
@@ -119,7 +120,7 @@
                 //-1 means not checked yet
                 global.bcSyncingMeta.stored.users[username] = {
                     lastID: -1,
-                    lastChecked: -1,
+                    lastCheckedTime: -1,
                     modes: modes
                 };
 
@@ -127,16 +128,20 @@
 
             }
 
-            //todo: save and call syncAccount...
+            //handle saving/cb
+            if (doSave)
+            {
+                saveBcSyncingMeta(function(err)
+                {
+                    if (cb) return cb(err);
 
-            //todo: cb is called if it is a function as optional
-            //doSave is true is need to do a save to DB...
-
-            //if adding a new mode not already, resync from start
-        },
-        setAccountLastID: function(username, id)
-        {
-            //useful to override the last ID to check from
+                    module.exports.syncAccount(username);
+                });
+            }
+            else
+            {
+                if (cb) return cb();
+            }
 
         },
         unwatchAccount: function(username, modes, cb)
@@ -171,21 +176,40 @@
                     wasChanged = true;
                 }
 
-                //
+                ///////////////////////////////////////////////////////////////
                 if (wasChanged)
                 {
                     doSave = true;
-                    //todo: if wasChanged is true, we need to cancel processing(if processing)
+                    processingRemove(username); //modes were removed, stop processing
                 }
 
             }
 
-            //todo: cb is called if it is a function as optional
-            //doSave is true is need to do a save to DB...
+            //handle saving/cb
+            if (doSave)
+            {
+                saveBcSyncingMeta(function(err)
+                {
+                    if (cb) return cb(err);
+                });
+            }
+            else
+            {
+                if (cb) return cb();
+            }
 
         },
-        syncAccount: function(mode, account, from, limit, cb)
+        setAccountLastID: function(username, id)
         {
+            if (global.bcSyncingMeta.stored.users[username])
+            {
+                global.bcSyncingMeta.stored.users[username].lastID = id;
+            }
+
+        },
+        syncAccount: function(username, cb)
+        {
+            //syncAccount: function(mode, account, from, limit, cb)
             //use global.bcSyncingMeta
         },
         isProcessing: isProcessing,
