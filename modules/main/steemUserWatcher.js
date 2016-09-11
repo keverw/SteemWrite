@@ -3,7 +3,8 @@
     var _ = require('underscore'),
         uuid = require('node-uuid'),
         kvs = require('./kvs.js'),
-        clone = require('fast-clone');
+        clone = require('fast-clone'),
+        util = require('../util.js');
 
     function saveBcSyncingMeta(cb)
     {
@@ -87,18 +88,55 @@
     function _syncAccount(reqMeta, cb)
     {
         //cb - err, status, reqID
+        function updateLastID(lastID)
+        {
+            if (global.bcSyncingMeta.stored.users[reqMeta.username])
+            {
+                global.bcSyncingMeta.stored.users[reqMeta.username].lastID = lastID;
+            }
+        }
+
+        function isDone(lastID)
+        {
+            if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
+            {
+                if (global.bcSyncingMeta.stored.users[reqMeta.username])
+                {
+                    updateLastID(lastID);
+                    global.bcSyncingMeta.stored.users[reqMeta.username].lastCheckedTime = util.time();
+
+                    saveBcSyncingMeta(function(err)
+                    {
+                        if (cb) cb(err, 'done', reqMeta.reqID);
+                    });
+
+                }
+                else
+                {
+                    if (cb) cb(null, 'canceled', reqMeta.reqID);
+                }
+
+            }
+            else
+            {
+                if (cb) cb(null, 'canceled', reqMeta.reqID);
+            }
+
+        }
+
         console.log(reqMeta);
-        if (isProcessingReqID(reqMeta.reqID))
+        if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
         {
             //sync data for account
 
-            //     //old function sig: syncAccount: function(mode, account, from, limit, cb)
-            //     //...
+            //probably new function sig: syncAccountHistory: function(id, mode, account, from, limit, cb)
+            //...
 
+            isDone(99);
         }
         else
         {
-            cb(null, 'canceled', reqMeta.reqID);
+            if (cb) cb(null, 'canceled', reqMeta.reqID);
         }
 
     }

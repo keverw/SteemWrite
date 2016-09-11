@@ -55,6 +55,11 @@
             ////////////////////////////
             var serverUrl = url.parse(address);
             return (_.contains(protocols, serverUrl.protocol) && serverUrl.host) ? true : false;
+        },
+        time: function()
+        {
+            //returns unixtime, like PHP's time() function
+            return Math.floor(Date.now() / 1000);
         }
 
     };
