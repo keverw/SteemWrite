@@ -266,9 +266,35 @@
             });
 
         },
-        sync: function()
+        sync: function(cb)
         {
-            //ready to sync
+            var cTime = util.time();
+            var syncInterval = 60 * 3; //3 min
+
+            //check what users need synced
+            for (var key in global.bcSyncingMeta.stored.users)
+            {
+                if (global.bcSyncingMeta.stored.users.hasOwnProperty(key))
+                {
+
+                    if (global.bcSyncingMeta.stored.users[key].lastID == -1 || global.bcSyncingMeta.stored.users[key].lastCheckedTime == -1)
+                    {
+                        //todo: add to sync list
+                        console.log('add to sync list');
+                    }
+                    else if (cTime - global.bcSyncingMeta.stored.users[key].lastCheckedTime > syncInterval)
+                    {
+                        //todo: add to sync list
+                        console.log('add to sync list - time');
+                    }
+
+                }
+
+            }
+
+            //start sync
+            //todo: use eachOfLimit to go over sync list
+
         },
         watchAccount: function(username, modes, cb)
         {
