@@ -148,6 +148,32 @@
         {
                         if (res.length > 0)
                         {
+                            var foundNewResults = false;
+
+                            async.eachOfSeries(res, function(value, key, callback)
+                            {
+                                if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
+                                {
+                                    var resultID = value[0];
+                                    var resultData = value[1];
+
+                                    if (resultID > reqMeta.lastID) //new ID found
+                                    {
+                                        callback();
+                                    }
+                                    else //not new
+                                    {
+                                        callback();
+                                    }
+
+                                }
+                                else //skip if canceled
+                                {
+                                    callback();
+                                }
+
+                            }, function(err) {
+                            });
 
                         }
                         else //no results found
