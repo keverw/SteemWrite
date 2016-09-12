@@ -108,13 +108,12 @@
 
         }
 
-        function isDone(lastID)
+        function isDone()
         {
             if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
             {
                 if (global.bcSyncingMeta.stored.users[reqMeta.username])
                 {
-                    updateLastID(lastID);
                     updateLastCheckedTime(util.time());
 
                     saveBcSyncingMeta(function(err)
@@ -159,7 +158,16 @@
 
                                     if (resultID > reqMeta.lastID) //new ID found
                                     {
+                                        foundNewResults = true;
+
+                                        global.bcSyncingMeta.processItemFN(reqMeta, resultData, function(err)
+                                        {
+                                            if (err) return callback(err);
+
+                                            updateLastID(resultID);
                                         callback();
+                                        });
+
                                     }
                                     else //not new
                                     {
@@ -172,7 +180,17 @@
                                     callback();
                                 }
 
-                            }, function(err) {
+                            }, function(err)
+                            {
+                                if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
+                                {
+                                    if (err && cb) cb(err);
+                                }
+                                else
+                                {
+                                    if (cb) cb(null, 'canceled', reqMeta.reqID);
+                                }
+
                             });
 
                         }
