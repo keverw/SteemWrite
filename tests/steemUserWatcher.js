@@ -11,57 +11,85 @@ global.isDBReady = function(cb)
     cb();
 };
 
-//test steemUserWatcher
-var steemUserWatcher = require('../modules/main/steemUserWatcher.js');
+//connect to blockchain
+global.bc = null; //BC connection
+global.bcReady = false; //BC connection ready
 
-steemUserWatcher.init(function(err)
+var steemClient = require('steem-rpc').Client;
+
+global.bc = steemClient.get({}, true);
+
+global.bc.initPromise.then(function(res)
 {
-    if (err) console.log(err);
-
-    steemUserWatcher.sync();
-
-    //steemUserWatcher.watchAccount('keverw', ['posts']);
-
-    // steemUserWatcher.watchAccountAndSync('keverw', ['posts'], function(err, status, reqID)
-    // {
-    //     console.log(err, status, reqID);
-    // }, function(err, status, reqID)
-    // {
-    //     console.log('done cb', err, status, reqID);
-    // });
-    //
-    // console.log(global.bcSyncingMeta.stored.users);
-    //
-    // steemUserWatcher.watchAccount('keverw', ['updater']); //in a real app you'd add both at the same time to be more efficient if you were to add multiples at once
-    //
-    // console.log(global.bcSyncingMeta.stored.users);
-
-    // steemUserWatcher.watchAccount('keverw', ['posts', 'updater']);
-    // console.log(global.bcSyncingMeta.stored.users);
-
-    //test remove:
-    // steemUserWatcher.unwatchAccount('keverw', ['posts']);
-    // console.log(global.bcSyncingMeta.stored.users);
-    //
-    // steemUserWatcher.unwatchAccount('keverw', ['updater']);
-    // console.log(global.bcSyncingMeta.stored.users);
-
-    // steemUserWatcher.unwatchAccount('keverw', ['posts', 'updater']);
-    // console.log(global.bcSyncingMeta.stored.users);
-
-    //test processing tracking functions
-    // console.log(steemUserWatcher.isProcessingUser('keverw'));
-    // console.log(steemUserWatcher.isProcessingReqID('d9d7c573-db53-4e9b-ad83-36a6f546bea8'));
-    //
-    // //add req
-    // var id = steemUserWatcher.processingAdd('keverw');
-    //
-    // console.log(steemUserWatcher.isProcessingUser('keverw'));
-    // console.log(steemUserWatcher.isProcessingReqID(id));
-    //
-    // steemUserWatcher.processingRemoveUser('keverw');
-    //
-    // console.log(steemUserWatcher.isProcessingUser('keverw'));
-    // console.log(steemUserWatcher.isProcessingReqID(id));
-
+    global.bcReady = true;
+    console.log("*** Connected to", res, "***");
+    test();
+}).catch(function(err)
+{
+    console.log('Connection error:', err);
 });
+
+//test steemUserWatcher
+function test()
+{
+    var steemUserWatcher = require('../modules/main/steemUserWatcher.js');
+
+    var processItemFN = function() {
+
+    };
+
+    steemUserWatcher.init(processItemFN, function(err)
+    {
+        if (err) console.log(err);
+
+        // steemUserWatcher.sync();
+
+        //steemUserWatcher.watchAccount('keverw', ['posts']);
+
+        steemUserWatcher.watchAccountAndSync('keverw', ['posts'], function(err, status, reqID)
+        {
+            console.log(err, status, reqID);
+        }, function(err, status, reqID)
+        {
+            console.log('done cb', err, status, reqID);
+        });
+        //
+        // console.log(global.bcSyncingMeta.stored.users);
+        //
+        // setTimeout(function()
+        // {
+        //     steemUserWatcher.watchAccount('keverw', ['updater']); //in a real app you'd add both at the same time to be more efficient if you were to add multiples at once
+        //
+        //     console.log(global.bcSyncingMeta.stored.users);
+        // }, 10000);
+
+        // steemUserWatcher.watchAccount('keverw', ['posts', 'updater']);
+        // console.log(global.bcSyncingMeta.stored.users);
+
+        //test remove:
+        // steemUserWatcher.unwatchAccount('keverw', ['posts']);
+        // console.log(global.bcSyncingMeta.stored.users);
+        //
+        // steemUserWatcher.unwatchAccount('keverw', ['updater']);
+        // console.log(global.bcSyncingMeta.stored.users);
+
+        // steemUserWatcher.unwatchAccount('keverw', ['posts', 'updater']);
+        // console.log(global.bcSyncingMeta.stored.users);
+
+        //test processing tracking functions
+        // console.log(steemUserWatcher.isProcessingUser('keverw'));
+        // console.log(steemUserWatcher.isProcessingReqID('d9d7c573-db53-4e9b-ad83-36a6f546bea8'));
+        //
+        // //add req
+        // var id = steemUserWatcher.processingAdd('keverw');
+        //
+        // console.log(steemUserWatcher.isProcessingUser('keverw'));
+        // console.log(steemUserWatcher.isProcessingReqID(id));
+        //
+        // steemUserWatcher.processingRemoveUser('keverw');
+        //
+        // console.log(steemUserWatcher.isProcessingUser('keverw'));
+        // console.log(steemUserWatcher.isProcessingReqID(id));
+
+    });
+}

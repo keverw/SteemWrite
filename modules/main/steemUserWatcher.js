@@ -226,7 +226,7 @@
 
     //Exported API
     module.exports = {
-        init: function(cb)
+        init: function(processItemFN, cb)
         {
             if (global.bcSyncingMeta) //already inited
             {
@@ -236,6 +236,7 @@
             //not inited
             global.bcSyncingMeta = {
                 loaded: false,
+                processItemFN: processItemFN,
                 processingAccounts: {}, //accounts currently being processed
                 processingIDToAccount: {}, //req IDs to account map
                 stored: {
