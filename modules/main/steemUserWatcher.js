@@ -7,6 +7,8 @@
         async = require('async'),
         util = require('../util.js');
 
+    var get_account_historyLimit = 250;
+
     function saveBcSyncingMeta(cb)
     {
         kvs.set({
@@ -134,15 +136,44 @@
 
         }
 
+        function grabAccHistory(from)
+        {
+            var limit = get_account_historyLimit;
+            from = (from == -1) ? limit : from + limit;
+
+            global.bc.database_api().exec('get_account_history', [reqMeta.username, from, limit])
+                .then(function(res)
+                {
+        if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
+        {
+                        if (res.length > 0)
+                        {
+
+                        }
+                        else //no results found
+                        {
+                            updateLastCheckedTime(util.time());
+                            if (cb) cb(err, 'done', reqMeta.reqID);
+                        }
+
+        }
+                    else
+                    {
+                        if (cb) cb(null, 'canceled', reqMeta.reqID);
+        }
+
+                })
+                .catch(function(e)
+                {
+                    if (cb) return cb(e);
+                });
+
+        }
+
         console.log(reqMeta);
         if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
         {
-            //sync data for account
-
-            //probably new function sig: syncAccountHistory: function(id, mode, account, from, limit, cb)
-            //...
-
-            isDone(99);
+            grabAccHistory(reqMeta.lastID);
         }
         else
         {
