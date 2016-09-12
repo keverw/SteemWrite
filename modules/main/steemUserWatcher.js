@@ -153,7 +153,7 @@
                         else //no results found
                         {
                             updateLastCheckedTime(util.time());
-                            if (cb) cb(err, 'done', reqMeta.reqID);
+                            if (cb) cb(null, 'done', reqMeta.reqID);
                         }
 
         }
