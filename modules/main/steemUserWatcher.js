@@ -228,6 +228,12 @@
     module.exports = {
         init: function(cb)
         {
+            if (global.bcSyncingMeta) //already inited
+            {
+                return cb();
+            }
+
+            //not inited
             global.bcSyncingMeta = {
                 loaded: false,
                 processingAccounts: {}, //accounts currently being processed
@@ -243,7 +249,7 @@
             kvs.read({
                 k: 'watchedUsers'
             }, function(err, result) {
-                if (err) return cb(err);
+                if (err) return cb(err); //return because error
 
                 if (result && typeof result == 'object')
                 {
@@ -254,7 +260,7 @@
                     }
                     catch (err)
                     {
-                        cb(err);
+                        return cb(err); //return because error
                     }
 
                 }
@@ -265,6 +271,19 @@
                 }
 
             });
+
+            //set sync timer
+            var interval = setInterval(function()
+            {
+                if (global.isAppClosing)
+                {
+                    clearInterval(interval);
+                    return;
+                }
+
+                module.exports.sync();
+
+            }, 50); //check every 50 milliseconds
 
         },
         sync: function(cb)
