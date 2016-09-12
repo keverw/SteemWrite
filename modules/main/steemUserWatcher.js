@@ -4,6 +4,7 @@
         uuid = require('node-uuid'),
         kvs = require('./kvs.js'),
         clone = require('fast-clone'),
+        async = require('async'),
         util = require('../util.js');
 
     function saveBcSyncingMeta(cb)
@@ -271,6 +272,8 @@
             var cTime = util.time();
             var syncInterval = 60 * 3; //3 min
 
+            var syncList = [];
+
             //check what users need synced
             for (var key in global.bcSyncingMeta.stored.users)
             {
@@ -279,21 +282,40 @@
 
                     if (global.bcSyncingMeta.stored.users[key].lastID == -1 || global.bcSyncingMeta.stored.users[key].lastCheckedTime == -1)
                     {
-                        //todo: add to sync list
-                        console.log('add to sync list');
+                        syncList.push(key);
                     }
                     else if (cTime - global.bcSyncingMeta.stored.users[key].lastCheckedTime > syncInterval)
                     {
-                        //todo: add to sync list
-                        console.log('add to sync list - time');
+                        syncList.push(key);
                     }
 
                 }
 
             }
 
-            //start sync
-            //todo: use eachOfLimit to go over sync list
+            //start sync - limited to 3 at a time
+            async.eachOfLimit(syncList, 3, function iteratee(value, key, callback)
+            {
+                module.exports.syncAccount(value, function(err, status, reqID)
+                {
+                    if (err) return callback(err);
+
+                    //callback only if not 'processing-started'
+                    if (status != 'processing-started')
+                    {
+                        callback();
+                    }
+
+                }, function(err, status, reqID)
+                {
+                    //sync done callback
+                    callback(err);
+                });
+
+            }, function done(err)
+            {
+                if (cb) cb(err);
+            });
 
         },
         watchAccount: function(username, modes, cb)
