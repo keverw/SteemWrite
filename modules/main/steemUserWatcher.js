@@ -97,6 +97,15 @@
             }
         }
 
+        function updateLastCheckedTime(time)
+        {
+            if (global.bcSyncingMeta.stored.users[reqMeta.username])
+            {
+                global.bcSyncingMeta.stored.users[reqMeta.username].lastCheckedTime = time;
+            }
+
+        }
+
         function isDone(lastID)
         {
             if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
@@ -104,7 +113,7 @@
                 if (global.bcSyncingMeta.stored.users[reqMeta.username])
                 {
                     updateLastID(lastID);
-                    global.bcSyncingMeta.stored.users[reqMeta.username].lastCheckedTime = util.time();
+                    updateLastCheckedTime(util.time());
 
                     saveBcSyncingMeta(function(err)
                     {
@@ -300,7 +309,7 @@
                 if (global.bcSyncingMeta.stored.users.hasOwnProperty(key))
                 {
 
-                    if (global.bcSyncingMeta.stored.users[key].lastID == -1 || global.bcSyncingMeta.stored.users[key].lastCheckedTime == -1)
+                    if (global.bcSyncingMeta.stored.users[key].lastCheckedTime == -1)
                     {
                         syncList.push(key);
                     }
