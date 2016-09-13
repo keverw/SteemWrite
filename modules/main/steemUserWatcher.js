@@ -93,17 +93,23 @@
         //cb - err, status, reqID
         function updateLastID(lastID)
         {
+            if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
+            {
             if (global.bcSyncingMeta.stored.users[reqMeta.username])
             {
                 global.bcSyncingMeta.stored.users[reqMeta.username].lastID = lastID;
             }
         }
+        }
 
         function updateLastCheckedTime(time)
         {
+            if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
+            {
             if (global.bcSyncingMeta.stored.users[reqMeta.username])
             {
                 global.bcSyncingMeta.stored.users[reqMeta.username].lastCheckedTime = time;
+            }
             }
 
         }
