@@ -118,6 +118,7 @@
 
                     saveBcSyncingMeta(function(err)
                     {
+                        processingRemoveReqID(reqMeta.reqID);
                         if (cb) cb(err, 'done', reqMeta.reqID);
                     });
 
@@ -133,6 +134,11 @@
                 if (cb) cb(null, 'canceled', reqMeta.reqID);
             }
 
+        }
+
+        function getLastID()
+        {
+            return (global.bcSyncingMeta.stored.users[reqMeta.username]) ? global.bcSyncingMeta.stored.users[reqMeta.username].lastID : -1;
         }
 
         function grabAccHistory(from)
@@ -156,7 +162,7 @@
                                     var resultID = value[0];
                                     var resultData = value[1];
 
-                                    if (resultID > reqMeta.lastID) //new ID found
+                                    if (resultID > getLastID()) //new ID found
                                     {
                                         foundNewResults = true;
 
@@ -214,7 +220,6 @@
 
         }
 
-        console.log(reqMeta);
         if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
         {
             grabAccHistory(reqMeta.lastID);

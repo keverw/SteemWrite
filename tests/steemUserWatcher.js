@@ -34,8 +34,10 @@ function test()
 {
     var steemUserWatcher = require('../modules/main/steemUserWatcher.js');
 
-    var processItemFN = function() {
-
+    var processItemFN = function(reqMeta, resultData, cb)
+    {
+        console.log(resultData);
+        cb();
     };
 
     steemUserWatcher.init(processItemFN, function(err)
