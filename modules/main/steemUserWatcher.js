@@ -149,8 +149,8 @@
             global.bc.database_api().exec('get_account_history', [reqMeta.username, from, limit])
                 .then(function(res)
                 {
-        if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
-        {
+                    if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
+                    {
                         if (res.length > 0)
                         {
                             var foundNewResults = false;
@@ -166,12 +166,18 @@
                                     {
                                         foundNewResults = true;
 
-                                        global.bcSyncingMeta.processItemFN(reqMeta, resultData, function(err)
+                                        var newReqMeta = {
+                                            username: reqMeta.username,
+                                            reqID: reqMeta.reqID,
+                                            modes: reqMeta.modes
+                                        };
+
+                                        global.bcSyncingMeta.processItemFN(newReqMeta, resultData, function(err)
                                         {
                                             if (err) return callback(err);
 
                                             updateLastID(resultID);
-                                        callback();
+                                            callback();
                                         });
 
                                     }
@@ -191,6 +197,27 @@
                                 if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
                                 {
                                     if (err && cb) cb(err);
+
+                                    if (foundNewResults)
+                                    {
+                                        //check for more results
+                                        var lastIDLookup = getLastID();
+
+                                        if (lastIDLookup > -1)
+                                        {
+                                            grabAccHistory(lastIDLookup);
+                                        }
+                                        else
+                                        {
+                                            isDone();
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        isDone();
+                                    }
+
                                 }
                                 else
                                 {
@@ -206,11 +233,11 @@
                             if (cb) cb(null, 'done', reqMeta.reqID);
                         }
 
-        }
+                    }
                     else
                     {
                         if (cb) cb(null, 'canceled', reqMeta.reqID);
-        }
+                    }
 
                 })
                 .catch(function(e)
