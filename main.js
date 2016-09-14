@@ -35,11 +35,13 @@ if (global.appConfig.dev)
 
 var kvs = require('./modules/main/kvs.js'),
     accounts = require('./modules/main/accounts.js'),
+    util = require('./modules/util.js'),
     steemUserWatcher = require('./modules/main/steemUserWatcher.js');
 
 global.db = null; //SQLite3 connection
 global.bc = null; //BC connection
 global.bcReady = false; //BC connection ready
+global.bcHardfork = '';
 global.bcStatus = ''; //BC connection status
 global.bcNode = ''; //BC connection node
 global.bcRestart = false; //bc require restart
@@ -162,7 +164,14 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
     bcConnLock = true;
 
     //init steemUserWatcher
-    steemUserWatcher.init(function(err)
+    var processItemFN = function(reqMeta, resultData, cb)
+    {
+        //note: should account for duplicated results
+        console.log(resultData);
+        cb();
+    };
+
+    steemUserWatcher.init(processItemFN, function(err)
     {
         if (err) global.closeWithError(parameters.err);
 
@@ -178,8 +187,8 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
             var wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
             global.bcNode = wsHost;
 
-            /////////////////////////////////////////////
-            global.bc = steemClient.get({
+            ////////////////////////////////////////////
+            util.enhancedBCConnect({
                 maxReconnectAttempts: null, //unlimited reconnect attempts
                 idleThreshold: 0,
                 apis: ['database_api', 'login_api', 'network_broadcast_api'],
@@ -189,33 +198,16 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
                     //possibly errors strings: open, closed, error
                     bcAlertUI(e);
                 }
-            }, true);
-
-            global.bc.initPromise.then(function(res)
-            {
-                global.bcReady = true;
-                console.log("*** Connected to", res, "***");
-
-                // Pulse the websocket every 20 seconds for block number 1, just to make
-                // sure the websocket doesn't disconnect.
-                setInterval(function()
+            }, function(err) {
+                if (err)
                 {
-                    global.bc.database_api().exec('get_block', [1]).then(function(res)
-                    {
-                        //console.log('database_api res', res);
-                    }).catch(function(e)
-                    {
-                        //console.log('database_api res', e);
-                    });
+                    bcAlertUI('error');
+                }
 
-                }, 20000);
-
-            }).catch(function(err)
-            {
-                console.log('Connection error:', err);
-                bcAlertUI('error');
             });
 
+            //OLD CODE
+            /////////////////////////////////////////////
         });
 
     });

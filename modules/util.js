@@ -5,7 +5,8 @@
         path = require('path'),
         pug = require('pug'),
         url = require('url'),
-        _ = require('underscore');
+        _ = require('underscore'),
+        steemClient = require('steem-rpc').Client;
 
     module.exports = {
         encrypt: function(data, key)
@@ -60,6 +61,75 @@
         {
             //returns unixtime, like PHP's time() function
             return Math.floor(Date.now() / 1000);
+        },
+        enhancedBCConnect: function(options, cb)
+        {
+            if (!global.enhancedBCConnectInited)
+            {
+                global.enhancedBCConnectInited = true;
+
+                var hasReadyLogicRan = false;
+
+                var checkHardforkVersion = function()
+                {
+                    global.bc.database_api().exec('get_hardfork_version', []).then(function(res)
+                    {
+                        //console.log('get_hardfork_version res', res);
+
+                        if (!hasReadyLogicRan)
+                        {
+                            hasReadyLogicRan = true;
+
+                            global.bcHardfork = res;
+                            global.bcReady = true;
+
+                            if (cb) cb();
+
+                            // Pulse the websocket every 20 seconds for get_hardfork_version, just to make
+                            // sure the websocket doesn't disconnect.
+
+                            var pulse = setInterval(function()
+                            {
+                                if (global.isAppClosing)
+                                {
+                                    clearInterval(pulse);
+                                    return;
+                                }
+
+                                checkHardforkVersion();
+                            }, 20000);
+
+                        }
+
+                    }).catch(function(e) {
+                        //console.log('get_hardfork_version res', e);
+
+                        //retry on an error
+                        setTimeout(function()
+                        {
+                            checkHardforkVersion();
+                        }, 1000);
+                    });
+
+                };
+
+                global.bc = steemClient.get(options, true);
+
+                global.bc.initPromise.then(function(res)
+                {
+                    //console.log('*** Connected to', res, '***');
+
+                    //Detect hardfork version
+                    checkHardforkVersion();
+
+                }).catch(function(err)
+                {
+                    //console.log('Connection error:', err);
+                    if (cb) cb(err);
+                });
+
+            }
+
         }
 
     };
