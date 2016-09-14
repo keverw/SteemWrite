@@ -14,19 +14,20 @@ global.isDBReady = function(cb)
 //connect to blockchain
 global.bc = null; //BC connection
 global.bcReady = false; //BC connection ready
+global.bcHardfork = '';
 
-var steemClient = require('steem-rpc').Client;
+var util = require('../modules/util.js');
 
-global.bc = steemClient.get({}, true);
+////Test Code
+test();
 
-global.bc.initPromise.then(function(res)
+util.enhancedBCConnect({}, function(err)
 {
-    global.bcReady = true;
-    console.log("*** Connected to", res, "***");
-    test();
-}).catch(function(err)
-{
-    console.log('Connection error:', err);
+    if (!err)
+    {
+        //test();
+    }
+
 });
 
 //test steemUserWatcher
@@ -36,6 +37,7 @@ function test()
 
     var processItemFN = function(reqMeta, resultData, cb)
     {
+        //note: should account for duplicated results
         console.log(resultData);
         cb();
     };
