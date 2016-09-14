@@ -4,7 +4,8 @@
         kvs = require('./kvs.js'),
         clone = require('fast-clone'),
         _ = require('underscore'),
-        postHelpers = require('./postHelpers.js');
+        postHelpers = require('./postHelpers.js'),
+        steemUserWatcher = require('./steemUserWatcher.js');
 
     function order(unordered) //http://stackoverflow.com/a/30693905/458642 order keys in ABC order
     {
@@ -330,6 +331,7 @@
                         {
                             if (err) return cb(err);
 
+                            steemUserWatcher.watchAccountAndSync(username, ['posts']); //watch account
                             global.accountsData.stored = storedData; //update stored data
                             cb(null, 'added');
                         });
@@ -488,6 +490,7 @@
                         {
                             if (err) return cb(err);
 
+                            steemUserWatcher.unwatchAccount(username, ['posts']); //unwatch account
                             global.accountsData.stored = storedData; //update stored data
                             cb(null, 'removed');
                         });
