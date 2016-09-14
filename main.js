@@ -36,6 +36,7 @@ if (global.appConfig.dev)
 var kvs = require('./modules/main/kvs.js'),
     accounts = require('./modules/main/accounts.js'),
     util = require('./modules/util.js'),
+    processWatchedUsers = require('./modules/main/processWatchedUsers.js'),
     steemUserWatcher = require('./modules/main/steemUserWatcher.js');
 
 global.db = null; //SQLite3 connection
@@ -163,51 +164,39 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
     if (bcConnLock) return;
     bcConnLock = true;
 
-    //init steemUserWatcher
-    var processItemFN = function(reqMeta, resultData, cb)
+    //connect to websocket node
+    var steemClient = require('steem-rpc').Client;
+
+    kvs.read({
+        k: 'wsNode'
+    }, function(err, result)
     {
-        //note: should account for duplicated results
-        console.log(resultData);
-        cb();
-    };
+        if (err) return global.closeWithError(parameters.err);
 
-    steemUserWatcher.init(processItemFN, function(err)
-    {
-        if (err) global.closeWithError(parameters.err);
+        var wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
+        global.bcNode = wsHost;
 
-        //connect to websocket node
-        var steemClient = require('steem-rpc').Client;
+        ////////////////////////////////////////////
+        util.enhancedBCConnect({
+            maxReconnectAttempts: null, //unlimited reconnect attempts
+            idleThreshold: 0,
+            apis: ['database_api', 'login_api', 'network_broadcast_api'],
+            url: wsHost,
+            statusCallback: function(e)
+            {
+                //possibly errors strings: open, closed, error
+                bcAlertUI(e);
+            }
+        }, function(err) {
+            if (err)
+            {
+                bcAlertUI('error');
+            }
+            else
+            {
+                steemUserWatcher.sync();
+            }
 
-        kvs.read({
-            k: 'wsNode'
-        }, function(err, result)
-        {
-            if (err) global.closeWithError(parameters.err);
-
-            var wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
-            global.bcNode = wsHost;
-
-            ////////////////////////////////////////////
-            util.enhancedBCConnect({
-                maxReconnectAttempts: null, //unlimited reconnect attempts
-                idleThreshold: 0,
-                apis: ['database_api', 'login_api', 'network_broadcast_api'],
-                url: wsHost,
-                statusCallback: function(e)
-                {
-                    //possibly errors strings: open, closed, error
-                    bcAlertUI(e);
-                }
-            }, function(err) {
-                if (err)
-                {
-                    bcAlertUI('error');
-                }
-
-            });
-
-            //OLD CODE
-            /////////////////////////////////////////////
         });
 
     });
@@ -267,6 +256,16 @@ app.on('ready', function()
     if (!global.db)
     {
         global.db = new sqlite3.Database(dbFile);
+
+        //init steemUserWatcher
+        steemUserWatcher.init(processWatchedUsers.processItem, function(err)
+        {
+            if (err) return global.closeWithError(err);
+
+            //watch account for updates
+            steemUserWatcher.watchAccount('steemwrite', ['updater']);
+        });
+
     }
 
     global.isAppReady = true;
