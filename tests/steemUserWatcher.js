@@ -19,13 +19,11 @@ global.bcHardfork = '';
 var util = require('../modules/util.js');
 
 ////Test Code
-test();
-
 util.enhancedBCConnect({}, function(err)
 {
     if (!err)
     {
-        //test();
+        test();
     }
 
 });

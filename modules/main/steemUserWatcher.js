@@ -7,8 +7,7 @@
         async = require('async'),
         util = require('../util.js');
 
-    //var get_account_historyLimit = 250;
-    var get_account_historyLimit = 4; //temp
+    var get_account_historyLimit = 250;
 
     function saveBcSyncingMeta(cb)
     {
@@ -146,8 +145,6 @@
             {
                 if (global.bcSyncingMeta.stored.users[reqMeta.username])
                 {
-                    console.log('done syncing'); //temp
-
                     updateLastCheckedTime(util.time());
 
                     saveBcSyncingMeta(function(err)
@@ -376,7 +373,6 @@
 
     function _checkIfNewHF(cb)
     {
-        //todo: actually write this function
         if (global.bcSyncingMeta.hfUpdateLock)
         {
             var isUnlockedTimer = setInterval(function()
@@ -385,14 +381,14 @@
                 {
                     //no longer locked
                     clearInterval(isUnlockedTimer);
-        cb();
+                    cb();
                 }
 
             }, 100);
         }
         else
         {
-        //Check if hardfork version changed
+            //Check if hardfork version changed
             if (global.bcSyncingMeta.stored.HFVer == global.bcHardfork)
             {
                 //No Change
@@ -400,14 +396,39 @@
             }
             else
             {
+                console.log('Detected Change', global.bcHardfork); //temp
+
                 //Detected Change
                 global.bcSyncingMeta.hfUpdateLock = true;
-        // {
+                global.bcSyncingMeta.stored.HFVer = global.bcHardfork;
+
+                //loop users
+                for (var key in global.bcSyncingMeta.stored.users)
+                {
+                    if (global.bcSyncingMeta.stored.users.hasOwnProperty(key))
+                    {
+                        //lock user, release all other locks
+                        var userLock = processingAdd(key);
+                        processingRemoveUserExcludeReqID(key, userLock);
+
+                        //update vars
+                        global.bcSyncingMeta.stored.users[key].lastID = -1;
+                        global.bcSyncingMeta.stored.users[key].lastCheckedTime = -1;
+
+                        //release lock for account
+                        processingRemoveReqID(userLock);
+
+                    }
+
+                }
+
+                //release lock
+                global.bcSyncingMeta.hfUpdateLock = false;
+                cb();
+
             }
 
         }
-        //
-        // }
 
     }
 
