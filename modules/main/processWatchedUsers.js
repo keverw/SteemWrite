@@ -1,6 +1,7 @@
 (function()
 {
-    var _ = require('underscore');
+    var _ = require('underscore'),
+        postHelpers = require('./postHelpers.js');
 
     module.exports = {
         processItem: function(reqMeta, resultData, cb)

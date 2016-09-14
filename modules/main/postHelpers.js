@@ -1,6 +1,7 @@
 (function()
 {
-    var async = require('async');
+    var async = require('async'),
+        sha1 = require('sha1');
 
     module.exports = {
         countPostsByUser: function(username, cb)
@@ -45,6 +46,20 @@
             else
             {
                 cb(null, results);
+            }
+
+        },
+        generateRevHash: function(author, permlink, title, body, json_metadata)
+        {
+            // revHash should be: author, permlink, title, body, json_metadata
+            // title, body, json_metadata are set to autosave in the hash if it’s a autosave
+            if (author && permlink && title && body && json_metadata)
+            {
+                return sha1([author, permlink, title, body, json_metadata].join(','));
+            }
+            else
+            {
+                return sha1([author, permlink, 'autosave', 'autosave', 'autosave'].join(','));
             }
 
         }

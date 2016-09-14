@@ -4,7 +4,9 @@
 
     var cmds = {
         auto_vacuum: 'PRAGMA auto_vacuum = 1',
-        make_cvsTBL: 'CREATE TABLE `kvs` (`k` TEXT, `v`	TEXT, PRIMARY KEY(k));'
+        make_cvsTBL: 'CREATE TABLE `kvs` (`k` TEXT, `v` TEXT, PRIMARY KEY(k));',
+        make_postsTBL: 'CREATE TABLE `posts` (`author` TEXT, `permlink` TEXT, `title` TEXT, `status` TEXT, `latestPublishedTX` TEXT, `revHash` TEXT, `date` INTEGER, `scheduledDate` INTEGER, `tag1` TEXT, `tag2` TEXT, `tag3` TEXT, `tag4` TEXT, `tag5` TEXT, `featuredImg` TEXT, PRIMARY KEY(`author`,`permlink`));',
+        make_revisionsTBL: 'CREATE TABLE `revisions` (`revHash` TEXT, `publishedTX` TEXT, `author` TEXT, `permlink` TEXT, `title` TEXT, `body` TEXT, `json_metadata` TEXT, `localDate` INTEGER, `blockChainDate` INTEGER, `isAutosave` INTEGER, PRIMARY KEY(`revHash`));'
     };
 
     module.exports = {
