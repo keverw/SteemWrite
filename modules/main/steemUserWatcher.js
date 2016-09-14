@@ -70,6 +70,31 @@
 
     }
 
+    function processingRemoveUserExcludeReqID(username, lockReqID)
+    {
+        username = username.toLowerCase();
+
+        if (isProcessingUser(username))
+        {
+            for (var key in global.bcSyncingMeta.processingAccounts[username])
+            {
+                if (global.bcSyncingMeta.processingAccounts[username].hasOwnProperty(key))
+                {
+                    var cReqID = global.bcSyncingMeta.processingAccounts[username][key];
+
+                    if (lockReqID != cReqID)
+                    {
+                        processingRemoveReqID(cReqID);
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
     function processingRemoveReqID(reqID)
     {
         if (global.bcSyncingMeta.processingIDToAccount[reqID])
@@ -352,16 +377,38 @@
     function _checkIfNewHF(cb)
     {
         //todo: actually write this function
+        if (global.bcSyncingMeta.hfUpdateLock)
+        {
+            var isUnlockedTimer = setInterval(function()
+            {
+                if (!global.bcSyncingMeta.hfUpdateLock)
+                {
+                    //no longer locked
+                    clearInterval(isUnlockedTimer);
         cb();
+                }
 
+            }, 100);
+        }
+        else
+        {
         //Check if hardfork version changed
-        // if (global.bcSyncingMeta.stored != global.bcHardfork)
+            if (global.bcSyncingMeta.stored.HFVer == global.bcHardfork)
+            {
+                //No Change
+                cb();
+            }
+            else
+            {
+                //Detected Change
+                global.bcSyncingMeta.hfUpdateLock = true;
         // {
+            }
+
+        }
         //
         // }
 
-        // stored: {
-        //     HFVer
     }
 
     //Exported API
@@ -379,6 +426,7 @@
                 processItemFN: processItemFN,
                 processingAccounts: {}, //accounts currently being processed
                 processingIDToAccount: {}, //req IDs to account map
+                hfUpdateLock: false,
                 stored: {
                     HFVer: '',
                     users: { //each user is key lowername name holding a object with: lastID, modes, lastCheckedTime
