@@ -349,6 +349,21 @@
 
     }
 
+    function _checkIfNewHF(cb)
+    {
+        //todo: actually write this function
+        cb();
+
+        //Check if hardfork version changed
+        // if (global.bcSyncingMeta.stored != global.bcHardfork)
+        // {
+        //
+        // }
+
+        // stored: {
+        //     HFVer
+    }
+
     //Exported API
     module.exports = {
         init: function(processItemFN, cb)
@@ -365,6 +380,7 @@
                 processingAccounts: {}, //accounts currently being processed
                 processingIDToAccount: {}, //req IDs to account map
                 stored: {
+                    HFVer: '',
                     users: { //each user is key lowername name holding a object with: lastID, modes, lastCheckedTime
 
                     }
@@ -416,52 +432,67 @@
         {
             if (global.bcReady)
             {
-                var cTime = util.time();
-                var syncInterval = 60 * 3; //3 min
 
-                var syncList = [];
-
-                //check what users need synced
-                for (var key in global.bcSyncingMeta.stored.users)
+                //Check if hardfork version changed
+                _checkIfNewHF(function(err)
                 {
-                    if (global.bcSyncingMeta.stored.users.hasOwnProperty(key))
+                    if (err)
                     {
+                        if (cb) cb(err);
+                    }
+                    else
+                    {
+                        //Check for accounts to sync
+                        var cTime = util.time();
+                        var syncInterval = 60 * 3; //3 min
 
-                        if (global.bcSyncingMeta.stored.users[key].lastCheckedTime == -1)
+                        var syncList = [];
+
+                        //check what users need synced
+                        for (var key in global.bcSyncingMeta.stored.users)
                         {
-                            syncList.push(key);
+                            if (global.bcSyncingMeta.stored.users.hasOwnProperty(key))
+                            {
+
+                                if (global.bcSyncingMeta.stored.users[key].lastCheckedTime == -1)
+                                {
+                                    syncList.push(key);
+                                }
+                                else if (cTime - global.bcSyncingMeta.stored.users[key].lastCheckedTime > syncInterval)
+                                {
+                                    syncList.push(key);
+                                }
+
+                            }
+
                         }
-                        else if (cTime - global.bcSyncingMeta.stored.users[key].lastCheckedTime > syncInterval)
+
+                        //start sync - limited to 3 at a time
+                        async.eachOfLimit(syncList, 3, function iteratee(value, key, callback)
                         {
-                            syncList.push(key);
-                        }
+                            module.exports.syncAccount(value, function(err, status, reqID)
+                            {
+                                if (err) return callback(err);
+
+                                //callback only if not 'processing-started'
+                                if (status != 'processing-started')
+                                {
+                                    callback();
+                                }
+
+                            }, function(err, status, reqID)
+                            {
+                                //sync done callback
+                                callback(err);
+                            });
+
+                        }, function done(err)
+                        {
+                            if (cb) cb(err);
+                        });
 
                     }
 
-                }
-
-                //start sync - limited to 3 at a time
-                async.eachOfLimit(syncList, 3, function iteratee(value, key, callback)
-                {
-                    module.exports.syncAccount(value, function(err, status, reqID)
-                    {
-                        if (err) return callback(err);
-
-                        //callback only if not 'processing-started'
-                        if (status != 'processing-started')
-                        {
-                            callback();
-                        }
-
-                    }, function(err, status, reqID)
-                    {
-                        //sync done callback
-                        callback(err);
-                    });
-
-                }, function done(err)
-                {
-                    if (cb) cb(err);
                 });
 
             }
@@ -548,32 +579,45 @@
             //cb - err, status, reqID(only if status == 'processing-started')
             if (global.bcReady)
             {
-                username = username.toLowerCase();
-
-                if (global.bcSyncingMeta.stored.users[username]) //added
+                //Check if hardfork version changed
+                _checkIfNewHF(function(err)
                 {
-
-                    if (isProcessingUser(username))
+                    if (err)
                     {
-                        if (cb) return cb(null, 'processing-already');
+                        if (cb) cb(err);
                     }
                     else
                     {
-                        var id = processingAdd(username);
+                        username = username.toLowerCase();
 
-                        var originalReq = clone(global.bcSyncingMeta.stored.users[username]);
-                        originalReq.reqID = id;
-                        originalReq.username = username;
+                        if (global.bcSyncingMeta.stored.users[username]) //added
+                        {
 
-                        if (cb) cb(null, 'processing-started', id); //no return since processing more after
-                        _syncAccount(originalReq, onDoneCB);
+                            if (isProcessingUser(username))
+                            {
+                                if (cb) return cb(null, 'processing-already');
+                            }
+                            else
+                            {
+                                var id = processingAdd(username);
+
+                                var originalReq = clone(global.bcSyncingMeta.stored.users[username]);
+                                originalReq.reqID = id;
+                                originalReq.username = username;
+
+                                if (cb) cb(null, 'processing-started', id); //no return since processing more after
+                                _syncAccount(originalReq, onDoneCB);
+                            }
+
+                        }
+                        else //account not added
+                        {
+                            if (cb) return cb(null, 'notfound');
+                        }
+
                     }
 
-                }
-                else //account not added
-                {
-                    if (cb) return cb(null, 'notfound');
-                }
+                });
 
             }
             else
