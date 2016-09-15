@@ -228,6 +228,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/main\/sqlHelpers.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/main\/sqlHelpers.js",
+		"outputAbbreviatedPath": "\/modules\/main\/min\/sqlHelpers-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/main\/steemUserWatcher.js": {
 		"fileType": 64,
 		"ignore": 1,
@@ -311,6 +322,17 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/tests\/patchTests.js",
 		"outputAbbreviatedPath": "\/tests\/min\/patchTests-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/tests\/sqlHelpers.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/tests\/sqlHelpers.js",
+		"outputAbbreviatedPath": "\/tests\/min\/sqlHelpers-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
