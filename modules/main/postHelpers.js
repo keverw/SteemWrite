@@ -66,10 +66,10 @@
         },
         insertRevision: function(parameters, cb)
         {
-            sqlHelpers.insert(parameters, function(names, placeholders, values)
+            sqlHelpers.insert(parameters, function(string, values)
             {
 
-                global.db.run('INSERT OR IGNORE INTO revisions (' + names + ') VALUES (' + placeholders + ')', values, function(err)
+                global.db.run('INSERT OR IGNORE INTO revisions ' + string, values, function(err)
                 {
                     cb(err);
                 });
@@ -79,10 +79,10 @@
         },
         insertPost: function(parameters, cb)
         {
-            sqlHelpers.insert(parameters, function(names, placeholders, values)
+            sqlHelpers.insert(parameters, function(string, values)
             {
 
-                global.db.run('INSERT OR IGNORE INTO posts (' + names + ') VALUES (' + placeholders + ')', values, function(err)
+                global.db.run('INSERT OR IGNORE INTO posts ' + string, values, function(err)
                 {
                     cb(err);
                 });

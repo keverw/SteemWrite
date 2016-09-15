@@ -19,9 +19,10 @@
 
             }
 
-            cb(names.join(', '), placeholders.join(', '), values);
+            cb('(' + names.join(', ') + ') VALUES (' + placeholders.join(', ') + ')', values);
 
         }
-    }
+
+    };
 
 })();
