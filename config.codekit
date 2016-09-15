@@ -305,6 +305,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/tests\/patchTests.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/tests\/patchTests.js",
+		"outputAbbreviatedPath": "\/tests\/min\/patchTests-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/tests\/steemUserWatcher.js": {
 		"fileType": 64,
 		"ignore": 1,

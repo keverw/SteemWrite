@@ -6,7 +6,10 @@
         pug = require('pug'),
         url = require('url'),
         _ = require('underscore'),
-        steemClient = require('steem-rpc').Client;
+        steemClient = require('steem-rpc').Client,
+        DiffMatchPatch = require('diff-match-patch');
+
+    var dmp = new DiffMatchPatch();
 
     module.exports = {
         encrypt: function(data, key)
@@ -128,6 +131,52 @@
                     if (cb) cb(err);
                 });
 
+            }
+
+        },
+        createPatch: function(oldText, newText, lessSpace)
+        {
+            var patches = dmp.patch_make(oldText, newText);
+            var patch = dmp.patch_toText(patches);
+
+            if (lessSpace)
+            {
+                // Putting body into buffer will expand Unicode characters into their true length
+                if (patch && patch.length < new Buffer(newText, 'utf-8').length)
+                {
+                    //patch is less than newText
+                    return patch;
+                }
+                else
+                {
+                    //patch is more than newText
+                    return newText;
+                }
+
+            }
+            else
+            {
+                return patch;
+            }
+
+        },
+        applyPatch: function(originalText, patchText)
+        {
+            try {
+                var fromText = dmp.patch_fromText(patchText);
+
+                if (fromText.length > 0)
+                {
+                    return dmp.patch_apply(fromText, originalText)[0];
+                }
+                else
+                {
+                    return patchText; //replace
+                }
+
+            }
+            catch (e) {
+                return patchText; //replace
             }
 
         }
