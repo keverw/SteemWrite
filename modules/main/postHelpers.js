@@ -1,7 +1,8 @@
 (function()
 {
     var async = require('async'),
-        sha1 = require('sha1');
+        sha1 = require('sha1'),
+        sqlHelpers = require('./sqlHelpers.js');
 
     module.exports = {
         countPostsByUser: function(username, cb)
@@ -61,6 +62,32 @@
             {
                 return sha1([author, permlink, 'autosave', 'autosave', 'autosave'].join(','));
             }
+
+        },
+        insertRevision: function(parameters, cb)
+        {
+            sqlHelpers.insert(parameters, function(names, placeholders, values)
+            {
+
+                global.db.run('INSERT OR IGNORE INTO revisions (' + names + ') VALUES (' + placeholders + ')', values, function(err)
+                {
+                    cb(err);
+                });
+
+            });
+
+        },
+        insertPost: function(parameters, cb)
+        {
+            sqlHelpers.insert(parameters, function(names, placeholders, values)
+            {
+
+                global.db.run('INSERT OR IGNORE INTO posts (' + names + ') VALUES (' + placeholders + ')', values, function(err)
+                {
+                    cb(err);
+                });
+
+            });
 
         }
 

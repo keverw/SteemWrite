@@ -155,12 +155,39 @@
                             //insert revision
                             var revHash = postHelpers.generateRevHash(data.author, data.permlink, data.title, data.body, JSON.stringify(metadata));
 
-                            global.db.run("INSERT OR IGNORE INTO revisions (`revHash`, `publishedTX`, `author`, `permlink`, `title`, `body`, `json_metadata`, `localDate`, `blockChainDate`, `date`, `isAutosave`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [revHash, trx_id, data.author, data.permlink, data.title, data.body, JSON.stringify(metadata), 0, unixTime, unixTime, 0], function(err)
+                            postHelpers.insertRevision({
+                                revHash: revHash,
+                                publishedTX: trx_id,
+                                author: data.author,
+                                permlink: data.permlink,
+                                title: data.title,
+                                body: data.body,
+                                json_metadata: JSON.stringify(metadata),
+                                localDate: 0,
+                                blockChainDate: unixTime,
+                                date: unixTime,
+                                isAutosave: 0
+                            }, function(err)
                             {
                                 if (err) return cb(err);
 
                                 //insert post
-                                global.db.run("INSERT OR IGNORE INTO posts (`author`, `permlink`, `title`, `status`, `latestPublishedTX`, `revHash`, `date`, `scheduledDate`, `tag1`, `tag2`, `tag3`, `tag4`, `tag5`, `featuredImg`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [data.author, data.permlink, data.title, 'published', trx_id, revHash, unixTime, 0, tag1, tag2, tag3, tag4, tag5, featuredImg], function(err)
+                                postHelpers.insertPost({
+                                    author: data.author,
+                                    permlink: data.permlink,
+                                    title: data.title,
+                                    status: 'published',
+                                    latestPublishedTX: trx_id,
+                                    revHash: revHash,
+                                    date: unixTime,
+                                    scheduledDate: 0,
+                                    tag1: tag1,
+                                    tag2: tag2,
+                                    tag3: tag3,
+                                    tag4: tag4,
+                                    tag5: tag5,
+                                    featuredImg: featuredImg
+                                }, function(err)
                                 {
                                     cb(err);
                                 });
