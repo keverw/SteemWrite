@@ -89,6 +89,24 @@
 
             });
 
+        },
+        metadataToTagsKV: function(metadata)
+        {
+            //returns a object with the tag1, tag2, etc set based on the metaData object
+            var tag1 = (metadata && typeof metadata == 'object' && metadata.tags && typeof metadata.tags == 'object' && metadata.tags[0]) ? metadata.tags[0] : '';
+            var tag2 = (metadata && typeof metadata == 'object' && metadata.tags && typeof metadata.tags == 'object' && metadata.tags[1]) ? metadata.tags[1] : '';
+            var tag3 = (metadata && typeof metadata == 'object' && metadata.tags && typeof metadata.tags == 'object' && metadata.tags[2]) ? metadata.tags[2] : '';
+            var tag4 = (metadata && typeof metadata == 'object' && metadata.tags && typeof metadata.tags == 'object' && metadata.tags[3]) ? metadata.tags[3] : '';
+            var tag5 = (metadata && typeof metadata == 'object' && metadata.tags && typeof metadata.tags == 'object' && metadata.tags[4]) ? metadata.tags[4] : '';
+
+            return {
+                tag1: tag1,
+                tag2: tag2,
+                tag3: tag3,
+                tag4: tag4,
+                tag5: tag5
+            };
+
         }
 
     };

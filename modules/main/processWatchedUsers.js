@@ -102,12 +102,6 @@
 
                         var metadata = JSON.parse(data.json_metadata);
 
-                        var tag1 = (metadata.tags && metadata.tags[0]) ? metadata.tags[0] : '';
-                        var tag2 = (metadata.tags && metadata.tags[1]) ? metadata.tags[1] : '';
-                        var tag3 = (metadata.tags && metadata.tags[2]) ? metadata.tags[2] : '';
-                        var tag4 = (metadata.tags && metadata.tags[3]) ? metadata.tags[3] : '';
-                        var tag5 = (metadata.tags && metadata.tags[4]) ? metadata.tags[4] : '';
-
                         //grr... if already need to caulate body...
                         //okay.... move this function to postHelpers.
                         //var revHash = [data.author, data.permlink.data.title].join('.');
@@ -172,7 +166,7 @@
                                 if (err) return cb(err);
 
                                 //insert post
-                                postHelpers.insertPost({
+                                var postData = {
                                     author: data.author,
                                     permlink: data.permlink,
                                     title: data.title,
@@ -181,13 +175,14 @@
                                     revHash: revHash,
                                     date: unixTime,
                                     scheduledDate: 0,
-                                    tag1: tag1,
-                                    tag2: tag2,
-                                    tag3: tag3,
-                                    tag4: tag4,
-                                    tag5: tag5,
                                     featuredImg: featuredImg
-                                }, function(err)
+                                };
+
+                                //add tags
+                                postData = _.extend(postData, postHelpers.metadataToTagsKV(metadata));
+
+                                //insert
+                                postHelpers.insertPost(postData, function(err)
                                 {
                                     cb(err);
                                 });
