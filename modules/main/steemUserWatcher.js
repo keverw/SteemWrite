@@ -227,26 +227,32 @@
                             {
                                 if (isProcessingReqID(reqMeta.reqID) && (!global.isAppClosing))
                                 {
-                                    if (err && cb) cb(err);
-
-                                    if (foundNewResults)
+                                    if (err)
                                     {
-                                        //check for more results
-                                        var lastIDLookup = getLastID();
-
-                                        if (lastIDLookup > -1)
+                                        if (cb) cb(err);
+                                    }
+                                    else
+                                    {
+                                        if (foundNewResults)
                                         {
-                                            grabAccHistory(lastIDLookup);
+                                            //check for more results
+                                            var lastIDLookup = getLastID();
+
+                                            if (lastIDLookup > -1)
+                                            {
+                                                grabAccHistory(lastIDLookup);
+                                            }
+                                            else
+                                            {
+                                                isDone();
+                                            }
+
                                         }
                                         else
                                         {
                                             isDone();
                                         }
 
-                                    }
-                                    else
-                                    {
-                                        isDone();
                                     }
 
                                 }

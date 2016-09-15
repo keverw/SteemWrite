@@ -1,6 +1,7 @@
 (function()
 {
     var _ = require('underscore'),
+        moment = require('moment-timezone'),
         postHelpers = require('./postHelpers.js');
 
     module.exports = {
@@ -39,10 +40,14 @@
             }
 
             //check when tasks are done:
+            var cbCalled = false;
+
             var isDone = setInterval(function()
             {
-                if (totalTasks == doneTasks)
+
+                if (!cbCalled && totalTasks == doneTasks)
                 {
+                    cbCalled = true;
                     clearInterval(isDone);
                     cb(lastErr);
                 }
