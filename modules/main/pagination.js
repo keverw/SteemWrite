@@ -1,5 +1,6 @@
 (function()
 {
+    var numberFormat = require('number-format').numberFormat;
 
     module.exports = {
         init: function()
@@ -71,6 +72,128 @@
 
                 var sqlLimit = (page - 1) * this.size + ',' + this.size;
                 return 'LIMIT ' + sqlLimit;
+            };
+
+            paginationHelpers.prototype._getOnclick = function(page)
+            {
+                var str = '';
+
+                if (this.onClickFN.length > 0)
+                {
+                    str = 'onclick="' + this.onClickFN + '(' + page + ')"';
+                }
+
+                return str;
+            };
+
+            paginationHelpers.prototype.getPager = function()
+            {
+                var output = {
+                    text: '',
+                    formattedText: '',
+                    html: ''
+                };
+
+                var totalPages = Math.floor(this.total / this.size);
+                totalPages += (this.total % this.size !== 0) ? 1 : 0;
+
+                var to = 0;
+                var from = 0;
+
+                if (this.page == totalPages)
+                {
+                    to = (this.total - this.size) + this.size;
+                    from = (this.page * this.size) - this.size + 1;
+                }
+                else
+                {
+                    to = (this.page * this.size);
+                    from = to - this.size + 1;
+                }
+
+                output.text = numberFormat(from) + '-' + numberFormat(to) + ' of ' + numberFormat(this.total);
+                output.formattedText = '<div class="text-center" style="margin: 15px 0px;font-weight: bold;">Displaying: ' + output.text + '</div>';
+
+                if (totalPages <= 1) //only 1 page, no need for pager html
+                {
+                    return output;
+                }
+                else
+                {
+                    //prepare loop
+                    var loopStart = 1;
+                    var loopEnd = totalPages;
+
+                    if (totalPages > 5)
+                    {
+                        if (this.page <= 3)
+                        {
+                            loopStart = 1;
+                            loopEnd = 5;
+                        }
+                        else if (this.page >= totalPages - 2)
+                        {
+                            loopStart = totalPages - 4;
+                            loopEnd = totalPages;
+                        }
+                        else
+                        {
+                            loopStart = this.page - 2;
+                            loopEnd = this.page + 2;
+                        }
+
+                    }
+
+                    //build htmlInner
+                    var htmlInner = '';
+
+                    //go to first page
+                    if (loopStart != 1)
+                    {
+                        htmlInner += '<li><a ' + this._getOnclick(1) + '>&#171;</a></li>';
+                    }
+
+                    //previous page
+                    if (this.page > 1)
+                    {
+                        htmlInner += '<li><a ' + this._getOnclick(this.page - 1) + '>Prev</a></li>';
+                    }
+
+                    //pages
+                    for (var i = loopStart; i <= loopEnd; i++)
+                    {
+                        if (i == this.page)
+                        {
+                            htmlInner += '<li class="active"><a ' + this._getOnclick(i) + '>' + i + '</a></li>';
+                        }
+                        else
+                        {
+                            htmlInner += '<li><a ' + this._getOnclick(i) + '>' + i + '</a></li>';
+                        }
+
+                    }
+
+                    //next page
+                    if (this.page < totalPages)
+                    {
+                        htmlInner += '<li><a ' + this._getOnclick(this.page + 1) + '>Next</a></li>';
+                    }
+
+                    //go to last page
+                    if (loopEnd != totalPages)
+                    {
+                        htmlInner += '<li><a ' + this._getOnclick(totalPages) + '>&#187;</a></li>';
+                    }
+
+                    //add to html
+                    output.html = '<div class="text-center">';
+                    output.html += '<a class="btn btn-default btn-block toggle-pagination"><i class="glyphicon glyphicon-plus"></i> Toggle Pagination</a>';
+                    output.html += '<ul class="pagination pagination-responsive pagination-lg">' + htmlInner + '</ul>';
+                    output.html += '</div>';
+
+                }
+
+                return output;
             };
 
             return new paginationHelpers();
