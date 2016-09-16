@@ -100,13 +100,8 @@
                     {
                         if (err) return cb(err);
 
-                        var postCurrentRevHash = row.revHash;
+                        var postCurrentRevHash = (row) ? row.revHash : '';
                         var metadata = JSON.parse(data.json_metadata);
-
-                        //grr... if already need to caulate body...
-                        //okay.... move this function to postHelpers.
-                        //var revHash = [data.author, data.permlink.data.title].join('.');
-                        //revHash should be: body, json_metadata
 
                         var featuredImg = '';
 
