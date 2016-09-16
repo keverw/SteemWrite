@@ -100,6 +100,7 @@
                     {
                         if (err) return cb(err);
 
+                        var postCurrentRevHash = row.revHash;
                         var metadata = JSON.parse(data.json_metadata);
 
                         //grr... if already need to caulate body...
@@ -119,14 +120,16 @@
                         if (row) //already
                         {
                             //grab revision before this one
-                            global.db.get('SELECT body FROM revisions WHERE author = ? AND permlink = ? AND blockChainDate > 0 AND blockChainDate < ? ORDER BY blockChainDate DESC LIMIT 1', [data.author, data.permlink, unixTime], function(err, row)
+                            global.db.get('SELECT body, revHash FROM revisions WHERE author = ? AND permlink = ? AND blockChainDate > 0 AND blockChainDate < ? ORDER BY blockChainDate DESC LIMIT 1', [data.author, data.permlink, unixTime], function(err, row)
                             {
                                 if (err) return cb(err);
 
                                 var body = data.body;
 
+                                var lastBCRevisonRevHash = '';
                                 if (row) //found a revision before
                                 {
+                                    lastBCRevisonRevHash = row.revHash;
                                     //update body
                                     body = util.applyPatch(row.body, data.body);
                                 }
@@ -150,24 +153,32 @@
                                 {
                                     if (err) return cb(err);
 
-                                    //update post
-                                    var postUpdateData = {
-                                        title: data.title,
-                                        status: 'published',
-                                        latestPublishedTX: trx_id,
-                                        revHash: revHash,
-                                        date: unixTime,
-                                        featuredImg: featuredImg
-                                    };
-
-                                    //add tags
-                                    postUpdateData = _.extend(postUpdateData, postHelpers.metadataToTagsKV(metadata));
-
-                                    //update posts
-                                    postHelpers.updatePost(data.author, data.permlink, postUpdateData, function(err)
+                                    if (postCurrentRevHash == lastBCRevisonRevHash)
                                     {
-                                        cb(err);
-                                    });
+                                        //update post
+                                        var postUpdateData = {
+                                            title: data.title,
+                                            status: 'published',
+                                            latestPublishedTX: trx_id,
+                                            revHash: revHash,
+                                            date: unixTime,
+                                            featuredImg: featuredImg
+                                        };
+
+                                        //add tags
+                                        postUpdateData = _.extend(postUpdateData, postHelpers.metadataToTagsKV(metadata));
+
+                                        //update posts
+                                        postHelpers.updatePost(data.author, data.permlink, postUpdateData, function(err)
+                                        {
+                                            cb(err);
+                                        });
+
+                                    }
+                                    else
+                                    {
+                                        cb();
+                                    }
 
                                 });
 
