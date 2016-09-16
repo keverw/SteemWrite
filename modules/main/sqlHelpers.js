@@ -21,6 +21,22 @@
 
             cb('(' + names.join(', ') + ') VALUES (' + placeholders.join(', ') + ')', values);
 
+        },
+        update: function(parameters, cb)
+        {
+            var pairs = [];
+            var values = [];
+
+            for (var key in parameters)
+            {
+                if (parameters.hasOwnProperty(key))
+                {
+                    pairs.push(key + '=?');
+                    values.push(parameters[key]);
+                }
+            }
+
+            cb(pairs.join(', '), values);
         }
 
     };

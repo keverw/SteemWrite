@@ -134,14 +134,44 @@
                                 //insert revision
                                 var revHash = postHelpers.generateRevHash(data.author, data.permlink, data.title, body, JSON.stringify(metadata));
 
+                                postHelpers.insertRevision({
+                                    revHash: revHash,
+                                    publishedTX: trx_id,
+                                    author: data.author,
+                                    permlink: data.permlink,
+                                    title: data.title,
+                                    body: body,
+                                    json_metadata: JSON.stringify(metadata),
+                                    localDate: 0,
+                                    blockChainDate: unixTime,
+                                    date: unixTime,
+                                    isAutosave: 0
+                                }, function(err)
+                                {
+                                    if (err) return cb(err);
+
+                                    //update post
+                                    var postUpdateData = {
+                                        title: data.title,
+                                        status: 'published',
+                                        latestPublishedTX: trx_id,
+                                        revHash: revHash,
+                                        date: unixTime,
+                                        featuredImg: featuredImg
+                                    };
+
+                                    //add tags
+                                    postUpdateData = _.extend(postUpdateData, postHelpers.metadataToTagsKV(metadata));
+
+                                    //update posts
+                                    postHelpers.updatePost(data.author, data.permlink, postUpdateData, function(err)
+                                    {
+                                        cb(err);
+                                    });
+
+                                });
+
                             });
-
-                            // CREATE TABLE `posts` (`author` TEXT, `permlink` TEXT, `title` TEXT, `status` TEXT, `latestPublishedTX` TEXT, `revHash` TEXT, `date` INTEGER, `scheduledDate` INTEGER, `tag1` TEXT, `tag2` TEXT, `tag3` TEXT, `tag4` TEXT, `tag5` TEXT, `featuredImg` TEXT, PRIMARY KEY(`author`,`permlink`));
-                            // CREATE TABLE `revisions` (`revHash` TEXT, `publishedTX` TEXT, `author` TEXT, `permlink` TEXT, `title` TEXT, `body` TEXT, `json_metadata` TEXT, `localDate` INTEGER, `blockChainDate` INTEGER, `date` INTEGER, `isAutosave` INTEGER, PRIMARY KEY(`revHash`));
-
-                            //insert revisions
-
-                            //update posts table if new revision is one newer than the last revision
 
                         }
                         else //not already

@@ -107,6 +107,22 @@
                 tag5: tag5
             };
 
+        },
+        updatePost: function(author, permlink, updateData, cb)
+        {
+            //author, permlink, updateData
+            sqlHelpers.update(updateData, function(string, values)
+            {
+                values.push(author);
+                values.push(permlink);
+
+                global.db.run('UPDATE posts SET ' + string + ' WHERE author = ? AND permlink = ?', values, function(err)
+                {
+                    cb(err);
+                });
+
+            });
+
         }
 
     };
