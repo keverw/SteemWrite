@@ -228,6 +228,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/main\/posts.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/main\/posts.js",
+		"outputAbbreviatedPath": "\/modules\/main\/min\/posts-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/main\/processWatchedUsers.js": {
 		"fileType": 64,
 		"ignore": 1,

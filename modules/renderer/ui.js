@@ -1157,6 +1157,14 @@
                 }
 
             }
+        },
+        fadeBetween: function($from, $to)
+        {
+            $from.fadeOut('fast', function()
+            {
+                $to.fadeIn('fast');
+            });
+
         }
 
     };

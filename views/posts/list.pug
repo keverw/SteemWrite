@@ -1,34 +1,37 @@
-.container.postListCards
-    .row
+.row
+    .col-sm-6.col-md-3
+        .thumbnail
+            img(src='./images/newpost.svg')
+            .caption
+                h4.text-center
+                    ='New Post'
+
+                p.desc
+                p.tags
+                p.text-center
+                    a.btn.btn-info(href='#', role='button') Create New Post
+
+    each post in posts
         .col-sm-6.col-md-3
             .thumbnail
-                img(src='./images/newpost.svg')
-                .caption
-                    h4.text-center
-                        ='New Post'
-
-                    p.desc
-                    p.tags
-                    p.text-center
-                        a.btn.btn-info(href='#', role='button') Create New Post
-
-        each post in posts
-            .col-sm-6.col-md-3
-                .thumbnail
+                if (post.featuredImg.length > 0)
                     img(src='https://img1.steemit.com/256x512/' + post.featuredImg)
-                    .caption
-                        h4
-                            span.label.label-default Default
-                            =' '
-                            =post.title
+                else
+                    |placeholder img here
 
-                        p.desc desc
-                        p.tags
-                            span.label.label-info Tags
-                            span.label.label-info Goes
-                            span.label.label-info Here
-                            span.label.label-info For
-                            span.label.label-info tags
-                        p
-                            a.btn.btn-primary(href='#', role='button') Button
-                            a.btn.btn-default(href='#', role='button') Button
+                .caption
+                    h4
+                        span.label.label-default Default
+                        =' '
+                        =post.title
+
+                    p.desc desc
+                    p.tags
+                        span.label.label-info Tags
+                        span.label.label-info Goes
+                        span.label.label-info Here
+                        span.label.label-info For
+                        span.label.label-info tags
+                    p
+                        a.btn.btn-primary(href='#', role='button') Button
+                        a.btn.btn-default(href='#', role='button') Button

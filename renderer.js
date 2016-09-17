@@ -12,7 +12,8 @@ global.tz = moment.tz.guess();
 global.viewData = {
     viewName: '',
     viewMeta: {
-        currentAcc: ''
+        currentAcc: '',
+        postsView: {}
     }
 };
 
