@@ -1,16 +1,41 @@
-.postListCards {
-    .thumbnail img {
-        width: 256px;
-        height: 128px;
+#postsList {
+    .paginationInfo {
+        position: relative;
+        bottom: 5px;
     }
 
-    .tags {
-        .label {
-            display: inline-block;
-            margin-right: 5px;
-            color: black;
-            font-size: 11px;
+    .postListCards {
+        .thumbnail {
+            height: 90%;
+
+            img {
+                width: 256px;
+                height: 128px;
+            }
+
         }
 
+        h4 {
+            margin-top: 0;
+            max-height: 50px;
+            min-height: 30px;
+            text-overflow: ellipsis;
+            width: 100%;
+            overflow: hidden;
+
+            .title {
+                line-height: 1.5;
+            }
+        }
+
+        .tags {
+            .label {
+                display: inline-block;
+                margin-right: 5px;
+                color: black;
+                font-size: 11px;
+            }
+
+        }
     }
 }

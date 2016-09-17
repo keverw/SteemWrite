@@ -12,4 +12,4 @@ myPagination.setPage(3);
 
 // console.log(myPagination.getLimitSql());
 
-console.log(myPagination.getPager());
+console.log(myPagination.getPagination());

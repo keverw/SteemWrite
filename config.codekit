@@ -411,34 +411,12 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
-	"\/thirdParty\/js\/bootbox.min.js": {
-		"fileType": 64,
-		"ignore": 1,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/thirdParty\/js\/bootbox.min.js",
-		"outputAbbreviatedPath": "\/thirdParty\/js\/min\/bootbox.min-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 0
-		},
 	"\/thirdParty\/js\/bootstrap.min.js": {
 		"fileType": 64,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/thirdParty\/js\/bootstrap.min.js",
 		"outputAbbreviatedPath": "\/thirdParty\/js\/min\/bootstrap.min-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 0
-		},
-	"\/thirdParty\/js\/jquery-3.1.0.min.js": {
-		"fileType": 64,
-		"ignore": 1,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/thirdParty\/js\/jquery-3.1.0.min.js",
-		"outputAbbreviatedPath": "\/thirdParty\/js\/min\/jquery-3.1.0.min-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,

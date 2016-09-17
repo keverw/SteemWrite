@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="512" height="256" viewBox="0, 0, 512, 256">
+  <g id="Background">
+    <rect x="0" y="0" width="512" height="256" fill="#000000" fill-opacity="0"/>
+  </g>
+  <defs>
+    <radialGradient id="Gradient_1" gradientUnits="userSpaceOnUse" cx="315.78" cy="128.28" r="144.289" fx="229.207" fy="128.28" gradientTransform="matrix(1, 0, -0, 1, 0, 0)">
+      <stop offset="0" stop-color="#2B49FF"/>
+      <stop offset="1" stop-color="#000A44"/>
+    </radialGradient>
+    <radialGradient id="Gradient_2" gradientUnits="userSpaceOnUse" cx="275.091" cy="127.855" r="45.615" fx="247.722" fy="127.855" gradientTransform="matrix(1, 0, -0, 1, 0, 0)">
+      <stop offset="0" stop-color="#2B49FF"/>
+      <stop offset="1" stop-color="#000A44"/>
+    </radialGradient>
+  </defs>
+  <g id="Layer_1">
+    <g>
+      <path d="M177.848,75.095 C173.697,75.095 170.353,78.438 170.353,82.589 L170.353,173.411 C170.353,177.562 173.697,180.905 177.848,180.905 L334.152,180.905 C338.304,180.905 341.647,177.562 341.647,173.411 L341.647,82.589 C341.647,78.438 338.304,75.095 334.152,75.095 L177.848,75.095 z M302.088,82.584 L327.821,82.584 C330.906,82.584 333.389,85.068 333.389,88.153 C333.389,91.238 330.906,93.723 327.821,93.723 L302.088,93.723 C299.002,93.723 296.519,91.238 296.519,88.153 C296.519,85.068 299.002,82.584 302.088,82.584 z M256.192,84.313 C280.162,84.313 299.592,103.743 299.591,127.713 C299.591,151.681 280.161,171.112 256.192,171.112 C232.224,171.112 212.793,151.681 212.793,127.713 C212.792,103.743 232.223,84.313 256.192,84.313 z" fill="url(#Gradient_1)" id="rect4142"/>
+      <path d="M283.268,127.712 C283.268,142.666 271.146,154.789 256.192,154.789 C241.238,154.789 229.116,142.666 229.116,127.712 C229.116,112.758 241.238,100.635 256.192,100.635 C271.146,100.635 283.268,112.758 283.268,127.712 z" fill="url(#Gradient_2)" id="path4138"/>
+    </g>
+    <g>
+      <path d="M312.395,227.669 C257.401,258.787 187.595,239.482 156.406,184.53 C125.215,129.577 144.427,59.745 199.336,28.482 C254.246,-2.782 324.105,16.335 355.441,71.202 C386.78,126.07 367.757,195.955 312.931,227.367" fill-opacity="0" stroke="#AB1500" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" id="path2160"/>
+      <path d="M178.492,50.188 L337.585,208.755" fill-opacity="0" stroke="#AB1500" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" id="path3134"/>
+    </g>
+  </g>
+</svg>

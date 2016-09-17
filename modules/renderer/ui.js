@@ -1158,13 +1158,19 @@
 
             }
         },
-        fadeBetween: function($from, $to)
+        fadeBetween: function($from, $to, cb)
         {
             $from.fadeOut('fast', function()
             {
                 $to.fadeIn('fast');
+                if (cb) cb();
             });
 
+        },
+        switchBetween: function($from, $to)
+        {
+            $from.hide();
+            $to.show();
         }
 
     };

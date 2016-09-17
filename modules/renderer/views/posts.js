@@ -26,7 +26,7 @@
         },
         loadPosts: function(type, page)
         {
-            //type: all, published, scheduled, drafts, trash
+            //type: all, published, scheduled, draft, trash
 
             if (typeof page != 'number')
             {
@@ -48,30 +48,42 @@
                     current: type
                 })).show();
 
-                ui.fadeBetween($('#' + reqViewID + ' .postsList'), $('#' + reqViewID + ' .basicLoaderScreen'));
-
-                //pretend fetch happend from DB
-                setTimeout(function()
+                irpcRenderer.call('posts.postList', {
+                    type: type,
+                    username: global.viewData.viewMeta.postsView.lastUser,
+                    page: page
+                }, function(err, result)
                 {
-                    $('#' + reqViewID + ' .postsList .postListCards').html(util.getViewHtml('posts/list', {
-                        posts: [
-                            {
-                                title: 'Foo',
-                                featuredImg: 'https://i.imgsafe.org/8f38637a9f.png'
-                            },
-                            {
-                                title: 'Bar',
-                                featuredImg: 'http://i.imgsafe.org/6546ce5557.jpg'
-                            }
-                        ]
-                    }));
+                    if (err)
+                    {
+                        console.log(err);
+                        bootbox.alert('Error Loading Posts...');
+                    }
+                    else
+                    {
+                        $('#' + reqViewID + ' #postsList .paginationInfo').html(result.pagination.formattedText);
 
-                    ui.fadeBetween($('#' + reqViewID + ' .basicLoaderScreen'), $('#' + reqViewID + ' .postsList'));
+                        $('#' + reqViewID + ' #postsList .postListCards').html(util.getViewHtml('posts/list', {
+                            posts: result.posts
+                        }));
 
-                }, 2000);
+                        $('#' + reqViewID + ' #postsList .paginationHolder').html(result.pagination.html);
+                        $('#' + reqViewID + ' .postcard').matchHeight({
+                            byRow: false
+                        });
+
+                        ui.switchBetween($('#' + reqViewID + ' .basicLoaderScreen'), $('#' + reqViewID + ' #postsList'));
+
+                    }
+
+                });
 
             }
 
+        },
+        page: function(pageNum)
+        {
+            module.exports.loadPosts(global.viewData.viewMeta.postsView.lastTab, pageNum);
         }
 
     };

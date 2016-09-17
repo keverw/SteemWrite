@@ -1,37 +1,42 @@
+//unused vars in view: author, permlink, status, date, scheduledDate
+
 .row
-    .col-sm-6.col-md-3
+    .postcard.col-sm-6.col-md-3
         .thumbnail
-            img(src='./images/newpost.svg')
+            img(src='./images/newPost.svg')
             .caption
                 h4.text-center
-                    ='New Post'
+                    ='Create New Post'
 
-                p.desc
                 p.tags
-                p.text-center
-                    a.btn.btn-info(href='#', role='button') Create New Post
+
 
     each post in posts
-        .col-sm-6.col-md-3
+        .postcard.col-sm-6.col-md-3
             .thumbnail
                 if (post.featuredImg.length > 0)
                     img(src='https://img1.steemit.com/256x512/' + post.featuredImg)
                 else
-                    |placeholder img here
+                    img(src='./images/noImage.svg')
 
                 .caption
                     h4
                         span.label.label-default Default
-                        =' '
-                        =post.title
+                        ='  '
+                        span.title=post.title
 
-                    p.desc desc
                     p.tags
-                        span.label.label-info Tags
-                        span.label.label-info Goes
-                        span.label.label-info Here
-                        span.label.label-info For
-                        span.label.label-info tags
-                    p
-                        a.btn.btn-primary(href='#', role='button') Button
-                        a.btn.btn-default(href='#', role='button') Button
+                        if (post.tag1)
+                            span.label.label-info=post.tag1
+
+                        if (post.tag2)
+                            span.label.label-info=post.tag2
+
+                        if (post.tag3)
+                            span.label.label-info=post.tag3
+
+                        if (post.tag4)
+                            span.label.label-info=post.tag4
+
+                        if (post.tag5)
+                            span.label.label-info=post.tag5

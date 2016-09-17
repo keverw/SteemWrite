@@ -40,7 +40,8 @@ var kvs = require('./modules/main/kvs.js'),
     accounts = require('./modules/main/accounts.js'),
     util = require('./modules/util.js'),
     processWatchedUsers = require('./modules/main/processWatchedUsers.js'),
-    steemUserWatcher = require('./modules/main/steemUserWatcher.js');
+    steemUserWatcher = require('./modules/main/steemUserWatcher.js'),
+    posts = require('./modules/main/posts.js');
 
 global.db = null; //SQLite3 connection
 global.bc = null; //BC connection
@@ -209,6 +210,7 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
 require('./modules/main/dbHelpers.js').init(irpcMain);
 irpcMain.addModule(kvs, 'kvs');
 irpcMain.addModule(accounts, 'accounts');
+irpcMain.addModule(posts, 'posts');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.

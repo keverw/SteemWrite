@@ -86,7 +86,7 @@
                 return str;
             };
 
-            paginationHelpers.prototype.getPager = function()
+            paginationHelpers.prototype.getPagination = function()
             {
                 var output = {
                     text: '',
@@ -114,7 +114,7 @@
                 output.text = numberFormat(from) + '-' + numberFormat(to) + ' of ' + numberFormat(this.total);
                 output.formattedText = '<div class="text-center" style="margin: 15px 0px;font-weight: bold;">Displaying: ' + output.text + '</div>';
 
-                if (totalPages <= 1) //only 1 page, no need for pager html
+                if (totalPages <= 1) //only 1 page, no need for pagination html
                 {
                     return output;
                 }
@@ -187,8 +187,7 @@
 
                     //add to html
                     output.html = '<div class="text-center">';
-                    output.html += '<a class="btn btn-default btn-block toggle-pagination"><i class="glyphicon glyphicon-plus"></i> Toggle Pagination</a>';
-                    output.html += '<ul class="pagination pagination-responsive pagination-lg">' + htmlInner + '</ul>';
+                    output.html += '<ul class="pagination pagination-lg">' + htmlInner + '</ul>';
                     output.html += '</div>';
 
                 }
