@@ -6,8 +6,8 @@ global.appConfig = require('./appConfig.json');
 global.appConfig.appVersion = require('./package.json').version;
 global.lang = require('./lang/en.json');
 
-var moment = require('moment-timezone');
-global.tz = moment.tz.guess();
+global.moment = require('moment-timezone');
+global.tz = global.moment.tz.guess();
 
 global.viewData = {
     viewName: '',

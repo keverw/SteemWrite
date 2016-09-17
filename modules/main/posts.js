@@ -29,7 +29,7 @@
                 myPagination.setPage(parameters.page);
                 output.pagination = myPagination.getPagination();
 
-                var fields = 'author, permlink, title, status, date, scheduledDate, tag1, tag2, tag3, tag4, tag5, featuredImg';
+                var fields = 'author, permlink, title, status, date, tag1, tag2, tag3, tag4, tag5, featuredImg';
 
                 if (parameters.type == 'all')
                 {

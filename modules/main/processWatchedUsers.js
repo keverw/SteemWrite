@@ -1,7 +1,6 @@
 (function()
 {
     var _ = require('underscore'),
-        moment = require('moment-timezone'),
         postHelpers = require('./postHelpers.js'),
         util = require('../util.js');
 
@@ -110,7 +109,7 @@
                             featuredImg = metadata.image[0];
                         }
 
-                        var unixTime = moment(timestamp).unix();
+                        var unixTime = global.moment(timestamp).unix();
 
                         if (row) //already
                         {
