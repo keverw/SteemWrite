@@ -760,7 +760,7 @@
                         else if (status == 'hasdrafts')
                         {
                             doneCB(null, {
-                                msg: 'AAccount has unpublished drafts and cannot be removed at this time.'
+                                msg: 'Account has unpublished drafts and cannot be removed at this time.'
                             });
                         }
                         else if (status == 'has_scheduled')

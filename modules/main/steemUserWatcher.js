@@ -7,7 +7,7 @@
         async = require('async'),
         util = require('../util.js');
 
-    var get_account_historyLimit = 250;
+    var get_account_historyLimit = 500;
 
     function saveBcSyncingMeta(cb)
     {

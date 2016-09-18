@@ -318,8 +318,8 @@
 
                         order(storedData.accounts); //order to be ABC order
 
-                        //no lastAcc set, update
-                        if (storedData.lastAcc.length === 0) storedData.lastAcc = username;
+                        //set added account to the last account
+                        storedData.lastAcc = username;
 
                         //update KVS and local memory
                         var stringifed = JSON.stringify(storedData);
@@ -331,9 +331,22 @@
                         {
                             if (err) return cb(err);
 
-                            steemUserWatcher.watchAccountAndSync(username, ['posts']); //watch account
-                            global.accountsData.stored = storedData; //update stored data
-                            cb(null, 'added');
+                            //watch account
+                            steemUserWatcher.watchAccountAndSync(username, ['posts'], function(err, status, reqID)
+                            {
+                                if (status != 'processing-started')
+                                {
+                                    global.accountsData.stored = storedData; //update stored data
+                                    cb(null, 'added');
+                                }
+
+                            }, function(err, status, reqID)
+                            {
+                                global.accountsData.stored = storedData; //update stored data
+                                cb(null, 'added');
+
+                            });
+
                         });
 
                     }

@@ -13,7 +13,9 @@
     //////////////////////////////////////////////////////////////////
     //////////////////////////////////////////////////////////////////
 
-    var migrationsPath = process.cwd() + '/migrations';
+    var steemUserWatcher = require('./steemUserWatcher.js'),
+        processWatchedUsers = require('./processWatchedUsers.js'),
+        migrationsPath = process.cwd() + '/migrations';
 
     global.didMigrateCheck = false;
     global.isMigrateingDone = false;
@@ -146,8 +148,22 @@
                 {
                     if (global.dbMeta.appDBVer === global.dbMeta.userDBVer)
                     {
-                        global.isMigrateingDone = true;
-                        isDBReady = true;
+                        //init background services that depend on DB inited here
+
+                        ////////////////////////////////////////////////////////
+                        //init steemUserWatcher
+                        steemUserWatcher.init(processWatchedUsers.processItem, function(err)
+                        {
+                            if (err) return global.closeWithError(err);
+
+                            //watch account for updates
+                            steemUserWatcher.watchAccount('steemwrite', ['updater']);
+
+                            //let script know that done
+                            global.isMigrateingDone = true;
+                            isDBReady = true;
+                        });
+
                     }
                     else
                     {

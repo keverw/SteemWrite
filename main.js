@@ -39,7 +39,6 @@ if (global.appConfig.dev)
 var kvs = require('./modules/main/kvs.js'),
     accounts = require('./modules/main/accounts.js'),
     util = require('./modules/util.js'),
-    processWatchedUsers = require('./modules/main/processWatchedUsers.js'),
     steemUserWatcher = require('./modules/main/steemUserWatcher.js'),
     posts = require('./modules/main/posts.js');
 
@@ -261,16 +260,6 @@ app.on('ready', function()
     if (!global.db)
     {
         global.db = new sqlite3.Database(dbFile);
-
-        //init steemUserWatcher
-        steemUserWatcher.init(processWatchedUsers.processItem, function(err)
-        {
-            if (err) return global.closeWithError(err);
-
-            //watch account for updates
-            steemUserWatcher.watchAccount('steemwrite', ['updater']);
-        });
-
     }
 
     global.isAppReady = true;

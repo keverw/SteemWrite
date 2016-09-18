@@ -7,11 +7,15 @@
     module.exports = {
         countPostsByUser: function(username, cb)
         {
-            //todo: query db for draft's and scheduled to return real data
 
-            cb(null, {
-                drafts: 0,
-                scheduled: 0
+            global.db.get("SELECT (SELECT COUNT(*) FROM posts WHERE author = ? AND status='scheduled') AS scheduled, (SELECT COUNT(*) FROM posts WHERE author = ? AND status='drafts') AS drafts", [username, username], function(err, row) {
+                if (err) return cb(err);
+
+                cb(null, {
+                    drafts: row.drafts,
+                    scheduled: row.scheduled
+                });
+
             });
 
         },

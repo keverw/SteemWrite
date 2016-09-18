@@ -26,7 +26,7 @@
         },
         loadPosts: function(type, page)
         {
-            //type: all, published, scheduled, draft, trash
+            //type: all, published, scheduled, drafts, trash
 
             if (typeof page != 'number')
             {
