@@ -294,6 +294,50 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/steemit\/ChainValidation.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/steemit\/ChainValidation.js",
+		"outputAbbreviatedPath": "\/modules\/steemit\/min\/ChainValidation-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/modules\/steemit\/HtmlReady.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/steemit\/HtmlReady.js",
+		"outputAbbreviatedPath": "\/modules\/steemit\/min\/HtmlReady-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/modules\/steemit\/Links.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/steemit\/Links.js",
+		"outputAbbreviatedPath": "\/modules\/steemit\/min\/Links-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/modules\/steemit\/SanitizeConfig.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/steemit\/SanitizeConfig.js",
+		"outputAbbreviatedPath": "\/modules\/steemit\/min\/SanitizeConfig-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/textHelpers.js": {
 		"fileType": 64,
 		"ignore": 1,
@@ -388,6 +432,17 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/tests\/steemUserWatcher.js",
 		"outputAbbreviatedPath": "\/tests\/min\/steemUserWatcher-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/tests\/textHelpersTest-getMeta.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/tests\/textHelpersTest-getMeta.js",
+		"outputAbbreviatedPath": "\/tests\/min\/textHelpersTest-getMeta-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,

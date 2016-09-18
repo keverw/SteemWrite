@@ -28,10 +28,13 @@
     "node-uuid": "^1.4.7",
     "number-format": "^0.1.1",
     "pug": "^2.0.0-beta6",
+    "remarkable": "^1.6.2",
+    "sanitize-html": "^1.13.0",
     "sha1": "^1.1.1",
     "sqlite3": "^3.1.4",
     "steem-rpc": "^0.6.5",
     "steemjs-lib": "^0.3.3",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "xmldom": "^0.1.22"
   }
 }

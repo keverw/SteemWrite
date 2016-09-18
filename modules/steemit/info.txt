@@ -1,0 +1,3 @@
+Code from this folder is adapted or copied from https://github.com/steemit/steemit.com
+
+Ran into https://babeljs.io/repl/, fixed paths and missing config vars

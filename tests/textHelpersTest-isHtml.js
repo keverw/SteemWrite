@@ -1,3 +1,5 @@
+/*jshint multistr: true */
+
 var textHelpers = require('../modules/textHelpers.js');
 
 var htmlText = "<!DOCTYPE html>\
@@ -5,7 +7,7 @@ var htmlText = "<!DOCTYPE html>\
 <body>\
 	lol\
 </body>\
-</html>"
+</html>";
 
 console.log(textHelpers.isHtml(htmlText)); //true
 console.log(textHelpers.isHtml('<html is cool>lol</html>')); //true
