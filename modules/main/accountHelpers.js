@@ -1,6 +1,7 @@
 (function()
 {
     var util = require('../util.js'),
+        async = require('async'),
         kvs = require('./kvs.js'),
         clone = require('fast-clone'),
         _ = require('underscore'),
@@ -12,6 +13,27 @@
         return _.object(_.sortBy(_.pairs(unordered), function(o) {
             return o[0];
         }));
+    }
+
+    function removeAccountDBRows(username, cb)
+    {
+        var cmds = {
+            delete_posts: 'DELETE FROM posts WHERE author = ?',
+            delete_revisions: 'DELETE FROM revisions WHERE author = ?'
+        };
+
+        async.eachOfSeries(cmds, function(value, key, callback)
+        {
+            global.db.run(value, [username], function(err)
+            {
+                callback(err);
+            });
+
+        }, function done(err)
+        {
+            cb(err);
+        });
+
     }
 
     module.exports = {
@@ -331,20 +353,19 @@
                         {
                             if (err) return cb(err);
 
+                            global.accountsData.stored = storedData; //update stored data
+
                             //watch account
                             steemUserWatcher.watchAccountAndSync(username, ['posts'], function(err, status, reqID)
                             {
                                 if (status != 'processing-started')
                                 {
-                                    global.accountsData.stored = storedData; //update stored data
                                     cb(null, 'added');
                                 }
 
                             }, function(err, status, reqID)
                             {
-                                global.accountsData.stored = storedData; //update stored data
                                 cb(null, 'added');
-
                             });
 
                         });
@@ -504,8 +525,26 @@
                             if (err) return cb(err);
 
                             steemUserWatcher.unwatchAccount(username, ['posts']); //unwatch account
-                            global.accountsData.stored = storedData; //update stored data
-                            cb(null, 'removed');
+
+                            removeAccountDBRows(username, function(err)
+                            {
+                                if (err) return cb(err);
+
+                                global.accountsData.stored = storedData; //update stored data
+
+                                setTimeout(function()
+                                {
+                                    removeAccountDBRows(username, function(err)
+                                    {
+                                        if (err) return cb(err);
+
+                                        cb(null, 'removed');
+                                    });
+
+                                }, 1000);
+
+                            });
+
                         });
 
                     }
