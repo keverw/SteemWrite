@@ -2,7 +2,8 @@
 {
     var _ = require('underscore'),
         postHelpers = require('./postHelpers.js'),
-        util = require('../util.js');
+        util = require('../util.js'),
+        textHelpers = require('../textHelpers.js');
 
     module.exports = {
         processItem: function(reqMeta, resultData, cb)
@@ -128,6 +129,18 @@
                                     body = util.applyPatch(row.body, data.body);
                                 }
 
+                                //no featured image, check metadata genreated from body
+                                if (featuredImg === '')
+                                {
+                                    var extractedMeta = textHelpers.metadata(body);
+
+                                    if (extractedMeta.images.length > 0)
+                                    {
+                                        featuredImg = extractedMeta.images[0];
+                                    }
+
+                                }
+
                                 //insert revision
                                 var revHash = postHelpers.generateRevHash(data.author, data.permlink, data.title, body, JSON.stringify(metadata));
 
@@ -181,6 +194,18 @@
                         }
                         else //not already
                         {
+                            //no featured image, check metadata genreated from body
+                            if (featuredImg === '')
+                            {
+                                var extractedMeta = textHelpers.metadata(data.body);
+
+                                if (extractedMeta.images.length > 0)
+                                {
+                                    featuredImg = extractedMeta.images[0];
+                                }
+
+                            }
+
                             //insert revision
                             var revHash = postHelpers.generateRevHash(data.author, data.permlink, data.title, data.body, JSON.stringify(metadata));
 
