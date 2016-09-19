@@ -1109,7 +1109,7 @@
             {
                 global.viewData.lastView = name;
 
-                $('#navMiddleButtons').hide(); //hide main nav buttons
+                $('#navMiddleButtons').html('').hide(); //hide main nav buttons
 
                 //returns the view to write to
                 var id = uuid.v1().replace(/-/g, '');

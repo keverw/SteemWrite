@@ -1,0 +1,5 @@
+ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
+    li(class=(current == 'md') ? 'mdtab active' : 'mdtab')
+        a(style='text-decoration: none;', onclick='editorView.switchEditor("md")') Markdown
+    li(class=(current == 'html') ? 'htmltab active' : 'htmltab')
+        a(style='text-decoration: none;', onclick='editorView.switchEditor("html")') HyperText
