@@ -24,6 +24,7 @@ var irpc = require('electron-irpc');
 var irpcRenderer = irpc.renderer();
 
 var postsView = require('./modules/renderer/views/posts.js');
+var editorView = require('./modules/renderer/views/editor.js');
 
 var fs = require('fs');
 

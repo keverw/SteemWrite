@@ -283,6 +283,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/renderer\/views\/editor.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/renderer\/views\/editor.js",
+		"outputAbbreviatedPath": "\/modules\/renderer\/views\/min\/editor-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/renderer\/views\/posts.js": {
 		"fileType": 64,
 		"ignore": 1,

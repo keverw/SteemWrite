@@ -64,6 +64,7 @@
                         $('#' + reqViewID + ' #postsList .paginationInfo').html(result.pagination.formattedText);
 
                         $('#' + reqViewID + ' #postsList .postListCards').html(util.getViewHtml('posts/list', {
+                            username: global.viewData.viewMeta.postsView.lastUser,
                             posts: result.posts
                         }));
 
@@ -84,6 +85,28 @@
         page: function(pageNum)
         {
             module.exports.loadPosts(global.viewData.viewMeta.postsView.lastTab, pageNum);
+        },
+        openEditor: function(ele)
+        {
+            var author = $(ele).attr('data-author'),
+                permlink = $(ele).attr('data-permlink');
+
+            if (typeof author == 'string' && author.length > 0)
+            {
+
+                if (typeof permlink == 'string' && permlink.length > 0)
+                {
+                    //existing post
+                    editorView.load(author, permlink);
+                }
+                else
+                {
+                    //new post
+                    editorView.load(author);
+                }
+
+            }
+
         }
 
     };

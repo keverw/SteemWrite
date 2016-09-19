@@ -1,20 +1,21 @@
-//unused vars in view: author, permlink
-
 .row
     .postcard.newPostCard.col-sm-6.col-md-3
         .thumbnail
-            img(src='./images/newPost.svg')
+            a(onclick='postsView.openEditor(this)', data-author=username)
+                img(src='./images/newPost.svg')
             .caption
-                h4.text-center='Create New Post'
+                a(onclick='postsView.openEditor(this)', data-author=username)
+                    h4.text-center='Create New Post'
 
     each post in posts
         .postcard.col-sm-6.col-md-3
             .thumbnail
                 .imgHolder
-                    if (post.featuredImg.length > 0)
-                        img(src='https://img1.steemit.com/256x512/' + post.featuredImg)
-                    else
-                        img(src='./images/noImage.svg')
+                    a(onclick='postsView.openEditor(this)', data-author=post.author, data-permlink=post.permlink)
+                        if (post.featuredImg.length > 0)
+                            img(src='https://img1.steemit.com/256x512/' + post.featuredImg)
+                        else
+                            img(src='./images/noImage.svg')
 
                     if (post.status == 'published')
                         span.statusLabel.label.label-success Published
@@ -27,7 +28,8 @@
 
                 .caption
                     h4
-                        span.title=post.title
+                        a(onclick='postsView.openEditor(this)', data-author=username)
+                            span.title=post.title
 
                     p.dateHolder
                         span.glyphicon.glyphicon-time(aria-hidden='true')
