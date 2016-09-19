@@ -10,11 +10,11 @@ global.moment = require('moment-timezone');
 global.tz = global.moment.tz.guess();
 
 global.viewData = {
-    viewName: '',
-    viewMeta: {
-        currentAcc: '',
-        postsView: {}
-    }
+    lastView: '',
+    lastAcc: '',
+    currentAcc: '',
+    postsViewMeta: {},
+    editorViewMeta: {}
 };
 
 var ui = require('./modules/renderer/ui.js');
@@ -247,6 +247,12 @@ global.updateMainUI = function(info)
             updateMainView = true;
         }
 
+        //lastAcc changed
+        if (info.lastAcc != global.viewData.lastAcc)
+        {
+            updateMainView = true;
+        }
+
     }
     else //lastAcc stored in the UI is empty
     {
@@ -255,7 +261,7 @@ global.updateMainUI = function(info)
 
     if (updateMainView)
     {
-        var viewHolder = ui.mainContentHolder.view();
+        var viewHolder = ui.mainContentHolder.view('main');
 
         if (info.hasAccs)
         {

@@ -7,13 +7,13 @@
 
             if (id)
             {
-                global.viewData.viewMeta.postsView.viewID = id;
+                global.viewData.postsViewMeta.viewID = id;
 
-                if (global.viewData.viewMeta.postsView.lastUser != username)
+                if (global.viewData.postsViewMeta.lastUser != username)
                 {
-                    global.viewData.viewMeta.postsView.lastPage = 1;
-                    global.viewData.viewMeta.postsView.lastTab = 'all';
-                    global.viewData.viewMeta.postsView.lastUser = username;
+                    global.viewData.postsViewMeta.lastPage = 1;
+                    global.viewData.postsViewMeta.lastTab = 'all';
+                    global.viewData.postsViewMeta.lastUser = username;
                 }
 
                 viewHolder.html(util.getViewHtml('posts/initial', {
@@ -34,13 +34,13 @@
             }
 
             //check if div exists
-            var reqViewID = global.viewData.viewMeta.postsView.viewID;
+            var reqViewID = global.viewData.postsViewMeta.viewID;
             if ($('#' + reqViewID).length)
             {
-                if (global.viewData.viewMeta.postsView.lastTab != type)
+                if (global.viewData.postsViewMeta.lastTab != type)
                 {
-                    global.viewData.viewMeta.postsView.lastPage = page;
-                    global.viewData.viewMeta.postsView.lastTab = type;
+                    global.viewData.postsViewMeta.lastPage = page;
+                    global.viewData.postsViewMeta.lastTab = type;
                 }
 
                 ////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@
 
                 irpcRenderer.call('posts.postList', {
                     type: type,
-                    username: global.viewData.viewMeta.postsView.lastUser,
+                    username: global.viewData.postsViewMeta.lastUser,
                     page: page
                 }, function(err, result)
                 {
@@ -64,7 +64,7 @@
                         $('#' + reqViewID + ' #postsList .paginationInfo').html(result.pagination.formattedText);
 
                         $('#' + reqViewID + ' #postsList .postListCards').html(util.getViewHtml('posts/list', {
-                            username: global.viewData.viewMeta.postsView.lastUser,
+                            username: global.viewData.postsViewMeta.lastUser,
                             posts: result.posts
                         }));
 
@@ -84,7 +84,7 @@
         },
         page: function(pageNum)
         {
-            module.exports.loadPosts(global.viewData.viewMeta.postsView.lastTab, pageNum);
+            module.exports.loadPosts(global.viewData.postsViewMeta.lastTab, pageNum);
         },
         openEditor: function(ele)
         {

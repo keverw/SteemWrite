@@ -1105,8 +1105,10 @@
             }
         },
         mainContentHolder: {
-            view: function()
+            view: function(name)
             {
+                global.viewData.lastView = name;
+
                 $('#navMiddleButtons').hide(); //hide main nav buttons
 
                 //returns the view to write to
@@ -1171,6 +1173,40 @@
         {
             $from.hide();
             $to.show();
+        },
+        homeBtn: function()
+        {
+            if (global.viewData.lastView == 'main') //already main
+            {
+                if (global.viewData.postsViewMeta.lastUser.length > 0)
+                {
+                    postsView.loadPosts("all");
+                }
+
+            }
+            else //not already main
+            {
+                var viewHolder = ui.mainContentHolder.view('main');
+
+                if (global.viewData.currentAcc.length > 0)
+                {
+                    postsView.load(viewHolder, global.viewData.currentAcc);
+                }
+                else
+                {
+                    viewHolder.html(util.getViewHtml('base/noAccountsView'));
+
+                    $('#noAccountsView').click(function(e)
+                    {
+                        ui.openSettings('accounts');
+                    });
+
+                }
+
+                //transition to displaying view
+                ui.mainContentHolder.ready(viewHolder);
+            }
+
         }
 
     };
