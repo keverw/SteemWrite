@@ -1,8 +1,12 @@
-.container
-    .basicLoaderScreen
-        .imgHolder
-            img(src='./images/whiteLoader.svg')
-        h1='Loading Editor'
+.basicLoaderScreen
+    .imgHolder
+        img(src='./images/whiteLoader.svg')
+    h1='Loading Editor'
 
-    #editorHolder(style="display: none;")
+#editorHolder(style="display: none;")
+    .editorLeft
+        .form-group
+            input(type='text', class='form-control')
         .editorHolder
+    .editorRight
+        |Hello world

@@ -224,7 +224,7 @@ global.createWindow = function()
         backgroundColor: '#272b30',
         width: 1200,
         height: 700,
-        minWidth: 800,
+        minWidth: 900,
         minHeight: 500
     });
 

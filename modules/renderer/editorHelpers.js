@@ -75,7 +75,7 @@
                     init_instance_callback: function(editor)
                     {
                         //editor loaded
-                        $('.mce-first .mce-txt').text('Heading');
+                        $('.mce-first .mce-txt').text('H');
 
                     }
                 });

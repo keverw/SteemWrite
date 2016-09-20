@@ -2,6 +2,24 @@
 {
     var defaultEditor = 'md'; //markdown is md, html is html
 
+    function resize()
+    {
+        var windowWidth = $(window).width(); //retrieve current window width
+        var windowHeight = $(window).height(); //retrieve current window height
+
+        //todo: write a FN with resize that will set .editorHolder, left and right
+
+        var sidebarSize = 300;
+        $('#editorHolder .editorLeft').width((windowWidth - sidebarSize - 15) + 'px');
+        $('#editorHolder .editorRight').width((sidebarSize - 15) + 'px');
+
+        $('#editorHolder .editorHolder').height((windowHeight - 149) + 'px');
+    }
+
+    $(window).resize(function() {
+        resize();
+    });
+
     module.exports = {
         load: function(author, permlink)
         {
@@ -11,6 +29,7 @@
 
             if (id)
             {
+
 
                 global.viewData.editorViewMeta.viewID = id;
 
@@ -38,6 +57,7 @@
                         //todo: load in editor based on defaultEditor val
 
                         //tmp
+                        resize();
                         ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
 
                         editorHelpers.insertEditor(id, 'md');
