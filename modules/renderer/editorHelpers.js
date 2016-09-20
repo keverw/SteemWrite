@@ -1,0 +1,210 @@
+(function()
+{
+    var path = require('path');
+    var textHelpers = require(path.resolve('./modules/textHelpers.js'));
+    //'./modules/textHelpers.js' won't work for some reason by itself...
+
+    var shell = require('electron').shell;
+
+    module.exports = {
+        getEditorID: function(reqViewID)
+        {
+            return reqViewID + 'Editor';
+        },
+        insertEditor: function(reqViewID, type)
+        {
+            var editorHolder = $('#' + reqViewID + ' .editorHolder');
+            var editorID = module.exports.getEditorID(reqViewID);
+
+            console.log('editorID: ', editorID);
+
+            //destory old Simplemde
+            if (global.viewData.editorViewMeta.SimpleMDE)
+            {
+                global.viewData.editorViewMeta.SimpleMDE.toTextArea();
+                global.viewData.editorViewMeta.SimpleMDE = null;
+            }
+
+            //destory old TinyMCE
+            if (tinymce.get(editorID) !== null)
+            {
+                tinymce.get(editorID).remove();
+            }
+
+            //add new text area
+            editorHolder.html('<div class="editorHeight editor-type-' + type + '"><textarea name="' + editorID + '", id="' + editorID + '" data-type="' + type + '"></textarea></div>');
+
+            if (type == 'html')
+            {
+                tinymce.init({
+                    selector: '#' + editorID,
+                    browser_spellcheck: true,
+                    menubar: false,
+                    formats: {
+                        underline: {}
+                    },
+                    style_formats: [
+                        {
+                            title: "Header 1",
+                            format: "h1"
+                        },
+                        {
+                            title: "Header 2",
+                            format: "h2"
+                        },
+                        {
+                            title: "Header 3",
+                            format: "h3"
+                        },
+                        {
+                            title: "Header 4",
+                            format: "h4"
+                        },
+                        {
+                            title: "Header 5",
+                            format: "h5"
+                        },
+                        {
+                            title: "Header 6",
+                            format: "h6"
+                        }
+                    ],
+                    toolbar: 'styleselect | bold italic strikethrough | alignleft aligncenter alignright | blockquote bullist numlist | link unlink | image | hr | table | code fullscreen',
+                    plugins: ["autolink link image lists spellchecker code fullscreen table paste hr"],
+                    statusbar: false,
+                    init_instance_callback: function(editor)
+                    {
+                        //editor loaded
+                        $('.mce-first .mce-txt').text('Heading');
+
+                    }
+                });
+
+            }
+            else if (type == 'md')
+            {
+
+                global.viewData.editorViewMeta.SimpleMDE = new SimpleMDE({
+                    element: document.getElementById(editorID),
+                    hideIcons: ['preview'],
+                    toolbar: ['heading', "|", 'bold', 'italic', 'strikethrough', 'code', "|", 'quote', 'unordered-list', 'ordered-list', '|', 'link', '|', 'image', '|', 'horizontal-rule', '|', 'table', '|', 'side-by-side', 'fullscreen', '|', {
+                        name: 'guide',
+                        action: function customFunction(editor)
+                        {
+                            shell.openExternal('https://simplemde.com/markdown-guide');
+                        },
+                        className: 'fa fa-question-circle',
+                        title: 'Markdown Guide'
+                    }],
+                    shortcuts: {
+                        togglePreview: null
+                    },
+                    status: false,
+                    previewRender: function(plainText) {
+                        return '<div class="previewRender">' + textHelpers.youtubePreview(textHelpers.preview(plainText)) + '</div>';
+                    }
+                });
+
+                $('.editor-type-md .editor-toolbar a').tooltip({
+                    animation: false,
+                    placement: 'bottom'
+                });
+
+                $('.editor-type-md .editor-toolbar a').click(function()
+                {
+                    $('.editor-type-md .editor-toolbar a').tooltip('hide');
+                });
+
+            }
+
+        },
+        getContent: function(editorID)
+        {
+            //return string if found, else null
+            if ($('#' + editorID).length > 0)
+            {
+                var type = $('#' + editorID).attr('data-type');
+
+                if (type == 'md')
+                {
+                    if (global.viewData.editorViewMeta.SimpleMDE)
+                    {
+                        return global.viewData.editorViewMeta.SimpleMDE.value();
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
+                }
+                else if (type == 'html')
+                {
+                    if (tinymce.get(editorID) === null)
+                    {
+                        return null;
+                    }
+                    else
+                    {
+                        return tinymce.get(editorID).getContent();
+                    }
+                }
+                else
+                {
+                    return null;
+                }
+
+            }
+            else
+            {
+                return null;
+            }
+
+        },
+        setContent: function(editorID, text)
+        {
+            //true if set, false if not
+            if ($('#' + editorID).length > 0)
+            {
+                var type = $('#' + editorID).attr('data-type');
+
+                if (type == 'md')
+                {
+                    if (global.viewData.editorViewMeta.SimpleMDE)
+                    {
+                        global.viewData.editorViewMeta.SimpleMDE.value(text);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else if (type == 'html')
+                {
+                    if (tinymce.get(editorID) === null)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        tinymce.get(editorID).setContent(text);
+                        return true;
+                    }
+
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
+    };
+
+})();

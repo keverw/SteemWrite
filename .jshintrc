@@ -98,6 +98,9 @@
         "ui": false,
         "util": false,
         "postsView": false,
-        "editorView": false
+        "editorView": false,
+        "tinymce": false,
+        "SimpleMDE": false,
+        "editorHelpers": false
     }
 }

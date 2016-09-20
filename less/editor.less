@@ -1,0 +1,83 @@
+.editor-toolbar {
+    &:before {
+        margin-bottom: 2px;
+    }
+
+    &:after {
+        margin-top: 2px;
+    }
+}
+
+.fullscreen {
+    &:before {
+        background: none !important;
+    }
+
+    &:after {
+        background: none !important;
+    }
+}
+
+.editor-type-md {
+    .tooltip-inner {
+        border-radius: 0;
+    }
+
+    .editor-toolbar {
+        border: 0 solid #cacaca;
+        border: 0 solid rgba(0,0,0,0.2);
+        background-color: #f0f0f0;
+        opacity: 1 !important;
+        border-radius: 0;
+
+        a {
+            font-size: 14px;
+            line-height: 20px;
+            cursor: pointer;
+            color: #333;
+            text-align: center;
+            overflow: visible;
+            -webkit-appearance: none;
+        }
+
+    }
+
+    .CodeMirror {
+        border-radius: 0;
+        height: 100%;
+    }
+
+    .editor-toolbar.fullscreen {
+        z-index: 1031; //higher than menu bar
+        .editor-toolbar();
+    }
+}
+
+.editor-type-html {
+    .mce-fullscreen {
+        z-index: 1031 !important; //higher than menu bar
+    }
+
+    .mce-panel {
+        border: 0 solid #cacaca !important;
+        border: 0 solid rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .mce-edit-area {
+        border: 1px solid #ddd !important;
+    }
+
+    .mce-edit-area,
+    .mce-tinymce {
+        height: 100%;
+    }
+
+    .mce-container-body {
+        height: 100%;
+
+        iframe {
+            height: 100% !important;
+        }
+    }
+
+}

@@ -23,8 +23,14 @@ var nodeUtil = require('util'); //Node.js utils
 var irpc = require('electron-irpc');
 var irpcRenderer = irpc.renderer();
 
+var webFrame = require('electron').webFrame;
+var SpellCheckProvider = require('electron-spell-check-provider');
+
+webFrame.setSpellCheckProvider('en-US', true, new SpellCheckProvider('en-US'));
+
 var postsView = require('./modules/renderer/views/posts.js');
 var editorView = require('./modules/renderer/views/editor.js');
+var editorHelpers = require('./modules/renderer/editorHelpers.js');
 
 var fs = require('fs');
 

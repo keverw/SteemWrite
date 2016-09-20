@@ -37,6 +37,12 @@
 
                         //todo: load in editor based on defaultEditor val
 
+                        //tmp
+                        ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
+
+                        editorHelpers.insertEditor(id, 'md');
+                        //editorHelpers.insertEditor(id, 'html');
+
                         //update nav bar buttons
                         if (global.viewData.editorViewMeta.viewID == id)
                         {
@@ -90,6 +96,8 @@
                             })).show();
 
                         }
+
+                        editorHelpers.insertEditor(reqViewID, type);
 
                     });
 
