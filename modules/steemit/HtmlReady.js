@@ -45,7 +45,7 @@ exports.default = function(html) {
         // console.log('state', state)
         if (!mutate) return state;
         return _extends({
-            html: XMLSerializer.serializeToString(doc)
+            html: doc ? XMLSerializer.serializeToString(doc) : ''
         }, state);
     } catch (error) {
         // Not Used, parseFromString might throw an error in the future
@@ -152,6 +152,7 @@ function img(state, child) {
 // For all img elements with non-local URLs, prepend the proxy URL (e.g. `https://img0.steemit.com/0x0/`)
 function proxifyImages(doc) {
     if (!$STM_Config.img_proxy_prefix) return;
+    if (!doc) return;
     [].concat(_toConsumableArray(doc.getElementsByTagName('img'))).forEach(function(node) {
         var url = node.getAttribute('src');
         if (!_Links2.default.local.test(url)) node.setAttribute('src', $STM_Config.img_proxy_prefix + '0x0/' + url);
