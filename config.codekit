@@ -433,6 +433,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/tags.json": {
+		"fileType": 524288,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/tags.json",
+		"orderOutput": 0,
+		"outputAbbreviatedPath": "\/tags-min.json",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1
+		},
 	"\/tests\/enhancedBCConnect.js": {
 		"fileType": 64,
 		"ignore": 1,
@@ -1197,6 +1208,17 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/thirdParty\/simplemde\/simplemde.min.js",
 		"outputAbbreviatedPath": "\/thirdParty\/simplemde\/min\/simplemde.min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/updateTags.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/updateTags.js",
+		"outputAbbreviatedPath": "\/min\/updateTags-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
