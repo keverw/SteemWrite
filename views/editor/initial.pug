@@ -6,7 +6,7 @@
 #editorHolder(style="display: none;")
     .editorLeft
         .form-group
-            input(type='text', class='form-control')
+            input(type='text', class='form-control', name='postTitle')
         .editorHolder
     .editorRight
         .panel.panel-primary
@@ -31,4 +31,4 @@
                     strong Warning!
                     |  This feature is intended for developers.
 
-                | Panel content
+                textarea(name='jsonEditTextarea')

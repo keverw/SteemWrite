@@ -7,12 +7,11 @@
         var windowWidth = $(window).width(); //retrieve current window width
         var windowHeight = $(window).height(); //retrieve current window height
 
-        //todo: write a FN with resize that will set .editorHolder, left and right
-
         var sidebarSize = 300;
         $('#editorHolder .editorLeft').width((windowWidth - sidebarSize - 15) + 'px');
         $('#editorHolder .editorRight').width((sidebarSize - 15) + 'px');
 
+        $('#editorHolder .editorRight').height((windowHeight - 60) + 'px');
         $('#editorHolder .editorHolder').height((windowHeight - 149) + 'px');
     }
 
