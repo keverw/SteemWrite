@@ -356,17 +356,36 @@ function loadAccounts(currentLayerID)
 
 global.hasAgreed = function(currentLayerID)
 {
-
-    //tell to connect to blockchain
-    irpcRenderer.call('bc-connect', {}, function(err, result)
+    //get Additional JSON Metadata UI pref
+    irpcRenderer.call('kvs.read', {
+        k: 'showJSONMetadataEditor'
+    }, function(err, result)
     {
+        //showJSONMetadataEditor
         if (err) return global.closeWithError(err);
 
-        //update blockchain connection status
-        global.updateBCStatus(result);
+        if (result && typeof result == 'object' && typeof result.v == 'string')
+        {
+            //convert to bool
+            global.showJSONMetadataEditor = (result.v == 'true');
+        }
+        else //value never changed, default to false
+        {
+            global.showJSONMetadataEditor = false;
+        }
 
-        // load accounts
-        loadAccounts(currentLayerID);
+        //tell to connect to blockchain
+        irpcRenderer.call('bc-connect', {}, function(err, result)
+        {
+            if (err) return global.closeWithError(err);
+
+            //update blockchain connection status
+            global.updateBCStatus(result);
+
+            // load accounts
+            loadAccounts(currentLayerID);
+
+        });
 
     });
 

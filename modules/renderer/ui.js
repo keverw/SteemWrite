@@ -141,12 +141,24 @@
                 };
 
                 //check for changes
+
+                //check if websocket host changed
                 var wsHostVal = $('#generalTabWSHostInput').val();
                 if (wsHostVal != settingsViewMeta.fields.general.wsHost)
                 {
                     result.unsaved = true;
                     result.what.wsHost = {
                         val: wsHostVal
+                    };
+                }
+
+                //check if json metadata checkbox changed
+                var showJSONMetadataEditorCheckboxVal = $("[name='showJSONMetadataEditorCheckbox']").is(':checked');
+                if (showJSONMetadataEditorCheckboxVal != settingsViewMeta.fields.general.showJSONMetadataEditor)
+                {
+                    result.unsaved = true;
+                    result.what.showJSONMetadataEditor = {
+                        val: showJSONMetadataEditorCheckboxVal
                     };
                 }
 
@@ -216,6 +228,40 @@
 
                     }
 
+                    if (changed.what.showJSONMetadataEditor) //update showJSONMetadataEditor
+                    {
+                        var boolAsString = (changed.what.showJSONMetadataEditor.val) ? 'true' : 'false';
+
+                        irpcRenderer.call('kvs.set', {
+                            k: 'showJSONMetadataEditor',
+                            v: boolAsString
+                        }, function(err, result)
+                        {
+                            if (err)
+                            {
+                                console.log(err);
+                                bootbox.alert('Error Updating Show JSON Editor...');
+                            }
+                            else
+                            {
+                                if (changed.what.showJSONMetadataEditor.val)
+                                {
+                                    $('.additionalJsonData').show();
+                                }
+                                else
+                                {
+                                    $('.additionalJsonData').hide();
+                                }
+
+                                settingsViewMeta.fields.general.showJSONMetadataEditor = changed.what.showJSONMetadataEditor.val;
+                                global.showJSONMetadataEditor = changed.what.showJSONMetadataEditor.val;
+
+                            }
+
+                        });
+
+                    }
+
                 }
                 else
                 {
@@ -276,10 +322,14 @@
                         else
                         {
                             settingsViewMeta.fields.general.wsHost = (result && typeof result == 'object') ? result.v : global.appConfig.defaultWS;
+                            settingsViewMeta.fields.general.showJSONMetadataEditor = global.showJSONMetadataEditor;
 
                             $('#settingsContent .general').html(util.getViewHtml('settings/generalTab', {
-                                wsHost: settingsViewMeta.fields.general.wsHost
+                                wsHost: settingsViewMeta.fields.general.wsHost,
+                                showJSONMetadataEditor: settingsViewMeta.fields.general.showJSONMetadataEditor
                             }));
+
+                            $("[name='showJSONMetadataEditorCheckbox']").bootstrapSwitch();
 
                             //Display tab
                             settingsViewMeta.loaded.general = true;

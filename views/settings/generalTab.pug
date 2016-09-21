@@ -3,10 +3,18 @@
 .inside(style='display: none;')
     form.form-horizontal(onsubmit='return ui.settingTabHelpers.updateSettings();')
         .form-group
-            label.col-sm-3.control-label(for='generalTabWSHostInput') Steem Node
-            .col-sm-9
+            label.col-sm-4.control-label(for='generalTabWSHostInput') Steem Node
+            .col-sm-8
                 .input-group
                     input#generalTabWSHostInput.form-control(type='text', placeholder='Steem Node', value=wsHost)
                     span.input-group-btn
                         button.btn.btn-default(type='button',onclick='ui.settingTab.general_setDefault()') Use Default
                 p.help-block.default Set the Steem Node Websocket Address. Requires application restart to apply after saving.
+        .form-group
+            label.col-sm-4.control-label(for='showJSONMetadataEditorCheck') Show JSON Editor
+            .col-sm-8
+                .input-group
+                    if (showJSONMetadataEditor)
+                        input(type='checkbox', name='showJSONMetadataEditorCheckbox', checked='', id='showJSONMetadataEditorCheck')
+                    else
+                        input(type='checkbox', name='showJSONMetadataEditorCheckbox', id='showJSONMetadataEditorCheck')
