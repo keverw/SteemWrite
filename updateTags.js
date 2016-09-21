@@ -6,9 +6,9 @@ global.bcReady = false; //BC connection ready
 global.bcHardfork = '';
 
 var util = require('./modules/util.js'),
+    fs = require('fs'),
+    _ = require('underscore'),
     categorySelectorValidation = require('./modules/steemit/CategorySelectorValidation.js');
-
-var fs = require('fs');
 
 var mem = {
     updated: '',
@@ -62,7 +62,7 @@ function saveFile()
 
 function download()
 {
-    global.bc.database_api().exec('get_trending_tags', ['', '5']) //50000 - -1 seems to work too
+    global.bc.database_api().exec('get_trending_tags', ['', '-1'])
         .then(function(res)
         {
             if (res.length > 0)
@@ -83,7 +83,12 @@ function download()
 
                             if (!categorySelectorValidation.validateCategory(tag)) //is null, no error
                             {
-                                console.log(tag);
+                                //check if not in list, add...
+                                if (!_.contains(mem.tags, tag))
+                                {
+                                    mem.tags.push(tag);
+                                }
+
                             }
 
                         }
@@ -97,6 +102,14 @@ function download()
                 throw new Error('No data downloaded');
             }
 
+            ////////////
+            mem.tags = _.uniq(mem.tags);
+            mem.tags = _.sortBy(mem.tags, function(name) {
+                return name;
+            });
+
+            mem.count = mem.tags.length;
+
             saveFile();
 
         })
@@ -104,11 +117,5 @@ function download()
         {
             throw e;
         });
-
-    //console.log(mem);
-
-    // count: 0,
-    // tags: []
-
 
 }
