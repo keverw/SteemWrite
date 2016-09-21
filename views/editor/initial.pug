@@ -9,4 +9,26 @@
             input(type='text', class='form-control')
         .editorHolder
     .editorRight
-        |Hello world
+        .panel.panel-primary
+            .panel-heading
+                h3.panel-title Publish
+            .panel-body
+                | Panel content
+
+        .panel.panel-primary
+            .panel-heading
+                h3.panel-title Tags
+            .panel-body
+                | Panel content
+
+        .panel.panel-primary.AdditionalJsonData
+            .panel-heading
+                h3.panel-title Additional JSON Metadata
+            .panel-body
+                .alert.alert-warning.alert-dismissible.fade.in(role='alert')
+                    button.close(type='button', data-dismiss='alert', aria-label='Close')
+                        span(aria-hidden='true') ×
+                    strong Warning!
+                    |  This feature is intended for developers.
+
+                | Panel content
