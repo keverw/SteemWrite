@@ -345,6 +345,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/steemit\/CategorySelectorValidation.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/steemit\/CategorySelectorValidation.js",
+		"outputAbbreviatedPath": "\/modules\/steemit\/min\/CategorySelectorValidation-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/steemit\/ChainValidation.js": {
 		"fileType": 64,
 		"ignore": 1,

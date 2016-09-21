@@ -5,7 +5,8 @@ global.bc = null; //BC connection
 global.bcReady = false; //BC connection ready
 global.bcHardfork = '';
 
-var util = require('./modules/util.js');
+var util = require('./modules/util.js'),
+    categorySelectorValidation = require('./modules/steemit/CategorySelectorValidation.js');
 
 var fs = require('fs');
 
@@ -61,11 +62,53 @@ function saveFile()
 
 function download()
 {
-    console.log(mem);
+    global.bc.database_api().exec('get_trending_tags', ['', '5']) //50000 - -1 seems to work too
+        .then(function(res)
+        {
+            if (res.length > 0)
+            {
+                for (var t in res)
+                {
+                    if (res.hasOwnProperty(t))
+                    {
+                        var tag = res[t].tag;
 
-    // updated: '',
+                        if (typeof tag == 'string')
+                        {
+
+                            if (tag.charAt(0) == '#')
+                            {
+                                tag = tag.slice(1);
+                            }
+
+                            if (!categorySelectorValidation.validateCategory(tag)) //is null, no error
+                            {
+                                console.log(tag);
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+            else {
+                throw new Error('No data downloaded');
+            }
+
+            saveFile();
+
+        })
+        .catch(function(e)
+        {
+            throw e;
+        });
+
+    //console.log(mem);
+
     // count: 0,
     // tags: []
 
-    saveFile();
+
 }
