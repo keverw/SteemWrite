@@ -79,8 +79,11 @@
                 ui.mainContentHolder.ready(viewHolder);
             }
 
-
-
+            new window.Awesomplete(document.querySelector('#' + id + ' .testAutobox'), {
+                list: global.tags,
+                minChars: 1,
+                maxItems: 15
+            });
 
             // console.log(author, permlink);
             // console.log(typeof author, typeof permlink);

@@ -17,6 +17,8 @@ global.viewData = {
     editorViewMeta: {}
 };
 
+global.tags = require('./tags.json').tags;
+
 var ui = require('./modules/renderer/ui.js');
 var util = require('./modules/util.js'); //my own utils
 var nodeUtil = require('util'); //Node.js utils
