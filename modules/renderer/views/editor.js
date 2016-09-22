@@ -19,7 +19,25 @@
         resize();
     });
 
+    function initTagEditor(reqViewID, tags)
+    {
+    }
+
     module.exports = {
+        tagEditor: {
+            addTagForm: function(formSelector)
+            {
+                var form = $(formSelector).serializeJSON();
+
+                console.log(form);
+
+                return false
+            },
+            removeTagBtn: function(reqViewID, tag)
+            {
+                //
+            }
+        },
         load: function(author, permlink)
         {
             var viewHolder = ui.mainContentHolder.view('editor');
@@ -28,13 +46,13 @@
 
             if (id)
             {
-
-
                 global.viewData.editorViewMeta.viewID = id;
 
                 //$('#' + reqViewID + ' #editorHolder')
 
-                viewHolder.html(util.getViewHtml('editor/initial'));
+                viewHolder.html(util.getViewHtml('editor/initial', {
+                    viewID: id
+                }));
 
                 if (typeof permlink == 'string' && permlink.length > 0)
                 {
@@ -79,7 +97,7 @@
                 ui.mainContentHolder.ready(viewHolder);
             }
 
-            new window.Awesomplete(document.querySelector('#' + id + ' .testAutobox'), {
+            new window.Awesomplete(document.querySelector('#' + id + ' .tagsAutoCompleteBox'), {
                 list: global.tags,
                 minChars: 1,
                 maxItems: 15

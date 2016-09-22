@@ -9,6 +9,8 @@
             input(type='text', class='form-control', name='postTitle')
         .editorHolder
     .editorRight
+        input(type='hidden', name='_postStatus', value='published')
+        input(type='hidden', name='postTags')
         .panel.panel-primary
             .panel-heading
                 h3.panel-title Publish
@@ -20,7 +22,16 @@
                 h3.panel-title Tags
             .panel-body
                 .tagsList
-                input(type='text', class='testAutobox')
+
+                form(style='display: inline;', onsubmit='return editorView.tagEditor.addTagForm(this);')
+                    p
+                        input(type='hidden', name='_tagViewID', value=viewID)
+                        input.form-control(type='text', name='_tagName', class='tagsAutoCompleteBox')
+
+                        =' '
+                        button.btn.btn-default(type='submit') Add
+                    p
+                        | Tag (up to 5 tags), the first tag is your main category and cannot be changed after publishing
 
         .panel.panel-primary.additionalJsonData(style=(global.showJSONMetadataEditor) ? '' : 'display: none;')
             .panel-heading
@@ -32,4 +43,4 @@
                     strong Warning!
                     |  This feature is intended for developers.
 
-                textarea(name='jsonEditTextarea')
+                textarea(name='postJSONTextarea')
