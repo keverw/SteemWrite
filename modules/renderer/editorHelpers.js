@@ -11,7 +11,7 @@
         {
             return reqViewID + 'Editor';
         },
-        insertEditor: function(reqViewID, type)
+        insertEditor: function(reqViewID, type, onChange)
         {
             var editorHolder = $('#' + reqViewID + ' .editorHolder');
             var editorID = module.exports.getEditorID(reqViewID);
@@ -76,8 +76,19 @@
                     {
                         //editor loaded
                         $('.mce-first .mce-txt').text('H');
+                    },
+                    setup: function(ed) {
+                        ed.on('keyup', function(e)
+                        {
+                            if (onChange) onChange();
+                        });
 
+                        ed.on('change', function(e)
+                        {
+                            if (onChange) onChange();
+                        });
                     }
+
                 });
 
             }
@@ -104,6 +115,12 @@
                         return '<div class="previewRender">' + textHelpers.youtubePreview(textHelpers.preview(plainText)) + '</div>';
                     }
                 });
+
+                global.viewData.editorViewMeta.SimpleMDE.codemirror.on('change', function()
+                {
+                    if (onChange) onChange();
+                });
+
 
                 $('.editor-type-md .editor-toolbar a').tooltip({
                     animation: false,
@@ -145,7 +162,7 @@
                     }
                     else
                     {
-                        return tinymce.get(editorID).getContent();
+                        return '<html>\n' + tinymce.get(editorID).getContent() + '\n</html>';
                     }
                 }
                 else

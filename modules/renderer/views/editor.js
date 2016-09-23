@@ -59,8 +59,15 @@
                         resize();
                         ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
 
-                        editorHelpers.insertEditor(id, 'md');
-                        //editorHelpers.insertEditor(id, 'html');
+                        editorHelpers.insertEditor(id, 'md', function()
+                        {
+                            console.log('Changed');
+                        });
+
+                        editorHelpers.insertEditor(id, 'html', function()
+                        {
+                            console.log('Changed');
+                        });
 
                         tagEditor.init(id, $('#' + id + " [name='postTags']").val());
 
@@ -104,7 +111,11 @@
                         k: 'defaultEditor',
                         v: type
                     }, function(err, result) {
-                        //update editor type used;
+                        //update editor type used
+                        editorHelpers.insertEditor(reqViewID, type, function()
+                        {
+                            console.log('Changed');
+                        });
 
                         //update nav bar buttons
                         if (global.viewData.editorViewMeta.viewID == reqViewID)
@@ -114,8 +125,6 @@
                             })).show();
 
                         }
-
-                        editorHelpers.insertEditor(reqViewID, type);
 
                     });
 
