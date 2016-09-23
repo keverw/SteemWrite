@@ -72,8 +72,9 @@ function download()
                     if (res.hasOwnProperty(t))
                     {
                         var tag = res[t].tag;
+                        var top_posts = res[t].top_posts;
 
-                        if (typeof tag == 'string')
+                        if (typeof tag == 'string' && top_posts >= 5) //5 posts or more using the tag
                         {
 
                             if (tag.charAt(0) == '#')
