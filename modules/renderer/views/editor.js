@@ -1,6 +1,10 @@
 (function()
 {
+    var path = require('path'),
+        _ = require('underscore');
+
     var defaultEditor = 'md'; //markdown is md, html is html
+    var categorySelectorValidation = require(path.resolve('./modules/steemit/CategorySelectorValidation.js'));
 
     function resize()
     {
@@ -19,8 +23,20 @@
         resize();
     });
 
-    function initTagEditor(reqViewID, tags)
+    function tagEditorRenderLabels(reqViewID, tags)
     {
+        if (typeof tags == 'string')
+        {
+            tags = tags.split(' ');
+            tags = tags.filter(function(v) {
+                return v !== '';
+            });
+        }
+
+        $('#' + reqViewID + ' .tagsList').html(util.getViewHtml('editor/tagsList', {
+            tags: tags,
+            viewID: reqViewID
+        }));
     }
 
     module.exports = {
@@ -28,14 +44,119 @@
             addTagForm: function(formSelector)
             {
                 var form = $(formSelector).serializeJSON();
+                $('#' + form._tagViewID + ' .tagsUIArea :input, #' + form._tagViewID + ' .tagsUIArea :button').attr('disabled', true);
 
-                console.log(form);
+                if ($('#' + form._tagViewID).length > 0)
+                {
+                    var spaceOrCommaErr = 'Use only lowercase letters, digits and one dash';
 
-                return false
+                    var tagVal = form._tagName.replace(/\s+/g, ' ');
+                    tagVal = tagVal.trim();
+
+                    if (tagVal.indexOf(' ') > -1 || tagVal.indexOf(',') > -1)
+                    {
+                        bootbox.alert({
+                            title: 'Add Tag',
+                            message: spaceOrCommaErr
+                        });
+
+                    }
+                    else
+                    {
+                        var validationResult = categorySelectorValidation.validateCategory(tagVal);
+
+                        if (validationResult) //not null - error
+                        {
+                            bootbox.alert({
+                                title: 'Add Tag',
+                                message: validationResult
+                            });
+                        }
+                        else
+                        {
+                            var tagsArray = $('#' + form._tagViewID + " [name='postTags']").val();
+
+                            if (typeof tagsArray == 'string')
+                            {
+                                tagsArray = tagsArray.split(' ');
+                                tagsArray = tagsArray.filter(function(v) {
+                                    return v !== '';
+                                });
+
+                                if (_.contains(tagsArray, tagVal))
+                                {
+                                    bootbox.alert({
+                                        title: 'Add Tag',
+                                        message: tagVal + ' already added'
+                                    });
+
+                                }
+                                else
+                                {
+                                    if (tagsArray.length == 5)
+                                    {
+                                        bootbox.alert({
+                                            title: 'Add Tag',
+                                            message: 'Please use only five categories'
+                                        });
+
+                                    }
+                                    else
+                                    {
+                                        tagsArray.push(tagVal);
+                                        $('#' + form._tagViewID + " [name='postTags']").val(tagsArray.join(' '));
+                                        $('#' + form._tagViewID + " [name='_tagName']").val('');
+                                    }
+
+                                }
+
+                                //update tags ui
+                                tagEditorRenderLabels(form._tagViewID, tagsArray);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                $('#' + form._tagViewID + ' .tagsUIArea :input, #' + form._tagViewID + ' .tagsUIArea :button').attr('disabled', false);
+                return false;
             },
-            removeTagBtn: function(reqViewID, tag)
+            removeTagBtn: function(btnSelector)
             {
-                //
+                var viewID = $(btnSelector).attr('data-viewID');
+                var tag = $(btnSelector).attr('data-tag');
+
+                if (typeof viewID == 'string' && typeof tag == 'string')
+                {
+                    if ($('#' + viewID).length > 0)
+                    {
+                        $('#' + viewID + ' .tagsUIArea :input, #' + viewID + ' .tagsUIArea :button').attr('disabled', true);
+
+                        var tagsArray = $('#' + viewID + " [name='postTags']").val();
+
+                        if (typeof tagsArray == 'string')
+                        {
+                            tagsArray = tagsArray.split(' ');
+                            tagsArray = tagsArray.filter(function(v) {
+                                return v !== '';
+                            });
+
+                            tagsArray = _.without(tagsArray, tag);
+                            $('#' + viewID + " [name='postTags']").val(tagsArray.join(' '));
+
+                            //update tags ui
+                            tagEditorRenderLabels(viewID, tagsArray);
+                        }
+
+                        $('#' + viewID + ' .tagsUIArea :input, #' + viewID + ' .tagsUIArea :button').attr('disabled', false);
+
+                    }
+
+                }
+
             }
         },
         load: function(author, permlink)
@@ -79,6 +200,8 @@
 
                         editorHelpers.insertEditor(id, 'md');
                         //editorHelpers.insertEditor(id, 'html');
+
+                        tagEditorRenderLabels(id, $('#' + id + " [name='postTags']").val());
 
                         //update nav bar buttons
                         if (global.viewData.editorViewMeta.viewID == id)

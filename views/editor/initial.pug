@@ -10,7 +10,7 @@
         .editorHolder
     .editorRight
         input(type='hidden', name='_postStatus', value='published')
-        input(type='hidden', name='postTags')
+        input(type='hidden', name='postTags', value='hello world demo')
         .panel.panel-primary
             .panel-heading
                 h3.panel-title Publish
@@ -20,8 +20,8 @@
         .panel.panel-primary
             .panel-heading
                 h3.panel-title Tags
-            .panel-body
-                .tagsList
+            .panel-body.tagsUIArea
+                p.tagsList
 
                 form(style='display: inline;', onsubmit='return editorView.tagEditor.addTagForm(this);')
                     p
