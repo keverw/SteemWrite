@@ -19,6 +19,36 @@
         resize();
     });
 
+    function checkPostTitleLength(viewID)
+    {
+        var errMsg = null;
+        var len = $('#' + viewID + " [name='postTitle']").val().length;
+
+        if (len > 0)
+        {
+            if (len > 255)
+            {
+                errMsg = 'Please shorten title';
+            }
+            else
+            {
+                $('#' + viewID + ' .titleError .postTitleLength').remove();
+            }
+
+        }
+        else
+        {
+            errMsg = 'Title is required';
+        }
+
+        if (errMsg)
+        {
+            $('#' + viewID + ' .titleError').append('<div class="alert alert-warning postTitleLength" role="alert">' + errMsg + '</div>');
+        }
+
+        return errMsg;
+    }
+
     module.exports = {
         load: function(author, permlink)
         {
@@ -35,6 +65,11 @@
                 viewHolder.html(util.getViewHtml('editor/initial', {
                     viewID: id
                 }));
+
+                $('#' + id + " [name='postTitle']").on('change keyup paste', function()
+                {
+                    checkPostTitleLength(id);
+                });
 
                 if (typeof permlink == 'string' && permlink.length > 0)
                 {
@@ -70,6 +105,8 @@
                         });
 
                         tagEditor.init(id, $('#' + id + " [name='postTags']").val());
+
+                        checkPostTitleLength(id); //use on exisiting posts
 
                         //update nav bar buttons
                         if (global.viewData.editorViewMeta.viewID == id)
