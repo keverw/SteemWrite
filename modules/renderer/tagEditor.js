@@ -27,6 +27,7 @@
 
     module.exports = {
         textStr2Array: textStr2Array,
+        renderLabels: tagEditorRenderLabels,
         init: function(reqViewID, tagsStr)
         {
             tagEditorRenderLabels(reqViewID, tagsStr);
