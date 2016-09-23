@@ -23,7 +23,7 @@
             .panel-body.tagsUIArea
                 p.tagsList
 
-                form(style='display: inline;', onsubmit='return editorView.tagEditor.addTagForm(this);')
+                form(style='display: inline;', onsubmit='return tagEditor.addTagForm(this);')
                     p
                         input(type='hidden', name='_tagViewID', value=viewID)
                         input.form-control(type='text', name='_tagName', class='tagsAutoCompleteBox')
