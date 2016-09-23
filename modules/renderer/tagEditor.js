@@ -124,8 +124,9 @@
         {
             var viewID = $(btnSelector).attr('data-viewID');
             var tag = $(btnSelector).attr('data-tag');
+            var postStatus = $('#' + viewID + " [name='_postStatus']").val();
 
-            if (typeof viewID == 'string' && typeof tag == 'string')
+            if (typeof viewID == 'string' && typeof tag == 'string' && typeof postStatus == 'string')
             {
                 if ($('#' + viewID).length > 0)
                 {
@@ -137,11 +138,25 @@
                     {
                         tagsArray = textStr2Array(tagsArray);
 
-                        tagsArray = _.without(tagsArray, tag);
-                        $('#' + viewID + " [name='postTags']").val(tagsArray.join(' '));
+                        var canRemove = false;
+                        if (postStatus == 'published' && tagsArray.length > 0 && tagsArray[0] == tag)
+                        {
+                            bootbox.alert('The first tag cannot be removed once published');
+                        }
+                        else
+                        {
+                            canRemove = true;
+                        }
 
-                        //update tags ui
-                        tagEditorRenderLabels(viewID, tagsArray);
+                        if (canRemove)
+                        {
+                            tagsArray = _.without(tagsArray, tag);
+                            $('#' + viewID + " [name='postTags']").val(tagsArray.join(' '));
+
+                            //update tags ui
+                            tagEditorRenderLabels(viewID, tagsArray);
+                        }
+
                     }
 
                     $('#' + viewID + ' .tagsUIArea :input, #' + viewID + ' .tagsUIArea :button').attr('disabled', false);
