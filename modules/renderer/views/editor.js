@@ -8,11 +8,15 @@
         var windowHeight = $(window).height(); //retrieve current window height
 
         var sidebarSize = 300;
+        var paddingTopSize = 60;
+
+        var titleBoxHeight = $('.editorLeft .form-group').outerHeight(true);
+
         $('#editorHolder .editorLeft').width((windowWidth - sidebarSize - 15) + 'px');
         $('#editorHolder .editorRight').width((sidebarSize - 15) + 'px');
 
-        $('#editorHolder .editorRight').height((windowHeight - 60) + 'px');
-        $('#editorHolder .editorHolder').height((windowHeight - 149) + 'px');
+        $('#editorHolder .editorRight').height((windowHeight - paddingTopSize) + 'px');
+        $('#editorHolder .editorHolder').height((windowHeight - (paddingTopSize + titleBoxHeight)) + 'px');
     }
 
     $(window).resize(function() {
@@ -47,6 +51,15 @@
         }
 
         return errMsg;
+    }
+
+    function checkPostBodyLength(viewID)
+    {
+        var errMsg = null;
+
+
+        return errMsg;
+
     }
 
     module.exports = {
@@ -91,22 +104,22 @@
                         //todo: load in editor based on defaultEditor val
 
                         //tmp
-                        resize();
                         ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
 
-                        editorHelpers.insertEditor(id, 'md', function()
-                        {
-                            console.log('Changed');
-                        });
+                        // editorHelpers.insertEditor(id, 'md', function()
+                        // {
+                        //     console.log('Changed');
+                        // });
 
                         editorHelpers.insertEditor(id, 'html', function()
                         {
-                            console.log('Changed');
+                            checkPostBodyLength(id);
                         });
 
                         tagEditor.init(id, $('#' + id + " [name='postTags']").val());
 
                         checkPostTitleLength(id); //use on exisiting posts
+                        checkPostBodyLength(id); //use on exisiting posts
 
                         //update nav bar buttons
                         if (global.viewData.editorViewMeta.viewID == id)
@@ -122,7 +135,11 @@
                 }
 
                 //transition to displaying view
-                ui.mainContentHolder.ready(viewHolder);
+                ui.mainContentHolder.ready(viewHolder, function()
+                {
+                    resize();
+                });
+
             }
 
             // console.log(author, permlink);
