@@ -11,7 +11,7 @@
         {
             return reqViewID + 'Editor';
         },
-        insertEditor: function(reqViewID, type, onChange)
+        insertEditor: function(reqViewID, type, onChange, onInit)
         {
             var editorHolder = $('#' + reqViewID + ' .editorHolder');
             var editorID = module.exports.getEditorID(reqViewID);
@@ -76,6 +76,8 @@
                     {
                         //editor loaded
                         $('.mce-first .mce-txt').text('H');
+
+                        if (onInit) onInit();
                     },
                     setup: function(ed) {
                         ed.on('keyup', function(e)
@@ -115,6 +117,8 @@
                         return '<div class="previewRender">' + textHelpers.youtubePreview(textHelpers.preview(plainText)) + '</div>';
                     }
                 });
+
+                if (onInit) onInit();
 
                 global.viewData.editorViewMeta.SimpleMDE.codemirror.on('change', function()
                 {
