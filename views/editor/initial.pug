@@ -4,46 +4,49 @@
     h1='Loading Editor'
 
 #editorHolder(style="display: none;")
-    .editorLeft
-        .form-group
-            input(type='text', class='form-control', name='postTitle')
-        .editorHolder
-    .editorRight
-        input(type='hidden', name='_postStatus', value='published')
-        input(type='hidden', name='postTags', value='hello world demo')
-        .panel.panel-primary
-            .panel-heading
-                h3.panel-title Publish
-            .panel-body
-                .fieldErrors
-                    .titleError
-                    .bodyError
-                    .jsonError
+    .editorTab
+        .editorLeft
+            .form-group
+                input(type='text', class='form-control', name='postTitle')
+            .editorHolder
+        .editorRight
+            input(type='hidden', name='_postStatus', value='published')
+            input(type='hidden', name='postTags', value='hello world demo')
+            .panel.panel-primary
+                .panel-heading
+                    h3.panel-title Publish
+                .panel-body
+                    .fieldErrors
+                        .titleError
+                        .bodyError
+                        .jsonError
 
-        .panel.panel-primary
-            .panel-heading
-                h3.panel-title Tags
-            .panel-body.tagsUIArea
-                p.tagsList
+            .panel.panel-primary
+                .panel-heading
+                    h3.panel-title Tags
+                .panel-body.tagsUIArea
+                    p.tagsList
 
-                form(style='display: inline;', onsubmit='return tagEditor.addTagForm(this);')
-                    p
-                        input(type='hidden', name='_tagViewID', value=viewID)
-                        input.form-control(type='text', name='_tagName', class='tagsAutoCompleteBox')
+                    form(style='display: inline;', onsubmit='return tagEditor.addTagForm(this);')
+                        p
+                            input(type='hidden', name='_tagViewID', value=viewID)
+                            input.form-control(type='text', name='_tagName', class='tagsAutoCompleteBox')
 
-                        =' '
-                        button.btn.btn-default(type='submit') Add
-                    p
-                        | Tag (up to 5 tags), the first tag is your main category and cannot be changed after publishing
+                            =' '
+                            button.btn.btn-default(type='submit') Add
+                        p
+                            | Tag (up to 5 tags), the first tag is your main category and cannot be changed after publishing
 
-        .panel.panel-primary.additionalJsonData(style=(global.showJSONMetadataEditor) ? '' : 'display: none;')
-            .panel-heading
-                h3.panel-title Additional JSON Metadata
-            .panel-body
-                .alert.alert-warning.alert-dismissible.fade.in(role='alert')
-                    button.close(type='button', data-dismiss='alert', aria-label='Close')
-                        span(aria-hidden='true') ×
-                    strong Warning!
-                    |  This feature is intended for developers.
+            .panel.panel-primary.additionalJsonData(style=(global.showJSONMetadataEditor) ? '' : 'display: none;')
+                .panel-heading
+                    h3.panel-title Additional JSON Metadata
+                .panel-body
+                    .alert.alert-warning.alert-dismissible.fade.in(role='alert')
+                        button.close(type='button', data-dismiss='alert', aria-label='Close')
+                            span(aria-hidden='true') ×
+                        strong Warning!
+                        |  This feature is intended for developers.
 
-                textarea(name='postJSONTextarea')
+                    textarea(name='postJSONTextarea')
+    .previewTab
+        | Hey

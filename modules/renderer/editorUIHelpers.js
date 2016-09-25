@@ -56,11 +56,8 @@
 
             return errMsg;
         },
-        checkPostBodyLength: function(viewID)
+        getPostBodyLength: function(viewID)
         {
-            var errMsg = null;
-            var maxKb = 100;
-
             var editorID = editorTextEditHelpers.getEditorID(viewID);
 
             var str = editorTextEditHelpers.getContent(editorID);
@@ -73,6 +70,15 @@
             {
                 len = htmlToText.fromString(str).trim().length;
             }
+
+            return len;
+        },
+        checkPostBodyLength: function(viewID)
+        {
+            var errMsg = null;
+            var maxKb = 100;
+
+            var len = module.exports.getPostBodyLength(viewID);
 
             if (len > 0)
             {
@@ -87,6 +93,22 @@
                 errMsg = 'Message is required';
             }
 
+            //update tab view
+            if (len > 0)
+            {
+                $('#navMiddleButtons .editorTabHasContent li').removeClass('active');
+                $('#navMiddleButtons .editorTabHasContent .edittab').addClass('active');
+
+                $('#navMiddleButtons .editorTabNoContent').hide();
+                $('#navMiddleButtons .editorTabHasContent').show();
+            }
+            else
+            {
+                $('#navMiddleButtons .editorTabHasContent').hide();
+                $('#navMiddleButtons .editorTabNoContent').show();
+            }
+
+            //update errors view
             if (errMsg)
             {
                 if ($('#' + viewID + ' .bodyError .postBodyLength').length === 0) $('#' + viewID + ' .bodyError').append('<div class="alert alert-warning postBodyLength" role="alert">' + errMsg + '</div>');

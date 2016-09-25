@@ -104,37 +104,64 @@
 
             if ($('#' + reqViewID).length)
             {
-                //todo: only switch if body is empty
+                var len = editorUIHelpers.getPostBodyLength(reqViewID)
 
-                if (type == 'html' || type == 'md')
+                if (len === 0)
                 {
-                    defaultEditor = type;
+                    if (type == 'html' || type == 'md')
+                    {
+                        defaultEditor = type;
 
-                    irpcRenderer.call('kvs.set', {
-                        k: 'defaultEditor',
-                        v: type
-                    }, function(err, result) {
-                        //update editor type used
-                        editorTextEditHelpers.insertEditor(reqViewID, type, function()
-                        {
-                            editorUIHelpers.checkPostBodyLength(reqViewID);
-                        }, function init()
-                        {
-                            editorUIHelpers.checkPostBodyLength(reqViewID);
-                            editorUIHelpers.resize();
+                        irpcRenderer.call('kvs.set', {
+                            k: 'defaultEditor',
+                            v: type
+                        }, function(err, result) {
+                            //update editor type used
+                            editorTextEditHelpers.insertEditor(reqViewID, type, function()
+                            {
+                                editorUIHelpers.checkPostBodyLength(reqViewID);
+                            }, function init()
+                            {
+                                editorUIHelpers.checkPostBodyLength(reqViewID);
+                                editorUIHelpers.resize();
+                            });
+
+                            //update nav bar buttons
+                            if (global.viewData.editorViewMeta.viewID == reqViewID)
+                            {
+                                $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
+                                    current: defaultEditor
+                                })).show();
+
+                            }
+
                         });
 
-                        //update nav bar buttons
-                        if (global.viewData.editorViewMeta.viewID == reqViewID)
-                        {
-                            $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                                current: defaultEditor
-                            })).show();
+                    }
+                }
 
-                        }
+            }
 
-                    });
+        },
+        switchMode: function(mode)
+        {
+            var reqViewID = global.viewData.editorViewMeta.viewID;
 
+            if ($('#' + reqViewID).length)
+            {
+                $('#navMiddleButtons .editorTabHasContent li').removeClass('active');
+
+                if (mode == 'edit')
+                {
+                    $('#' + reqViewID + ' .previewTab').hide();
+                    $('#' + reqViewID + ' .editorTab').show();
+                    $('#navMiddleButtons .editorTabHasContent .edittab').addClass('active');
+                }
+                else if (mode == 'preview')
+                {
+                    $('#' + reqViewID + ' .editorTab').hide();
+                    $('#' + reqViewID + ' .previewTab').show();
+                    $('#navMiddleButtons .editorTabHasContent .previewtab').addClass('active');
                 }
 
             }

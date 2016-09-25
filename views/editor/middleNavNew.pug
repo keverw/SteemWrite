@@ -1,5 +1,13 @@
-ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
-    li(class=(current == 'md') ? 'mdtab active' : 'mdtab')
-        a(style='text-decoration: none;', onclick='editorView.switchEditor("md")') Markdown
-    li(class=(current == 'html') ? 'htmltab active' : 'htmltab')
-        a(style='text-decoration: none;', onclick='editorView.switchEditor("html")') HyperText
+.editorTabNoContent
+    ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
+        li(class=(current == 'md') ? 'mdtab active' : 'mdtab')
+            a(style='text-decoration: none;', onclick='editorView.switchEditor("md")') Markdown
+        li(class=(current == 'html') ? 'htmltab active' : 'htmltab')
+            a(style='text-decoration: none;', onclick='editorView.switchEditor("html")') HyperText
+
+.editorTabHasContent(style='display: none;')
+    ul.navbar-nav(style='float: none;display: inline-block;list-style-type: none;')
+        li.edittab
+            a(style='text-decoration: none;', onclick='editorView.switchMode("edit")') Editor
+        li.previewtab
+            a(style='text-decoration: none;', onclick='editorView.switchMode("preview")') Preview
