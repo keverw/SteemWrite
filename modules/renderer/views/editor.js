@@ -3,109 +3,14 @@
     var path = require('path');
 
     var textHelpers = require(path.resolve('./modules/textHelpers.js')),
-        htmlToText = require('html-to-text');
+        editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js'));
 
     var defaultEditor = 'md'; //markdown is md, html is html
 
-    function resize()
+    $(window).resize(function()
     {
-        var windowWidth = $(window).width(); //retrieve current window width
-        var windowHeight = $(window).height(); //retrieve current window height
-
-        var sidebarSize = 300;
-        var paddingTopSize = 60;
-
-        var titleBoxHeight = $('.editorLeft .form-group').outerHeight(true);
-
-        $('#editorHolder .editorLeft').width((windowWidth - sidebarSize - 15) + 'px');
-        $('#editorHolder .editorRight').width((sidebarSize - 15) + 'px');
-
-        $('#editorHolder .editorRight').height((windowHeight - paddingTopSize) + 'px');
-
-        var editorHolderHeight = windowHeight - (paddingTopSize + titleBoxHeight);
-
-        editorHolderHeight = editorHolderHeight - 36; //toolbar size
-
-        $('#editorHolder .editorHolder').height(editorHolderHeight + 'px');
-    }
-
-    $(window).resize(function() {
-        resize();
+        editorUIHelpers.resize();
     });
-
-    function checkPostTitleLength(viewID)
-    {
-        var errMsg = null;
-        var len = $('#' + viewID + " [name='postTitle']").val().length;
-
-        if (len > 0)
-        {
-            if (len > 255)
-            {
-                errMsg = 'Please shorten title';
-            }
-
-        }
-        else
-        {
-            errMsg = 'Title is required';
-        }
-
-        if (errMsg && $('#' + viewID + ' .titleError .postTitleLength').length === 0)
-        {
-            $('#' + viewID + ' .titleError').append('<div class="alert alert-warning postTitleLength" role="alert">' + errMsg + '</div>');
-        }
-        else
-        {
-            $('#' + viewID + ' .titleError .postTitleLength').remove();
-        }
-
-        return errMsg;
-    }
-
-    function checkPostBodyLength(viewID)
-    {
-        var errMsg = null;
-        var maxKb = 100;
-
-        var editorID = editorHelpers.getEditorID(viewID);
-
-        var str = editorHelpers.getContent(editorID);
-
-        if (!str) str = ''; //incase null
-        str = str.trim();
-
-        var len = str.length;
-        if (textHelpers.isHtml(str))
-        {
-            len = htmlToText.fromString(str).trim().length;
-        }
-
-        if (len > 0)
-        {
-            if (len > maxKb * 1024)
-            {
-                errMsg = 'Exceeds maximum length (' + maxKb + 'KB)';
-            }
-
-        }
-        else
-        {
-            errMsg = 'Message is required';
-        }
-
-        if (errMsg && $('#' + viewID + ' .bodyError .postBodyLength').length === 0)
-        {
-            $('#' + viewID + ' .bodyError').append('<div class="alert alert-warning postBodyLength" role="alert">' + errMsg + '</div>');
-        }
-        else
-        {
-            $('#' + viewID + ' .bodyError .postBodyLength').remove();
-        }
-
-        return errMsg;
-
-    }
 
     module.exports = {
         load: function(author, permlink)
@@ -126,7 +31,7 @@
 
                 $('#' + id + " [name='postTitle']").on('change keyup paste', function()
                 {
-                    checkPostTitleLength(id);
+                    editorUIHelpers.checkPostTitleLength(id);
                 });
 
                 if (typeof permlink == 'string' && permlink.length > 0)
@@ -151,17 +56,17 @@
                         //tmp
                         ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
 
-                        // editorHelpers.insertEditor(id, 'md', function change()
-                        editorHelpers.insertEditor(id, 'html', function change()
+                        // editorTextEditHelpers.insertEditor(id, 'md', function change()
+                        editorTextEditHelpers.insertEditor(id, 'html', function change()
                         {
-                            checkPostBodyLength(id);
+                            editorUIHelpers.checkPostBodyLength(id);
                         }, function init()
                         {
-                            checkPostBodyLength(id); //use on exisiting posts
+                            editorUIHelpers.checkPostBodyLength(id); //use on exisiting posts
 
                             tagEditor.init(id, $('#' + id + " [name='postTags']").val());
 
-                            checkPostTitleLength(id); //use on exisiting posts
+                            editorUIHelpers.checkPostTitleLength(id); //use on exisiting posts
 
                             //update nav bar buttons
                             if (global.viewData.editorViewMeta.viewID == id)
@@ -175,7 +80,7 @@
                             //transition to displaying view
                             ui.mainContentHolder.ready(viewHolder, function()
                             {
-                                resize();
+                                editorUIHelpers.resize();
                             });
 
                         });
@@ -210,13 +115,13 @@
                         v: type
                     }, function(err, result) {
                         //update editor type used
-                        editorHelpers.insertEditor(reqViewID, type, function()
+                        editorTextEditHelpers.insertEditor(reqViewID, type, function()
                         {
-                            console.log('Changed');
+                            editorUIHelpers.checkPostBodyLength(reqViewID);
                         }, function init()
                         {
-                            checkPostBodyLength(reqViewID);
-                            resize();
+                            editorUIHelpers.checkPostBodyLength(reqViewID);
+                            editorUIHelpers.resize();
                         });
 
                         //update nav bar buttons

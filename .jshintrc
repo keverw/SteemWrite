@@ -101,7 +101,7 @@
         "editorView": false,
         "tinymce": false,
         "SimpleMDE": false,
-        "editorHelpers": false,
+        "editorTextEditHelpers": false,
         "tagEditor": false
     }
 }

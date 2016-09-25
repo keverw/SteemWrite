@@ -301,12 +301,23 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
-	"\/modules\/renderer\/editorHelpers.js": {
+	"\/modules\/renderer\/editorTextEditHelpers.js": {
 		"fileType": 64,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/modules\/renderer\/editorHelpers.js",
-		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorHelpers-min.js",
+		"inputAbbreviatedPath": "\/modules\/renderer\/editorTextEditHelpers.js",
+		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorTextEditHelpers-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/modules\/renderer\/editorUIHelpers.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/renderer\/editorUIHelpers.js",
+		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorUIHelpers-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
