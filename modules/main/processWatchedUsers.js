@@ -142,10 +142,12 @@
                                 }
 
                                 //insert revision
-                                var revHash = postHelpers.generateRevHash(data.author, data.permlink, data.title, body, JSON.stringify(metadata));
+                                var contentHash = postHelpers.generateContentHash(data.author, data.permlink, data.title, body, JSON.stringify(metadata));
+                                var revHash = postHelpers.generateRevHash(contentHash, unixTime);
 
                                 postHelpers.insertRevision({
                                     revHash: revHash,
+                                    contentHash: contentHash,
                                     publishedTX: trx_id,
                                     author: data.author,
                                     permlink: data.permlink,
@@ -207,10 +209,12 @@
                             }
 
                             //insert revision
-                            var revHash = postHelpers.generateRevHash(data.author, data.permlink, data.title, data.body, JSON.stringify(metadata));
+                            var contentHash = postHelpers.generateContentHash(data.author, data.permlink, data.title, data.body, JSON.stringify(metadata));
+                            var revHash = postHelpers.generateRevHash(contentHash, unixTime);
 
                             postHelpers.insertRevision({
                                 revHash: revHash,
+                                contentHash: contentHash,
                                 publishedTX: trx_id,
                                 author: data.author,
                                 permlink: data.permlink,

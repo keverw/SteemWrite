@@ -54,7 +54,7 @@
             }
 
         },
-        generateRevHash: function(author, permlink, title, body, json_metadata)
+        generateContentHash: function(author, permlink, title, body, json_metadata)
         {
             // revHash should be: author, permlink, title, body, json_metadata
             // title, body, json_metadata are set to autosave in the hash if it’s a autosave
@@ -67,6 +67,10 @@
                 return sha1([author, permlink, 'autosave', 'autosave', 'autosave'].join(','));
             }
 
+        },
+        generateRevHash: function(contentHash, blockChainDate)
+        {
+            return sha1([contentHash, blockChainDate].join(','));
         },
         insertRevision: function(parameters, cb)
         {
