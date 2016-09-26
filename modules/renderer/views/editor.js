@@ -170,13 +170,29 @@
                     if (!bodyStr) bodyStr = ''; //incase null
                     bodyStr = bodyStr.trim();
 
-                    //todo: populate the rest of the data sent to preview view with real data
+                    var tagsArr = $('#' + reqViewID + " [name='postTags']").val();
+
+                    if (typeof tagsArr == 'string')
+                    {
+                        tagsArr = tagEditor.textStr2Array(tagsArr);
+                    }
+                    else
+                    {
+                        tagsArr = [];
+                    }
+
+                    if (tagsArr.length === 0)
+                    {
+                        tagsArr.push('uncategorized');
+                    }
+
+                    //todo: populate the author with the real author
                     $('#' + reqViewID + ' .previewTab').html(util.getViewHtml('editor/preview', {
                         title: $('#' + reqViewID + " [name='postTitle']").val().trim(),
                         body: textHelpers.youtubePreview(textHelpers.preview(bodyStr)),
                         author: 'todo',
-                        category: 'testing',
-                        tagList: ['testing', 'lol', 'wtfbbq']
+                        category: tagsArr[0],
+                        tagList: tagsArr
                     }));
 
                     //attach play button to data-youtubeid
