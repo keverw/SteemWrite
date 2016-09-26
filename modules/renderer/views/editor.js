@@ -104,7 +104,7 @@
 
             if ($('#' + reqViewID).length)
             {
-                var len = editorUIHelpers.getPostBodyLength(reqViewID)
+                var len = editorUIHelpers.getPostBodyLength(reqViewID);
 
                 if (len === 0)
                 {

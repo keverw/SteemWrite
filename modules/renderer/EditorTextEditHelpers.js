@@ -114,7 +114,7 @@
                     },
                     status: false,
                     previewRender: function(plainText) {
-                        return '<div class="previewRender">' + textHelpers.youtubePreview(textHelpers.preview(plainText)) + '</div>';
+                        return '<div class="previewRender allow-copy">' + textHelpers.youtubePreview(textHelpers.preview(plainText)) + '</div>';
                     }
                 });
 
