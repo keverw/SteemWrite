@@ -2,8 +2,10 @@
 {
     var path = require('path');
 
-    var textHelpers = require(path.resolve('./modules/textHelpers.js')),
-        editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js'));
+    var shell = require('electron').shell,
+        textHelpers = require(path.resolve('./modules/textHelpers.js')),
+        editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js')),
+        validator = require('validator');
 
     var defaultEditor = 'md'; //markdown is md, html is html
 
@@ -151,15 +153,58 @@
             {
                 $('#navMiddleButtons .editorTabHasContent li').removeClass('active');
 
+                $('#' + reqViewID + ' .previewTab').html();
+                $('#' + reqViewID + ' .editorHolderTabs').hide();
+
                 if (mode == 'edit')
                 {
-                    $('#' + reqViewID + ' .previewTab').hide();
                     $('#' + reqViewID + ' .editorTab').show();
                     $('#navMiddleButtons .editorTabHasContent .edittab').addClass('active');
                 }
                 else if (mode == 'preview')
                 {
-                    $('#' + reqViewID + ' .editorTab').hide();
+                    var editorID = editorTextEditHelpers.getEditorID(reqViewID);
+
+                    var bodyStr = editorTextEditHelpers.getContent(editorID);
+
+                    if (!bodyStr) bodyStr = ''; //incase null
+                    bodyStr = bodyStr.trim();
+
+                    //todo: populate the rest of the data sent to preview view with real data
+                    $('#' + reqViewID + ' .previewTab').html(util.getViewHtml('editor/preview', {
+                        title: $('#' + reqViewID + " [name='postTitle']").val().trim(),
+                        body: textHelpers.youtubePreview(textHelpers.preview(bodyStr)),
+                        author: 'todo',
+                        category: 'testing',
+                        tagList: ['testing', 'lol', 'wtfbbq']
+                    }));
+
+                    //attach play button to data-youtubeid
+                    $('[data-youtubeid]').click(function()
+                    {
+                        var youTubeID = $(this).attr('data-youtubeid');
+
+                        var iframeSrc = 'https://www.youtube.com/embed/' + youTubeID + '?autoplay=1&autohide=1';
+                        var iframeHtml = '<iframe width="640" height="480" src="' + iframeSrc + '" frameBorder="0" allowFullScreen="true"></iframe>';
+
+                        $(this).replaceWith(iframeHtml);
+                    });
+
+                    //attach open in browser to links
+                    $('#' + reqViewID + ' .previewTab a').click(function(event)
+                    {
+                        event.preventDefault();
+
+                        var href = $(this).attr('href');
+
+                        if (typeof href == 'string' && validator.isURL(href))
+                        {
+                            shell.openExternal(href);
+                        }
+
+                    });
+
+                    //transition too view
                     $('#' + reqViewID + ' .previewTab').show();
                     $('#navMiddleButtons .editorTabHasContent .previewtab').addClass('active');
                 }

@@ -4,7 +4,7 @@
     h1='Loading Editor'
 
 #editorHolder(style="display: none;")
-    .editorTab
+    .editorHolderTabs.editorTab
         .editorLeft
             .form-group
                 input(type='text', class='form-control', name='postTitle')
@@ -48,4 +48,4 @@
                         |  This feature is intended for developers.
 
                     textarea(name='postJSONTextarea')
-    .previewTab(style="display: none;")
+    .editorHolderTabs.previewTab(style="display: none;")

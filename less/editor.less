@@ -124,3 +124,62 @@ textarea[name="postJSONTextarea"] {
 
     }
 }
+
+.previewRender {
+    img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    .youtube {
+        background-position: 50%;
+        background-repeat: no-repeat;
+        position: relative;
+        display: inline-block;
+        overflow: hidden;
+        cursor: pointer;
+
+        .play {
+            background: url("../images/play.svg") no-repeat 50%;
+            background-size: 64px 64px;
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            opacity: 0.8;
+            filter: alpha(opacity=80);
+
+            &:hover {
+                opacity: 1;
+                filter: alpha(opacity=100);
+            }
+        }
+    }
+}
+
+.previewPage {
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+
+    .postBody {
+        padding: 1rem 0 2rem;
+        clear: left;
+        font-size: 120%;
+        line-height: 150%;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        -webkit-hyphens: auto;
+        -ms-hyphens: auto;
+        hyphens: auto;
+    }
+
+    .tagList {
+        padding-bottom: 4rem;
+
+        .label {
+            margin-right: 8px;
+        }
+    }
+}

@@ -1,0 +1,18 @@
+.previewRender.previewPage.allow-copy
+    h1.entry-title=title
+    .meta-data
+        | Posted by
+        b
+            =' '
+            =author
+            b
+                =' '
+                |in
+                =' '
+                strong
+                    a(href='/trending/' + category)=category
+    .postBody!=body
+    .tagList
+        each tag in tagList
+            span.label.label-primary.lb-md
+                span.allow-copy=tag

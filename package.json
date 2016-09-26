@@ -38,6 +38,7 @@
     "steem-rpc": "^0.6.5",
     "steemjs-lib": "^0.3.3",
     "underscore": "^1.8.3",
+    "validator": "^5.7.0",
     "xmldom": "^0.1.22"
   }
 }
