@@ -1,17 +1,12 @@
 body {
     height: 100%;
     background: #272b30;
-}
-
-/*Thanks https://github.com/electron/electron/issues/2538 for selecting and dragging */
-:not(input):not(textarea),
-:not(input):not(textarea)::after,
-:not(input):not(textarea)::before {
     -webkit-user-select: none;
     user-select: none;
     cursor: default;
 }
 
+/*Thanks https://github.com/electron/electron/issues/2538 for selecting and dragging */
 :focus,
 button,
 input,
@@ -36,9 +31,12 @@ a[href^="https://"] {
 
 //copy rule for dialogs
 .allow-copy,
-.allow-copy .bootbox-body {
+.allow-copy .bootbox-body,
+input,
+textarea {
     -webkit-user-select: text;
     user-select: text;
+    cursor: text;
 }
 
 .navbar-center {
