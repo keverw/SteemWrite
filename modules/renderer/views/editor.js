@@ -14,6 +14,53 @@
         editorUIHelpers.resize();
     });
 
+    function editorReady(id, parameters, cb)
+    {
+        if (!parameters.tags) parameters.tags = '';
+
+        irpcRenderer.call('kvs.read', {
+            k: 'defaultEditor'
+        }, function(err, result)
+        {
+            if (!err && (result && typeof result == 'object'))
+            {
+                defaultEditor = result.v;
+            }
+
+            if (parameters.title) $('#' + id + " [name='postTitle']").val(parameters.title);
+
+            // input(type='hidden', name='_postStatus', value='')
+            // input(type='hidden', name='_author', value='')
+            // input(type='hidden', name='_permalink', value='')
+
+            editorTextEditHelpers.insertEditor(id, 'html', function change()
+            {
+                editorUIHelpers.checkPostBodyLength(id);
+            }, function init()
+            {
+                editorUIHelpers.checkPostBodyLength(id);
+                editorUIHelpers.checkPostTitleLength(id);
+
+                tagEditor.init(id, parameters.tags);
+
+                //update nav bar buttons
+                if (global.viewData.editorViewMeta.viewID == id)
+                {
+                    $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
+                        current: defaultEditor
+                    })).show();
+
+                }
+
+                //transition to displaying view
+                cb();
+
+            });
+
+        });
+
+    }
+
     module.exports = {
         load: function(author, permlink)
         {
@@ -25,8 +72,6 @@
             {
                 global.viewData.editorViewMeta.viewID = id;
 
-                //$('#' + reqViewID + ' #editorHolder')
-
                 viewHolder.html(util.getViewHtml('editor/initial', {
                     viewID: id
                 }));
@@ -36,58 +81,33 @@
                     editorUIHelpers.checkPostTitleLength(id);
                 });
 
+                var transitionView = function()
+                {
+                    ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
+
+                    ui.mainContentHolder.ready(viewHolder, function()
+                    {
+                        editorUIHelpers.resize();
+                    });
+
+                };
+
                 if (typeof permlink == 'string' && permlink.length > 0)
                 {
                     //existing post
-
+                    //todo: have loading existing posts
+                    editorReady(id, {
+                        body: 'Hi!',
+                        tags: $('#' + id + " [name='postTags']").val()
+                    }, transitionView);
                 }
                 else
                 {
                     //new post
-                    irpcRenderer.call('kvs.read', {
-                        k: 'defaultEditor'
-                    }, function(err, result)
-                    {
-                        if (!err && (result && typeof result == 'object'))
-                        {
-                            defaultEditor = result.v;
-                        }
+                    //todo: handle loading new post
+                    editorReady(id, {
 
-                        //todo: load in editor based on defaultEditor val
-
-                        //tmp
-                        ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
-
-                        // editorTextEditHelpers.insertEditor(id, 'md', function change()
-                        editorTextEditHelpers.insertEditor(id, 'html', function change()
-                        {
-                            editorUIHelpers.checkPostBodyLength(id);
-                        }, function init()
-                        {
-                            editorUIHelpers.checkPostBodyLength(id); //use on exisiting posts
-
-                            tagEditor.init(id, $('#' + id + " [name='postTags']").val());
-
-                            editorUIHelpers.checkPostTitleLength(id); //use on exisiting posts
-
-                            //update nav bar buttons
-                            if (global.viewData.editorViewMeta.viewID == id)
-                            {
-                                $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                                    current: defaultEditor
-                                })).show();
-
-                            }
-
-                            //transition to displaying view
-                            ui.mainContentHolder.ready(viewHolder, function()
-                            {
-                                editorUIHelpers.resize();
-                            });
-
-                        });
-
-                    });
+                    }, transitionView);
 
                 }
 
