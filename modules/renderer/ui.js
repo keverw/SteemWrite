@@ -1230,7 +1230,7 @@
             {
                 if (global.viewData.postsViewMeta.lastUser.length > 0)
                 {
-                    postsView.loadPosts("all");
+                    postsView.loadPosts('all');
                 }
 
             }

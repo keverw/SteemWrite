@@ -131,6 +131,21 @@
 
             });
 
+        },
+        isOpLock: function(author, permalink)
+        {
+            var str = author + '.' + permalink;
+            return (typeof global.postOpLocks[str] == 'boolean');
+        },
+        opLock: function(author, permalink)
+        {
+            var str = author + '.' + permalink;
+            global.postOpLocks[str] = true;
+        },
+        opUnlock: function(author, permalink)
+        {
+            var str = author + '.' + permalink;
+            delete global.postOpLocks[str];
         }
 
     };

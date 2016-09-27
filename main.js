@@ -49,6 +49,7 @@ global.bcHardfork = '';
 global.bcStatus = ''; //BC connection status
 global.bcNode = ''; //BC connection node
 global.bcRestart = false; //bc require restart
+global.postOpLocks = {}; //locks for like when changing permalinks for unpublished posts
 
 var dialog = require('electron').dialog;
 

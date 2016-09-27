@@ -1,5 +1,6 @@
 (function()
 {
+
     var path = require('path');
 
     var shell = require('electron').shell,
@@ -15,6 +16,11 @@
         editorUIHelpers.resize();
     });
 
+    function updateSlugUI()
+    {
+        //
+    }
+
     function editorReady(id, parameters, cb)
     {
         if (!parameters.tags) parameters.tags = '';
@@ -28,35 +34,71 @@
                 defaultEditor = result.v;
             }
 
-            if (parameters.title) $('#' + id + " [name='postTitle']").val(parameters.title);
+            if (!parameters.title) parameters.title = 'Untitled';
+            if (!parameters.additionalJSON) parameters.additionalJSON = '';
 
-            // input(type='hidden', name='_postStatus', value='')
-            // input(type='hidden', name='_author', value='')
-            // input(type='hidden', name='_permalink', value='')
+            $('#' + id + " [name='postTitle']").val(parameters.title);
 
-            editorTextEditHelpers.insertEditor(id, 'html', function change()
+            if (parameters.postStatus)
             {
-                editorUIHelpers.checkPostBodyLength(id);
-            }, function init()
+                $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
+            }
+
+            if (parameters.permlink && typeof parameters.permlink == 'string' && parameters.permlink.length > 0)
             {
-                editorUIHelpers.checkPostBodyLength(id);
-                editorUIHelpers.checkPostTitleLength(id);
-
-                tagEditor.init(id, parameters.tags);
-
-                //update nav bar buttons
-                if (global.viewData.editorViewMeta.viewID == id)
+                editorReadyStep2(id, parameters, cb);
+            }
+            else
+            {
+                editorUtility.createMainPermlink(parameters.title, parameters.author, function(err, permlink)
                 {
-                    $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                        current: defaultEditor
-                    })).show();
+                    if (err)
+                    {
+                        console.log(err);
+                        bootbox.alert('Error Loading Editor');
+                    }
+                    else
+                    {
+                        parameters.permlink = permlink;
+                        editorReadyStep2(id, parameters, cb);
+                    }
 
-                }
+                });
 
-                //transition to displaying view
-                cb();
+            }
 
-            });
+        });
+
+    }
+
+    function editorReadyStep2(id, parameters, cb)
+    {
+
+        editorTextEditHelpers.insertEditor(id, 'html', function change()
+        {
+            editorUIHelpers.checkPostBodyLength(id);
+        }, function init()
+        {
+            editorUIHelpers.checkPostBodyLength(id);
+            editorUIHelpers.checkPostTitleLength(id);
+
+            tagEditor.init(id, parameters.tags);
+
+            $('#' + id + " [name='_author']").val(parameters.author);
+            $('#' + id + " [name='_permalink']").val(parameters.permlink);
+            $('#' + id + " [name='postJSONTextarea']").val(parameters.additionalJSON);
+
+            //update nav bar buttons
+            if (global.viewData.editorViewMeta.viewID == id)
+            {
+                $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
+                    current: defaultEditor
+                })).show();
+
+            }
+
+            //transition to displaying view
+            cb();
 
         });
 
@@ -98,6 +140,7 @@
                     //existing post
                     //todo: have loading existing posts
                     editorReady(id, {
+                        author: author,
                         body: 'Hi!',
                         tags: $('#' + id + " [name='postTags']").val()
                     }, transitionView);
@@ -105,17 +148,14 @@
                 else
                 {
                     //new post
-                    //todo: handle loading new post
                     editorReady(id, {
-
+                        author: author,
+                        postStatus: 'drafts'
                     }, transitionView);
 
                 }
 
             }
-
-            // console.log(author, permlink);
-            // console.log(typeof author, typeof permlink);
 
             //if no permlink, new post
             //console.log(author, permlink);
@@ -207,11 +247,10 @@
                         tagsArr.push('uncategorized');
                     }
 
-                    //todo: populate the author with the real author
                     $('#' + reqViewID + ' .previewTab').html(util.getViewHtml('editor/preview', {
                         title: $('#' + reqViewID + " [name='postTitle']").val().trim(),
                         body: textHelpers.youtubePreview(textHelpers.preview(bodyStr)),
-                        author: 'todo',
+                        author: $('#' + reqViewID + " [name='_author']").val().trim(),
                         category: tagsArr[0],
                         tagList: tagsArr
                     }));
