@@ -323,6 +323,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/renderer\/editorUtility.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/renderer\/editorUtility.js",
+		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorUtility-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/renderer\/tagEditor.js": {
 		"fileType": 64,
 		"ignore": 1,

@@ -51,6 +51,27 @@
                 global.db.get("SELECT COUNT(*) AS posts FROM posts WHERE author = ? AND status = ?", [parameters.username, parameters.type], processCountResult);
             }
 
+        },
+        bcGetContent: function(parameters, cb)
+        {
+            if (global.bcReady)
+            {
+                global.bc.database_api().exec('get_content', [parameters.author, parameters.permlink])
+                    .then(function(res)
+                    {
+                        cb(null, res);
+                    })
+                    .catch(function(e)
+                    {
+                        cb(e);
+                    });
+
+            }
+            else
+            {
+                cb(new Error('Blockchain not ready yet'));
+            }
+
         }
 
     };

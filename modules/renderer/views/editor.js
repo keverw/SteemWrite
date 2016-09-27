@@ -5,6 +5,7 @@
     var shell = require('electron').shell,
         textHelpers = require(path.resolve('./modules/textHelpers.js')),
         editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js')),
+        editorUtility = require(path.resolve('./modules/renderer/editorUtility.js')),
         validator = require('validator');
 
     var defaultEditor = 'md'; //markdown is md, html is html
