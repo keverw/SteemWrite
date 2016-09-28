@@ -268,14 +268,7 @@
 
                     var tagsArr = $('#' + reqViewID + " [name='postTags']").val();
 
-                    if (typeof tagsArr == 'string')
-                    {
-                        tagsArr = tagEditor.textStr2Array(tagsArr);
-                    }
-                    else
-                    {
-                        tagsArr = [];
-                    }
+                    tagsArr = (typeof tagsArr == 'string') ? tagEditor.textStr2Array(tagsArr) : [];
 
                     if (tagsArr.length === 0)
                     {

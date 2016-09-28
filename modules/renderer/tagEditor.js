@@ -30,7 +30,7 @@
         renderLabels: tagEditorRenderLabels,
         init: function(reqViewID, tagsStr)
         {
-            if (typeof tagsStr == 'string') tagsStr = textStr2Array(tags);
+            if (typeof tagsStr == 'string') tagsStr = textStr2Array(tagsStr);
 
             $('#' + reqViewID + " [name='postTags']").val(tagsStr.join(' '));
             tagEditorRenderLabels(reqViewID, tagsStr);
