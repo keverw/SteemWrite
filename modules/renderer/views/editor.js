@@ -73,29 +73,24 @@
 
     function editorReadyStep2(id, parameters, cb)
     {
+        if (!parameters.body) parameters.body = '';
 
-        editorTextEditHelpers.insertEditor(id, 'html', function change()
+        var bodyType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
+
+        editorTextEditHelpers.insertEditor(id, bodyType, function change()
         {
             editorUIHelpers.checkPostBodyLength(id);
         }, function init()
         {
-            editorUIHelpers.checkPostBodyLength(id);
             editorUIHelpers.checkPostTitleLength(id);
+
+            editorTextEditHelpers.setContent(editorTextEditHelpers.getEditorID(id), parameters.body);
 
             tagEditor.init(id, parameters.tags);
 
             $('#' + id + " [name='_author']").val(parameters.author);
             $('#' + id + " [name='_permalink']").val(parameters.permlink);
             $('#' + id + " [name='postJSONTextarea']").val(parameters.additionalJSON);
-
-            //update nav bar buttons
-            if (global.viewData.editorViewMeta.viewID == id)
-            {
-                $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                    current: defaultEditor
-                })).show();
-
-            }
 
             //transition to displaying view
             cb();
@@ -130,7 +125,20 @@
 
                     ui.mainContentHolder.ready(viewHolder, function()
                     {
+                        //update nav bar buttons
+                        if (global.viewData.editorViewMeta.viewID == id)
+                        {
+                            $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
+                                current: defaultEditor
+                            }));
+
+                        }
+
                         editorUIHelpers.resize();
+                        editorTextEditHelpers.refresh(editorTextEditHelpers.getEditorID(id));
+                        editorUIHelpers.checkPostBodyLength(id);
+                        $('#navMiddleButtons').show();
+
                     });
 
                 };
@@ -280,7 +288,7 @@
 
                     });
 
-                    //transition too view
+                    //transition to view
                     $('#' + reqViewID + ' .previewTab').show();
                     $('#navMiddleButtons .editorTabHasContent .previewtab').addClass('active');
                 }

@@ -114,7 +114,7 @@
                     },
                     status: false,
                     previewRender: function(plainText) {
-                        return '<div class="previewRender allow-copy">' + textHelpers.youtubePreview(textHelpers.preview(plainText)) + '</div>';
+                        return '<div class="previewRender markdownPreviewRender allow-copy">' + textHelpers.youtubePreview(textHelpers.preview(plainText)) + '</div>';
                     }
                 });
 
@@ -222,6 +222,25 @@
             else
             {
                 return false;
+            }
+
+        },
+        refresh: function(editorID)
+        {
+
+            if ($('#' + editorID).length > 0)
+            {
+                var type = $('#' + editorID).attr('data-type');
+
+                if (type == 'md')
+                {
+                    if (global.viewData.editorViewMeta.SimpleMDE)
+                    {
+                        global.viewData.editorViewMeta.SimpleMDE.codemirror.refresh();
+                    }
+
+                }
+
             }
 
         }
