@@ -72,6 +72,65 @@
                 cb(new Error('Blockchain not ready yet'));
             }
 
+        },
+        loadPost: function(parameters, cb)
+        {
+            global.db.get("SELECT * FROM posts WHERE author = ? AND permlink = ? LIMIT 1", [parameters.author, parameters.permlink], function(err, postsRow)
+            {
+                if (err) return cb(err);
+
+                if (postsRow)
+                {
+                    global.db.get("SELECT * FROM revisions WHERE revHash = ? LIMIT 1", [postsRow.revHash], function(err, revisionsRow)
+                    {
+                        if (err) return cb(err);
+
+                        if (revisionsRow)
+                        {
+                            var tags = [];
+
+                            try {
+                                var metadata = JSON.parse(revisionsRow.json_metadata);
+
+                                if (metadata.tags)
+                                {
+                                    tags = metadata.tags;
+                                }
+
+                            } catch (err)
+                            {
+                                //
+                            }
+
+                            console.log(tags);
+
+                            cb(null, {
+                                status: 'found',
+                                author: revisionsRow.author,
+                                permlink: revisionsRow.permlink,
+                                title: revisionsRow.title,
+                                body: revisionsRow.body,
+                                tags: tags
+                            });
+
+                        }
+                        else
+                        {
+                        }
+
+                    });
+
+                }
+                else
+                {
+                    cb(null, {
+                        status: 'notfound'
+                    });
+                }
+
+
+            });
+
         }
 
     };

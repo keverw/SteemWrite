@@ -30,7 +30,9 @@
         renderLabels: tagEditorRenderLabels,
         init: function(reqViewID, tagsStr)
         {
-            $('#' + reqViewID + " [name='postTags']").val(tagsStr);
+            if (typeof tagsStr == 'string') tagsStr = textStr2Array(tags);
+
+            $('#' + reqViewID + " [name='postTags']").val(tagsStr.join(' '));
             tagEditorRenderLabels(reqViewID, tagsStr);
 
             new window.Awesomplete(document.querySelector('#' + reqViewID + ' .tagsAutoCompleteBox'), {

@@ -28,7 +28,7 @@
 
                 .caption
                     h4
-                        a(onclick='postsView.openEditor(this)', data-author=username)
+                        a(onclick='postsView.openEditor(this)', data-author=post.author, data-permlink=post.permlink)
                             span.title=post.title
 
                     p.dateHolder

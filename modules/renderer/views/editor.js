@@ -146,12 +146,39 @@
                 if (typeof permlink == 'string' && permlink.length > 0)
                 {
                     //existing post
-                    //todo: have loading existing posts
-                    editorReady(id, {
+
+                    irpcRenderer.call('posts.loadPost', {
                         author: author,
-                        body: 'Hi!',
-                        tags: $('#' + id + " [name='postTags']").val()
-                    }, transitionView);
+                        permlink: permlink
+                    }, function(err, result) {
+                        if (err)
+                        {
+                            console.log(err);
+                            bootbox.alert('Error Loading Editor');
+                        }
+                        else
+                        {
+                            if (result.status == 'notfound')
+                            {
+                                bootbox.alert('Error Loading Editor');
+                            }
+                            else if (result.status == 'found')
+                            {
+                                editorReady(id, {
+                                    author: result.author,
+                                    permlink: result.permlink,
+                                    title: result.title,
+                                    body: result.body,
+                                    tags: result.tags
+                                }, transitionView);
+
+
+                            }
+
+                        }
+
+                    });
+
                 }
                 else
                 {
