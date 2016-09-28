@@ -115,7 +115,7 @@
                 if (foundCount == 8)
                 {
                     result.found = true;
-                    result.n_AutosaveHash = module.exports.hashContent(result.title, result.body, result.tags, result.additionalJSON)
+                    result.n_AutosaveHash = module.exports.hashContent(result.title, result.body, result.tags, result.additionalJSON);
                 }
             }
 

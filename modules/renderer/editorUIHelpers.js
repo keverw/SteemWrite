@@ -7,10 +7,8 @@
 
     function getPostAsStr(viewID)
     {
-        var editorID = editorTextEditHelpers.getEditorID(viewID);
-        var str = editorTextEditHelpers.getContent(editorID);
-
-        if (!str) str = ''; //incase null
+        var str = editorTextEditHelpers.getContent(editorTextEditHelpers.getEditorID(viewID));
+        return (str) ? str : ''; //if null will give a blank string
     }
 
     function getPostStrLen(str)
@@ -46,17 +44,13 @@
             var errMsg = null;
             var len = $('#' + viewID + " [name='postTitle']").val().trim().length;
 
-            if (len > 0)
-            {
-                if (len > 255)
-                {
-                    errMsg = 'Please shorten title';
-                }
-
-            }
-            else
+            if (len === 0)
             {
                 errMsg = 'Title is required';
+            }
+            else if (len > 255)
+            {
+                errMsg = 'Please shorten title';
             }
 
             if (errMsg)
@@ -72,21 +66,33 @@
         },
         getPostBodyLength: function(viewID)
         {
-            var str = getPostAsStr(viewID);
-            return getPostStrLen(str);
+            return getPostStrLen(getPostAsStr(viewID));
         },
         checkPostBodyLength: function(viewID)
         {
             var errMsg = null;
             var maxKb = 100;
 
-            var len = module.exports.getPostBodyLength(viewID);
+            var str = getPostAsStr(viewID);
+            var len = getPostStrLen(str);
 
             if (len > 0)
             {
                 if (len > maxKb * 1024)
                 {
                     errMsg = 'Exceeds maximum length (' + maxKb + 'KB)';
+                }
+                else
+                {
+                    var metadata = textHelpers.metadata(str);
+
+                    var errorStrings = [];
+
+                    if (metadata.tagsWarning.length > 0) errorStrings.push('<p>' + metadata.tagsWarning + '</p>');
+                    if (metadata.sanitizeErrorsWarning.length > 0) errorStrings.push('<p>' + metadata.sanitizeErrorsWarning + '</p>');
+
+                    //set errMsg if errorStrings not empty
+                    if (errorStrings.length > 0) errMsg = errorStrings.join('<br>');
                 }
 
             }
