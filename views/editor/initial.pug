@@ -10,6 +10,7 @@
                 input(type='text', class='form-control', name='postTitle')
             .editorHolder
         .editorRight
+            input(type='hidden', name='_autosaveHash', value='')
             input(type='hidden', name='_postStatus', value='')
             input(type='hidden', name='_author', value='')
             input(type='hidden', name='_permalink', value='')
@@ -18,6 +19,7 @@
                 .panel-heading
                     h3.panel-title Publish
                 .panel-body
+                    .actions
                     .fieldErrors
                         .titleError
                         .bodyError

@@ -84,6 +84,7 @@
             $('#' + id + " [name='_author']").val(parameters.author);
             $('#' + id + " [name='_permalink']").val(parameters.permlink);
             $('#' + id + " [name='postJSONTextarea']").val(parameters.additionalJSON);
+            $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
 
             //transition to displaying view
             cb();
@@ -130,6 +131,7 @@
                         editorTextEditHelpers.refresh(editorTextEditHelpers.getEditorID(id));
                         editorUIHelpers.checkPostBodyLength(id);
                         $('#navMiddleButtons').show();
+                        autosave(id);
 
                     });
 

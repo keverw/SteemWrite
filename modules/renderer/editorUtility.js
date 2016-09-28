@@ -2,7 +2,8 @@
 {
     var getSlug = require('speakingurl'),
         base58 = require('bs58'),
-        secureRandom = require('secure-random');
+        secureRandom = require('secure-random'),
+        sha1 = require('sha1');
 
     function cleanPermlink(permlink)
     {
@@ -70,7 +71,57 @@
         createReplyPermlink: function(parent_author, parent_permlink, cb)
         {
             createPermlink('', '', parent_author, parent_permlink, cb);
+        },
+        hashContent: function(title, body, tags, additionalJSON)
+        {
+            if (typeof tags == 'object') tags = tags.join(' ');
+
+            return sha1([title, body, tags, additionalJSON].join('$'));
+        },
+        getEditorData: function(id)
+        {
+            var result = {
+                found: false
+            };
+
+            if ($('#' + id).length)
+            {
+                var foundCount = 0;
+
+                result.additionalJSON = $('#' + id + " [name='postJSONTextarea']").val();
+                if (typeof result.additionalJSON == 'string') foundCount++;
+
+                result.author = $('#' + id + " [name='_author']").val();
+                if (typeof result.author == 'string') foundCount++;
+
+                result.body = editorTextEditHelpers.getContent(editorTextEditHelpers.getEditorID(id));
+                if (typeof result.body == 'string') foundCount++;
+
+                result.permlink = $('#' + id + " [name='_permalink']").val();
+                if (typeof result.permlink == 'string') foundCount++;
+
+                result.postStatus = $('#' + id + " [name='_postStatus']").val();
+                if (typeof result.postStatus == 'string') foundCount++;
+
+                result.tags = $('#' + id + " [name='postTags']").val();
+                if (typeof result.tags == 'string') foundCount++;
+
+                result.title = $('#' + id + " [name='postTitle']").val();
+                if (typeof result.title == 'string') foundCount++;
+
+                result.c_AutosaveHash = $('#' + id + " [name='_autosaveHash']").val();
+                if (typeof result.c_AutosaveHash == 'string') foundCount++;
+
+                if (foundCount == 8)
+                {
+                    result.found = true;
+                    result.n_AutosaveHash = module.exports.hashContent(result.title, result.body, result.tags, result.additionalJSON)
+                }
+            }
+
+            return result;
         }
+
     };
 
 })();

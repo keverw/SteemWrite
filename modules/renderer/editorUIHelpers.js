@@ -5,6 +5,20 @@
     var textHelpers = require(path.resolve('./modules/textHelpers.js')),
         htmlToText = require('html-to-text');
 
+    function getPostAsStr(viewID)
+    {
+        var editorID = editorTextEditHelpers.getEditorID(viewID);
+        var str = editorTextEditHelpers.getContent(editorID);
+
+        if (!str) str = ''; //incase null
+    }
+
+    function getPostStrLen(str)
+    {
+        str = str.trim();
+        return (textHelpers.isHtml(str)) ? htmlToText.fromString(str).trim().length : str.length;
+    }
+
     module.exports = {
         resize: function()
         {
@@ -58,20 +72,8 @@
         },
         getPostBodyLength: function(viewID)
         {
-            var editorID = editorTextEditHelpers.getEditorID(viewID);
-
-            var str = editorTextEditHelpers.getContent(editorID);
-
-            if (!str) str = ''; //incase null
-            str = str.trim();
-
-            var len = str.length;
-            if (textHelpers.isHtml(str))
-            {
-                len = htmlToText.fromString(str).trim().length;
-            }
-
-            return len;
+            var str = getPostAsStr(viewID);
+            return getPostStrLen(str);
         },
         checkPostBodyLength: function(viewID)
         {
