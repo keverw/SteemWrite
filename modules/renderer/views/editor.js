@@ -1,6 +1,5 @@
 (function()
 {
-
     var path = require('path');
 
     var shell = require('electron').shell,
@@ -29,20 +28,14 @@
             k: 'defaultEditor'
         }, function(err, result)
         {
-            if (!err && (result && typeof result == 'object'))
-            {
-                defaultEditor = result.v;
-            }
+            if (!err && (result && typeof result == 'object')) defaultEditor = result.v;
 
             if (!parameters.title) parameters.title = 'Untitled';
             if (!parameters.additionalJSON) parameters.additionalJSON = '';
 
             $('#' + id + " [name='postTitle']").val(parameters.title);
 
-            if (parameters.postStatus)
-            {
-                $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
-            }
+            if (parameters.postStatus) $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
 
             if (parameters.permlink && typeof parameters.permlink == 'string' && parameters.permlink.length > 0)
             {
@@ -94,7 +87,6 @@
 
             //transition to displaying view
             cb();
-
         });
 
     }
@@ -146,7 +138,6 @@
                 if (typeof permlink == 'string' && permlink.length > 0)
                 {
                     //existing post
-
                     irpcRenderer.call('posts.loadPost', {
                         author: author,
                         permlink: permlink
@@ -165,6 +156,7 @@
                             else if (result.status == 'found')
                             {
                                 editorReady(id, {
+                                    postStatus: result.postStatus,
                                     author: result.author,
                                     permlink: result.permlink,
                                     title: result.title,
@@ -192,9 +184,6 @@
 
             }
 
-            //if no permlink, new post
-            //console.log(author, permlink);
-
         },
         switchEditor: function(type)
         {
@@ -204,9 +193,7 @@
             {
                 var len = editorUIHelpers.getPostBodyLength(reqViewID);
 
-                if (len === 0)
-                {
-                    if (type == 'html' || type == 'md')
+                if (len === 0 && (type == 'html' || type == 'md'))
                     {
                         defaultEditor = type;
 
@@ -236,7 +223,6 @@
                         });
 
                     }
-                }
 
             }
 
@@ -259,21 +245,15 @@
                 }
                 else if (mode == 'preview')
                 {
-                    var editorID = editorTextEditHelpers.getEditorID(reqViewID);
-
-                    var bodyStr = editorTextEditHelpers.getContent(editorID);
+                    var bodyStr = editorTextEditHelpers.getContent(editorTextEditHelpers.getEditorID(reqViewID)).trim();
 
                     if (!bodyStr) bodyStr = ''; //incase null
-                    bodyStr = bodyStr.trim();
 
                     var tagsArr = $('#' + reqViewID + " [name='postTags']").val();
 
                     tagsArr = (typeof tagsArr == 'string') ? tagEditor.textStr2Array(tagsArr) : [];
 
-                    if (tagsArr.length === 0)
-                    {
-                        tagsArr.push('uncategorized');
-                    }
+                    if (tagsArr.length === 0) tagsArr.push('uncategorized');
 
                     $('#' + reqViewID + ' .previewTab').html(util.getViewHtml('editor/preview', {
                         title: $('#' + reqViewID + " [name='postTitle']").val().trim(),
@@ -288,10 +268,12 @@
                     {
                         var youTubeID = $(this).attr('data-youtubeid');
 
+                        if (typeof youTubeID == 'string')
+                        {
                         var iframeSrc = 'https://www.youtube.com/embed/' + youTubeID + '?autoplay=1&autohide=1';
-                        var iframeHtml = '<iframe width="640" height="480" src="' + iframeSrc + '" frameBorder="0" allowFullScreen="true"></iframe>';
+                            $(this).replaceWith('<iframe width="640" height="480" src="' + iframeSrc + '" frameBorder="0" allowFullScreen="true"></iframe>');
+                        }
 
-                        $(this).replaceWith(iframeHtml);
                     });
 
                     //attach open in browser to links
