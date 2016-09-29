@@ -3,6 +3,7 @@
     var path = require('path');
 
     var textHelpers = require(path.resolve('./modules/textHelpers.js')),
+        htmlToText = require('html-to-text'),
         getSlug = require('speakingurl'),
         base58 = require('bs58'),
         secureRandom = require('secure-random'),
@@ -80,8 +81,12 @@
             if (typeof tags == 'object') tags = tags.join(' ');
             body = textHelpers.preview(body);
 
-
             return sha1([title, body, tags, additionalJSON].join('$'));
+        },
+        getPostStrLen: function(str)
+        {
+            str = str.trim();
+            return (textHelpers.isHtml(str)) ? htmlToText.fromString(str).trim().length : str.length;
         },
         getEditorData: function(id)
         {
@@ -94,7 +99,11 @@
                 var foundCount = 0;
 
                 result.additionalJSON = $('#' + id + " [name='postJSONTextarea']").val();
-                if (typeof result.additionalJSON == 'string') foundCount++;
+                if (typeof result.additionalJSON == 'string')
+                {
+                    result.additionalJSON = result.additionalJSON.trim();
+                    foundCount++;
+                }
 
                 result.author = $('#' + id + " [name='_author']").val();
                 if (typeof result.author == 'string') foundCount++;
@@ -112,7 +121,11 @@
                 if (typeof result.tags == 'string') foundCount++;
 
                 result.title = $('#' + id + " [name='postTitle']").val();
-                if (typeof result.title == 'string') foundCount++;
+                if (typeof result.title == 'string')
+                {
+                    result.title = result.title.trim();
+                    foundCount++;
+                }
 
                 result.c_AutosaveHash = $('#' + id + " [name='_autosaveHash']").val();
                 if (typeof result.c_AutosaveHash == 'string') foundCount++;
@@ -125,6 +138,58 @@
             }
 
             return result;
+        },
+        validate: {
+            postTitleLength: function(text)
+            {
+                var errMsg = null;
+                var len = text.length;
+
+                if (len === 0)
+                {
+                    errMsg = 'Title is required';
+                }
+                else if (len > 255)
+                {
+                    errMsg = 'Please shorten title';
+                }
+
+                return errMsg;
+            },
+            postBody: function(text, len)
+            {
+                if (typeof len != 'number') len = module.exports.getPostStrLen(text);
+
+                var errMsg = null;
+                var maxKb = 100;
+
+                if (len > 0)
+                {
+                    if (len > maxKb * 1024)
+                    {
+                        errMsg = 'Exceeds maximum length (' + maxKb + 'KB)';
+                    }
+                    else
+                    {
+                        var metadata = textHelpers.metadata(text);
+
+                        var errorStrings = [];
+
+                        if (metadata.tagsWarning.length > 0) errorStrings.push('<p>' + metadata.tagsWarning + '</p>');
+                        if (metadata.sanitizeErrorsWarning.length > 0) errorStrings.push('<p>' + metadata.sanitizeErrorsWarning + '</p>');
+
+                        //set errMsg if errorStrings not empty
+                        if (errorStrings.length > 0) errMsg = errorStrings.join('<br>');
+                    }
+
+                }
+                else
+                {
+                    errMsg = 'Message is required';
+                }
+
+                return errMsg;
+            }
         }
 
     };

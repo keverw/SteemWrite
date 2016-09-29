@@ -15,7 +15,7 @@
         editorUIHelpers.resize();
     });
 
-    function updateSlugUI()
+    function checkAdditionalJSON()
     {
         //
     }
@@ -87,6 +87,7 @@
             $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
 
             //transition to displaying view
+            updatePublishPanel(id, parameters);
             cb();
         });
 
@@ -110,6 +111,12 @@
                 $('#' + id + " [name='postTitle']").on('change keyup paste', function()
                 {
                     editorUIHelpers.checkPostTitleLength(id);
+                });
+
+                //this should only be checked when done typing, not during
+                $('#' + id + " [name='postJSONTextarea']").on('change paste', function()
+                {
+                    editorUIHelpers.checkAdditionalJSON(id);
                 });
 
                 var transitionView = function()
@@ -140,6 +147,8 @@
                 if (typeof permlink == 'string' && permlink.length > 0)
                 {
                     //existing post
+                    $('#' + id + " [name='_isNew']").val(0);
+
                     irpcRenderer.call('posts.loadPost', {
                         author: author,
                         permlink: permlink
@@ -177,6 +186,8 @@
                 else
                 {
                     //new post
+                    $('#' + id + " [name='_isNew']").val(1);
+
                     editorReady(id, {
                         author: author,
                         postStatus: 'drafts'

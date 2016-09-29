@@ -3,18 +3,12 @@
     var path = require('path');
 
     var textHelpers = require(path.resolve('./modules/textHelpers.js')),
-        htmlToText = require('html-to-text');
+        editorUtility = require(path.resolve('./modules/renderer/editorUtility.js'));
 
     function getPostAsStr(viewID)
     {
         var str = editorTextEditHelpers.getContent(editorTextEditHelpers.getEditorID(viewID));
         return (str) ? str : ''; //if null will give a blank string
-    }
-
-    function getPostStrLen(str)
-    {
-        str = str.trim();
-        return (textHelpers.isHtml(str)) ? htmlToText.fromString(str).trim().length : str.length;
     }
 
     module.exports = {
@@ -41,17 +35,9 @@
         },
         checkPostTitleLength: function(viewID)
         {
-            var errMsg = null;
-            var len = $('#' + viewID + " [name='postTitle']").val().trim().length;
+            var text = $('#' + viewID + " [name='postTitle']").val().trim();
 
-            if (len === 0)
-            {
-                errMsg = 'Title is required';
-            }
-            else if (len > 255)
-            {
-                errMsg = 'Please shorten title';
-            }
+            var errMsg = editorUtility.validate.postTitleLength(text);
 
             if (errMsg)
             {
@@ -66,40 +52,14 @@
         },
         getPostBodyLength: function(viewID)
         {
-            return getPostStrLen(getPostAsStr(viewID));
+            return editorUtility.getPostStrLen(getPostAsStr(viewID));
         },
         checkPostBodyLength: function(viewID)
         {
-            var errMsg = null;
-            var maxKb = 100;
+            var text = getPostAsStr(viewID);
+            var len = editorUtility.getPostStrLen(text);
 
-            var str = getPostAsStr(viewID);
-            var len = getPostStrLen(str);
-
-            if (len > 0)
-            {
-                if (len > maxKb * 1024)
-                {
-                    errMsg = 'Exceeds maximum length (' + maxKb + 'KB)';
-                }
-                else
-                {
-                    var metadata = textHelpers.metadata(str);
-
-                    var errorStrings = [];
-
-                    if (metadata.tagsWarning.length > 0) errorStrings.push('<p>' + metadata.tagsWarning + '</p>');
-                    if (metadata.sanitizeErrorsWarning.length > 0) errorStrings.push('<p>' + metadata.sanitizeErrorsWarning + '</p>');
-
-                    //set errMsg if errorStrings not empty
-                    if (errorStrings.length > 0) errMsg = errorStrings.join('<br>');
-                }
-
-            }
-            else
-            {
-                errMsg = 'Message is required';
-            }
+            var errMsg = editorUtility.validate.postBody(text, len);
 
             //update tab view
             if (len > 0)
@@ -127,6 +87,12 @@
             }
 
             return errMsg;
+        },
+        checkAdditionalJSON: function(viewID)
+        {
+            var text = $('#' + viewID + " [name='postJSONTextarea']").val().trim();
+
+
         }
 
     };
