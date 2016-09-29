@@ -1,6 +1,9 @@
 (function()
 {
-    var getSlug = require('speakingurl'),
+    var path = require('path');
+
+    var textHelpers = require(path.resolve('./modules/textHelpers.js')),
+        getSlug = require('speakingurl'),
         base58 = require('bs58'),
         secureRandom = require('secure-random'),
         sha1 = require('sha1');
@@ -75,6 +78,8 @@
         hashContent: function(title, body, tags, additionalJSON)
         {
             if (typeof tags == 'object') tags = tags.join(' ');
+            body = textHelpers.preview(body);
+
 
             return sha1([title, body, tags, additionalJSON].join('$'));
         },

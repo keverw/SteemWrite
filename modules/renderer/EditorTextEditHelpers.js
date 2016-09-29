@@ -208,7 +208,24 @@
                     }
                     else
                     {
+                        text = text.trim();
+
+                        //remove from start of string
+                        if (text.substring(0, 6) == '<html>')
+                        {
+                            text = text.substring(6);
+                        }
+
+                        //remove from end of string
+                        if (text.substring(text.length - 7) == '</html>')
+                        {
+                            text = text.substring(0, text.length - 7);
+                        }
+
+                        //trim again
+                        text = text.trim();
                         tinymce.get(editorID).setContent(text);
+
                         return true;
                     }
 

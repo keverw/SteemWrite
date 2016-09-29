@@ -1186,17 +1186,18 @@
                     {
                         var views = $('#mainContentHolder .viewHolder:not(' + selector + ')');
 
+                        //using .stop() because if you click really fast, animations finish in the wrong order and the view will stay hidden 
                         if (views.length > 0)
                         {
-                            views.fadeOut('fast', function()
+                            views.stop().fadeOut('fast', function()
                             {
-                                $(selector).fadeIn('fast');
+                                $(selector).stop().fadeIn('fast');
                                 if (typeof cb == 'function') cb('show'); //ui was shown
                             }).remove();
                         }
                         else
                         {
-                            $(selector).fadeIn('fast');
+                            $(selector).stop().fadeIn('fast');
                             if (typeof cb == 'function') cb('show'); //ui was shown
                         }
 
