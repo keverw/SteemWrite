@@ -92,7 +92,19 @@
         {
             var text = $('#' + viewID + " [name='postJSONTextarea']").val().trim();
 
+            var errMsg = editorUtility.validate.additionalJSONParse(text).errMsg;
 
+            //update errors view
+            if (errMsg)
+            {
+                if ($('#' + viewID + ' .bodyError .jsonError').length === 0) $('#' + viewID + ' .bodyError').append('<div class="alert alert-warning jsonError" role="alert">' + errMsg + '</div>');
+            }
+            else
+            {
+                $('#' + viewID + ' .bodyError .jsonError').remove();
+            }
+
+            return errMsg;
         }
 
     };

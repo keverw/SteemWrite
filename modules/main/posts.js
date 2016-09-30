@@ -97,11 +97,6 @@
                                     tags = metadata.tags;
                                 }
 
-                            } catch (err)
-                            {
-                                //
-                            }
-
                             cb(null, {
                                 status: 'found',
                                 postStatus: postsRow.status,
@@ -109,9 +104,14 @@
                                 permlink: revisionsRow.permlink,
                                 title: revisionsRow.title,
                                 body: revisionsRow.body,
+                                    json_metadata: metadata,
                                 tags: tags
                             });
 
+                            } catch (err)
+                            {
+                                if (err) return cb(err);
+                            }
                         }
                         else
                         {

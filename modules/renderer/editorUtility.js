@@ -79,6 +79,11 @@
         hashContent: function(title, body, tags, additionalJSON)
         {
             if (typeof tags == 'object') tags = tags.join(' ');
+            if (typeof additionalJSON == 'object') additionalJSON = JSON.stringify(additionalJSON);
+            additionalJSON = additionalJSON.trim();
+
+            if (additionalJSON.length == 0) additionalJSON = '{}';
+
             body = textHelpers.preview(body);
 
             return sha1([title, body, tags, additionalJSON].join('$'));
@@ -189,7 +194,63 @@
                 }
 
                 return errMsg;
+            },
+            additionalJSONParse: function(text)
+            {
+                var result = {
+                    errMsg: null,
+                    decoded: {}
+                };
+
+                if (text.length > 0)
+                {
+                    try {
+                        var jsonData = JSON.parse(text);
+
+                        if (typeof jsonData == 'object')
+                        {
+                            var errorStrings = [];
+
+                            if (jsonData.hasOwnProperty('tags'))
+                            {
+                                errorStrings.push('<p><code>tags</code> key is automatically added and is not allowed</p>');
+                            }
+
+                            if (jsonData.hasOwnProperty('users'))
+                            {
+                                errorStrings.push('<p><code>users</code> key is automatically added and is not allowed</p>');
+                            }
+
+                            if (jsonData.hasOwnProperty('image'))
+                            {
+                                errorStrings.push('<p><code>image</code> key is automatically added and is not allowed</p>');
+                            }
+
+                            if (jsonData.hasOwnProperty('links'))
+                            {
+                                errorStrings.push('<p><code>links</code> key is automatically added and is not allowed</p>');
+                            }
+
+                            if (errorStrings.length > 0)
+                            {
+                                result.errMsg = errorStrings.join('<br>');
+                            }
+
+                        }
+                        else
+                        {
+                            result.errMsg = 'Invaild JSON Data';
+                        }
+
+                    } catch (err)
+                    {
+                        result.errMsg = 'Invaild JSON Data';
+                    }
+                }
+
+                return result;
             }
+
         }
 
     };

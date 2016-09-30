@@ -15,7 +15,7 @@
         editorUIHelpers.resize();
     });
 
-    function checkAdditionalJSON()
+    function updateSlugUI()
     {
         //
     }
@@ -31,9 +31,10 @@
             if (!err && (result && typeof result == 'object')) defaultEditor = result.v;
 
             if (!parameters.title) parameters.title = 'Untitled';
-            if (!parameters.additionalJSON) parameters.additionalJSON = '';
+            if (!parameters.additionalJSON) parameters.additionalJSON = {};
 
             $('#' + id + " [name='postTitle']").val(parameters.title);
+            $('#' + id + " [name='postJSONTextarea']").val(JSON.stringify(parameters.additionalJSON));
 
             if (parameters.postStatus) $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
 
@@ -75,15 +76,15 @@
             editorUIHelpers.checkPostBodyLength(id);
         }, function init()
         {
-            editorUIHelpers.checkPostTitleLength(id);
-
             editorTextEditHelpers.setContent(editorTextEditHelpers.getEditorID(id), parameters.body);
+
+            editorUIHelpers.checkAdditionalJSON(id);
+            editorUIHelpers.checkPostTitleLength(id);
 
             tagEditor.init(id, parameters.tags);
 
             $('#' + id + " [name='_author']").val(parameters.author);
             $('#' + id + " [name='_permalink']").val(parameters.permlink);
-            $('#' + id + " [name='postJSONTextarea']").val(parameters.additionalJSON);
             $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
 
             //transition to displaying view
@@ -166,15 +167,22 @@
                             }
                             else if (result.status == 'found')
                             {
+                                if (typeof result.json_metadata != 'object') result.json_metadata = {};
+
+                                delete result.json_metadata.tags;
+                                delete result.json_metadata.users;
+                                delete result.json_metadata.image;
+                                delete result.json_metadata.links;
+
                                 editorReady(id, {
                                     postStatus: result.postStatus,
                                     author: result.author,
                                     permlink: result.permlink,
                                     title: result.title,
                                     body: result.body,
-                                    tags: result.tags
+                                    tags: result.tags,
+                                    additionalJSON: result.json_metadata
                                 }, transitionView);
-
 
                             }
 
