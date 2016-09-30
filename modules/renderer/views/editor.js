@@ -215,35 +215,35 @@
                 var len = editorUIHelpers.getPostBodyLength(reqViewID);
 
                 if (len === 0 && (type == 'html' || type == 'md'))
-                    {
-                        defaultEditor = type;
+                {
+                    defaultEditor = type;
 
-                        irpcRenderer.call('kvs.set', {
-                            k: 'defaultEditor',
-                            v: type
-                        }, function(err, result) {
-                            //update editor type used
-                            editorTextEditHelpers.insertEditor(reqViewID, type, function()
-                            {
-                                editorUIHelpers.checkPostBodyLength(reqViewID);
-                            }, function init()
-                            {
-                                editorUIHelpers.checkPostBodyLength(reqViewID);
-                                editorUIHelpers.resize();
-                            });
-
-                            //update nav bar buttons
-                            if (global.viewData.editorViewMeta.viewID == reqViewID)
-                            {
-                                $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                                    current: defaultEditor
-                                })).show();
-
-                            }
-
+                    irpcRenderer.call('kvs.set', {
+                        k: 'defaultEditor',
+                        v: type
+                    }, function(err, result) {
+                        //update editor type used
+                        editorTextEditHelpers.insertEditor(reqViewID, type, function()
+                        {
+                            editorUIHelpers.checkPostBodyLength(reqViewID);
+                        }, function init()
+                        {
+                            editorUIHelpers.checkPostBodyLength(reqViewID);
+                            editorUIHelpers.resize();
                         });
 
-                    }
+                        //update nav bar buttons
+                        if (global.viewData.editorViewMeta.viewID == reqViewID)
+                        {
+                            $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
+                                current: defaultEditor
+                            })).show();
+
+                        }
+
+                    });
+
+                }
 
             }
 
@@ -291,7 +291,7 @@
 
                         if (typeof youTubeID == 'string')
                         {
-                        var iframeSrc = 'https://www.youtube.com/embed/' + youTubeID + '?autoplay=1&autohide=1';
+                            var iframeSrc = 'https://www.youtube.com/embed/' + youTubeID + '?autoplay=1&autohide=1';
                             $(this).replaceWith('<iframe width="640" height="480" src="' + iframeSrc + '" frameBorder="0" allowFullScreen="true"></iframe>');
                         }
 

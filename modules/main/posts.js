@@ -97,16 +97,16 @@
                                     tags = metadata.tags;
                                 }
 
-                            cb(null, {
-                                status: 'found',
-                                postStatus: postsRow.status,
-                                author: revisionsRow.author,
-                                permlink: revisionsRow.permlink,
-                                title: revisionsRow.title,
-                                body: revisionsRow.body,
+                                cb(null, {
+                                    status: 'found',
+                                    postStatus: postsRow.status,
+                                    author: revisionsRow.author,
+                                    permlink: revisionsRow.permlink,
+                                    title: revisionsRow.title,
+                                    body: revisionsRow.body,
                                     json_metadata: metadata,
-                                tags: tags
-                            });
+                                    tags: tags
+                                });
 
                             } catch (err)
                             {
