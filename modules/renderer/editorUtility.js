@@ -82,7 +82,7 @@
             if (typeof additionalJSON == 'object') additionalJSON = JSON.stringify(additionalJSON);
             additionalJSON = additionalJSON.trim();
 
-            if (additionalJSON.length == 0) additionalJSON = '{}';
+            if (additionalJSON.length === 0) additionalJSON = '{}';
 
             body = textHelpers.preview(body);
 
@@ -132,10 +132,18 @@
                     foundCount++;
                 }
 
+                var _isNew = $('#' + id + " [name='_isNew']").val();
+
+                if (typeof _isNew == 'string')
+                {
+                    result.isNew = (_isNew == '1');
+                    foundCount++;
+                }
+
                 result.c_AutosaveHash = $('#' + id + " [name='_autosaveHash']").val();
                 if (typeof result.c_AutosaveHash == 'string') foundCount++;
 
-                if (foundCount == 8)
+                if (foundCount == 9)
                 {
                     result.found = true;
                     result.n_AutosaveHash = module.exports.hashContent(result.title, result.body, result.tags, result.additionalJSON);

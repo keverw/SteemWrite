@@ -15,9 +15,82 @@
         editorUIHelpers.resize();
     });
 
-    function updateSlugUI()
+    function updatePermlinkUI()
     {
-        //
+        //...
+    }
+
+    function autosave(id)
+    {
+        var data = editorUtility.getEditorData(id);
+
+        if (data.found)
+        {
+            var autosaveInterval = 1000; //1 sec
+
+            if (data.c_AutosaveHash == data.n_AutosaveHash)
+            {
+                //no change
+                setTimeout(function()
+                {
+                    autosave(id);
+                }, autosaveInterval);
+
+            }
+            else
+            {
+                //changed
+                console.log(data);
+                console.log('changed');
+
+                irpcRenderer.call('posts.savePost', {
+                    mode: 'autosave',
+                    editorData: data
+                }, function(err, result)
+                {
+                    console.log(err, result);
+
+                    if (err)
+                    {
+                        console.log(err);
+                        bootbox.alert('Error Auto Saving Post...');
+                    }
+                    else if (result.locked)
+                    {
+                        //locked...
+                        console.log('locked');
+                    }
+                    else
+                    {
+                        //not locked
+                        console.log('was not locked');
+                    }
+
+                    setTimeout(function()
+                    {
+                        autosave(id);
+                    }, autosaveInterval);
+
+                });
+
+                //contnet changed...
+                //handle save, set a timeout calling htis again later, etc
+
+                //do that when done
+                //$('#' + id + " [name='_autosaveHash']").val(n hash)
+                //$('#' + id + " [name='_isNew']").val(1);
+            }
+
+        }
+
+    }
+
+    function updatePublishPanel(id, parameters)
+    {
+        $('#' + id + ' .publishActions').html(util.getViewHtml('editor/publishPanelActions', {
+            postStatus: parameters.postStatus
+        }));
+
     }
 
     function editorReady(id, parameters, cb)
@@ -112,6 +185,7 @@
                 $('#' + id + " [name='postTitle']").on('change keyup paste', function()
                 {
                     editorUIHelpers.checkPostTitleLength(id);
+                    //todo: call updatePermlinkUI/write that function
                 });
 
                 //this should only be checked when done typing, not during

@@ -1,6 +1,7 @@
 (function()
 {
-    var pagination = require('./pagination.js');
+    var pagination = require('./pagination.js'),
+        postHelpers = require('./postHelpers.js');
 
     module.exports = {
         postList: function(parameters, cb)
@@ -92,10 +93,7 @@
                             try {
                                 var metadata = JSON.parse(revisionsRow.json_metadata);
 
-                                if (metadata.tags)
-                                {
-                                    tags = metadata.tags;
-                                }
+                                if (metadata.tags) tags = metadata.tags;
 
                                 cb(null, {
                                     status: 'found',
@@ -112,9 +110,11 @@
                             {
                                 if (err) return cb(err);
                             }
+
                         }
                         else
                         {
+                            //todo: handle if not found
                         }
 
                     });
@@ -127,8 +127,48 @@
                     });
                 }
 
+                //todo: check if a autosave and return that rev instead
 
             });
+
+        },
+        savePost: function(parameters, cb)
+        {
+            //console.log(parameters);
+
+            if (parameters.mode == 'autosave')
+            {
+                if (postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
+                {
+                    cb(null, {
+                        locked: true
+                    });
+
+                }
+                else
+                {
+                    console.log('locking...');
+                    postHelpers.opLock(parameters.editorData.author, parameters.editorData.permlink);
+
+                    setTimeout(function()
+                    {
+                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                        console.log('unlocking...');
+
+                        cb(null, {
+                            locked: false
+                        });
+
+                    }, 10000);
+
+                }
+
+            }
+            else
+            {
+                cb(new Error('Invalid mode'));
+            }
 
         }
 
