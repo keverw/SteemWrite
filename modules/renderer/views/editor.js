@@ -5,7 +5,7 @@
     var shell = require('electron').shell,
         textHelpers = require(path.resolve('./modules/textHelpers.js')),
         editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js')),
-        editorUtility = require(path.resolve('./modules/renderer/editorUtility.js')),
+        editorUtility = require(path.resolve('./modules/editorUtility.js')),
         validator = require('validator');
 
     var defaultEditor = 'md'; //markdown is md, html is html
@@ -22,7 +22,7 @@
 
     function autosave(id)
     {
-        var data = editorUtility.getEditorData(id);
+        var data = editorUIHelpers.getEditorData(id);
 
         if (data.found)
         {
@@ -149,12 +149,12 @@
             editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
         }
 
-        editorTextEditHelpers.insertEditor(id, editorType, function change()
+        editorTextHelpers.insertEditor(id, editorType, function change()
         {
             editorUIHelpers.checkPostBodyLength(id);
         }, function init()
         {
-            editorTextEditHelpers.setContent(editorTextEditHelpers.getEditorID(id), parameters.body);
+            editorTextHelpers.setContent(editorTextHelpers.getEditorID(id), parameters.body);
 
             editorUIHelpers.checkAdditionalJSON(id);
             editorUIHelpers.checkPostTitleLength(id);
@@ -215,7 +215,7 @@
                         }
 
                         editorUIHelpers.resize();
-                        editorTextEditHelpers.refresh(editorTextEditHelpers.getEditorID(id));
+                        editorTextHelpers.refresh(editorTextHelpers.getEditorID(id));
                         editorUIHelpers.checkPostBodyLength(id);
                         $('#navMiddleButtons').show();
                         autosave(id);
@@ -302,7 +302,7 @@
                         v: type
                     }, function(err, result) {
                         //update editor type used
-                        editorTextEditHelpers.insertEditor(reqViewID, type, function()
+                        editorTextHelpers.insertEditor(reqViewID, type, function()
                         {
                             editorUIHelpers.checkPostBodyLength(reqViewID);
                         }, function init()
@@ -345,7 +345,7 @@
                 }
                 else if (mode == 'preview')
                 {
-                    var bodyStr = editorTextEditHelpers.getContent(editorTextEditHelpers.getEditorID(reqViewID)).trim();
+                    var bodyStr = editorTextHelpers.getContent(editorTextHelpers.getEditorID(reqViewID)).trim();
 
                     if (!bodyStr) bodyStr = ''; //incase null
 

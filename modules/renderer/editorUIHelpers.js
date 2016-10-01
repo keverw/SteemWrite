@@ -3,11 +3,11 @@
     var path = require('path');
 
     var textHelpers = require(path.resolve('./modules/textHelpers.js')),
-        editorUtility = require(path.resolve('./modules/renderer/editorUtility.js'));
+        editorUtility = require(path.resolve('./modules/editorUtility.js'));
 
     function getPostAsStr(viewID)
     {
-        var str = editorTextEditHelpers.getContent(editorTextEditHelpers.getEditorID(viewID));
+        var str = editorTextHelpers.getContent(editorTextHelpers.getEditorID(viewID));
         return (str) ? str : ''; //if null will give a blank string
     }
 
@@ -32,6 +32,65 @@
             editorHolderHeight = editorHolderHeight - 36; //toolbar size
 
             $('#editorHolder .editorHolder').height(editorHolderHeight + 'px');
+        },
+        getEditorData: function(id)
+        {
+            var result = {
+                found: false
+            };
+
+            if ($('#' + id).length)
+            {
+                var foundCount = 0;
+
+                result.additionalJSON = $('#' + id + " [name='postJSONTextarea']").val();
+                if (typeof result.additionalJSON == 'string')
+                {
+                    result.additionalJSON = result.additionalJSON.trim();
+                    foundCount++;
+                }
+
+                result.author = $('#' + id + " [name='_author']").val();
+                if (typeof result.author == 'string') foundCount++;
+
+                result.body = editorTextHelpers.getContent(editorTextHelpers.getEditorID(id));
+                if (typeof result.body == 'string') foundCount++;
+
+                result.permlink = $('#' + id + " [name='_permalink']").val();
+                if (typeof result.permlink == 'string') foundCount++;
+
+                result.postStatus = $('#' + id + " [name='_postStatus']").val();
+                if (typeof result.postStatus == 'string') foundCount++;
+
+                result.tags = $('#' + id + " [name='postTags']").val();
+                if (typeof result.tags == 'string') foundCount++;
+
+                result.title = $('#' + id + " [name='postTitle']").val();
+                if (typeof result.title == 'string')
+                {
+                    result.title = result.title.trim();
+                    foundCount++;
+                }
+
+                var _isNew = $('#' + id + " [name='_isNew']").val();
+
+                if (typeof _isNew == 'string')
+                {
+                    result.isNew = (_isNew == '1');
+                    foundCount++;
+                }
+
+                result.c_AutosaveHash = $('#' + id + " [name='_autosaveHash']").val();
+                if (typeof result.c_AutosaveHash == 'string') foundCount++;
+
+                if (foundCount == 9)
+                {
+                    result.found = true;
+                    result.n_AutosaveHash = editorUtility.hashContent(result.title, result.body, result.tags, result.additionalJSON);
+                }
+            }
+
+            return result;
         },
         checkPostTitleLength: function(viewID)
         {

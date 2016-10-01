@@ -33,7 +33,7 @@ webFrame.setSpellCheckProvider('en-US', true, new SpellCheckProvider('en-US'));
 var postsView = require('./modules/renderer/views/posts.js');
 var editorView = require('./modules/renderer/views/editor.js');
 
-var editorTextEditHelpers = require('./modules/renderer/editorTextEditHelpers.js');
+var editorTextHelpers = require('./modules/renderer/editorTextHelpers.js');
 var tagEditor = require('./modules/renderer/tagEditor.js');
 
 var fs = require('fs');

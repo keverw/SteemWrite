@@ -191,6 +191,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
+	"\/modules\/editorUtility.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/modules\/editorUtility.js",
+		"outputAbbreviatedPath": "\/modules\/min\/editorUtility-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
 	"\/modules\/main\/accountHelpers.js": {
 		"fileType": 64,
 		"ignore": 1,
@@ -301,12 +312,12 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 0
 		},
-	"\/modules\/renderer\/editorTextEditHelpers.js": {
+	"\/modules\/renderer\/editorTextHelpers.js": {
 		"fileType": 64,
 		"ignore": 1,
 		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/modules\/renderer\/editorTextEditHelpers.js",
-		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorTextEditHelpers-min.js",
+		"inputAbbreviatedPath": "\/modules\/renderer\/editorTextHelpers.js",
+		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorTextHelpers-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
@@ -318,17 +329,6 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/modules\/renderer\/editorUIHelpers.js",
 		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorUIHelpers-min.js",
-		"outputPathIsOutsideProject": 0,
-		"outputPathIsSetByUser": 0,
-		"outputStyle": 1,
-		"syntaxCheckerStyle": 0
-		},
-	"\/modules\/renderer\/editorUtility.js": {
-		"fileType": 64,
-		"ignore": 1,
-		"ignoreWasSetByUser": 0,
-		"inputAbbreviatedPath": "\/modules\/renderer\/editorUtility.js",
-		"outputAbbreviatedPath": "\/modules\/renderer\/min\/editorUtility-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
