@@ -80,6 +80,20 @@
                         if (onInit) onInit();
                     },
                     setup: function(ed) {
+                        ed.on('keydown', function(event) {
+                            if (event.keyCode == 9) { // tab pressed
+                                if (event.shiftKey) {
+                                    ed.execCommand('Outdent');
+                                }
+                                else {
+                                    ed.execCommand('Indent');
+                                }
+
+                                event.preventDefault();
+                                return false;
+                            }
+                        });
+
                         ed.on('keyup', function(e)
                         {
                             if (onChange) onChange();
