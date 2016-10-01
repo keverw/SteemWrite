@@ -37,7 +37,13 @@
             }
 
             cb(pairs.join(', '), values);
+        },
+        inParam: function(sql, arr)
+        {
+            //thanks https://github.com/mapbox/node-sqlite3/issues/527
+            return sql.replace('?#', arr.map(() => '?').join(',')); // jshint ignore:line
         }
+
 
     };
 

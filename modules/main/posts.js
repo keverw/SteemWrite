@@ -1,6 +1,7 @@
 (function()
 {
-    var pagination = require('./pagination.js'),
+    var _ = require('underscore'),
+        pagination = require('./pagination.js'),
         postHelpers = require('./postHelpers.js'),
         util = require('../util.js'),
         textHelpers = require('../textHelpers.js'),
@@ -85,39 +86,68 @@
 
                 if (postsRow)
                 {
-                    global.db.get("SELECT * FROM revisions WHERE revHash = ? LIMIT 1", [postsRow.revHash], function(err, revisionsRow)
+                    var authperm = [parameters.author, parameters.permlink].join('.');
+
+                    postHelpers.getRevInfo(authperm, function(err, info)
                     {
                         if (err) return cb(err);
 
-                        if (revisionsRow)
+                        var lookupRev = info.autosaveRevison;
+
+                        if (lookupRev === '') //no autosave, use latest saved revison
                         {
-                            var tags = [];
+                            lookupRev = info.latestRevison;
+                        }
 
-                            try {
-                                var metadata = JSON.parse(revisionsRow.json_metadata);
+                        if (lookupRev.length > 0)
+                        {
 
-                                if (metadata.tags) tags = metadata.tags;
-
-                                cb(null, {
-                                    status: 'found',
-                                    postStatus: postsRow.status,
-                                    author: revisionsRow.author,
-                                    permlink: revisionsRow.permlink,
-                                    title: revisionsRow.title,
-                                    body: revisionsRow.body,
-                                    json_metadata: metadata,
-                                    tags: tags
-                                });
-
-                            } catch (err)
+                            global.db.get("SELECT * FROM revisions WHERE revHash = ? LIMIT 1", [lookupRev], function(err, revisionsRow)
                             {
                                 if (err) return cb(err);
-                            }
+
+                                if (revisionsRow)
+                                {
+                                    var tags = [];
+
+                                    try {
+                                        var metadata = JSON.parse(revisionsRow.json_metadata);
+
+                                        if (metadata.tags) tags = metadata.tags;
+
+                                        cb(null, {
+                                            status: 'found',
+                                            postStatus: postsRow.status,
+                                            author: revisionsRow.author,
+                                            permlink: revisionsRow.permlink,
+                                            title: revisionsRow.title,
+                                            body: revisionsRow.body,
+                                            json_metadata: metadata,
+                                            tags: tags
+                                        });
+
+                                    } catch (err)
+                                    {
+                                        if (err) return cb(err);
+                                    }
+
+                                }
+                                else
+                                {
+                                    cb(null, {
+                                        status: 'notfound'
+                                    });
+
+                                }
+
+                            });
 
                         }
                         else
                         {
-                            //todo: handle if not found
+                            cb(null, {
+                                status: 'notfound'
+                            });
                         }
 
                     });
@@ -129,8 +159,6 @@
                         status: 'notfound'
                     });
                 }
-
-                //todo: check if a autosave and return that rev instead
 
             });
 

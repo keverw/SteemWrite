@@ -56,7 +56,6 @@
         },
         generateContentHash: function(title, body, json_metadata)
         {
-            // revHash should be: author, permlink, title, body, json_metadata
             // title, body, json_metadata are set to autosave in the hash if it’s a autosave
             if (title && body && json_metadata)
             {
@@ -127,6 +126,87 @@
                 global.db.run('UPDATE posts SET ' + string + ' WHERE author = ? AND permlink = ?', values, function(err)
                 {
                     cb(err);
+                });
+
+            });
+
+        },
+        getLatestRevisons: function(authperms, cb)
+        {
+            global.db.all(sqlHelpers.inParam('SELECT authperm, revHash from revisions WHERE isAutosave = 0 AND authperm in (?#) GROUP BY authperm ORDER BY date DESC', authperms), authperms, function(err, rows)
+            {
+                if (err) return cb(err);
+
+                var results = {};
+
+                if (rows.length > 0)
+                {
+                    for (var i in rows)
+                    {
+                        if (rows.hasOwnProperty(i))
+                        {
+                            results[rows[i].authperm] = rows[i].revHash;
+                        }
+
+                    }
+
+                }
+
+                cb(err, results);
+            });
+
+        },
+        getAutosaves: function(authperms, cb)
+        {
+            global.db.all(sqlHelpers.inParam('SELECT authperm, revHash from revisions WHERE isAutosave = 1 AND authperm in (?#)', authperms), authperms, function(err, rows)
+            {
+                if (err) return cb(err);
+
+                var results = {};
+
+                if (rows.length > 0)
+                {
+                    for (var i in rows)
+                    {
+                        if (rows.hasOwnProperty(i))
+                        {
+                            results[rows[i].authperm] = rows[i].revHash;
+                        }
+
+                    }
+
+                }
+
+                cb(err, results);
+            });
+
+        },
+        getRevInfo: function(authperm, cb)
+        {
+            var result = {
+                latestRevison: '',
+                autosaveRevison: ''
+            };
+
+            module.exports.getLatestRevisons([authperm], function(err, results)
+            {
+                if (err) return cb(err);
+
+                if (results[authperm])
+                {
+                    result.latestRevison = results[authperm];
+                }
+
+                module.exports.getAutosaves([authperm], function(err, results)
+                {
+                    if (err) return cb(err);
+
+                    if (results[authperm])
+                    {
+                        result.autosaveRevison = results[authperm];
+                    }
+
+                    cb(null, result);
                 });
 
             });

@@ -100,39 +100,110 @@
                     {
                         if (err) return cb(err);
 
-                        var postCurrentRevHash = (row) ? row.revHash : '';
-                        var metadata = JSON.parse(data.json_metadata);
+                        var authperm = [data.author, data.permlink].join('.');
 
-                        var featuredImg = '';
-
-                        if (metadata.image && typeof metadata.image == 'object' && typeof metadata.image[0] == 'string')
+                        postHelpers.getLatestRevisons([authperm], function(err, results)
                         {
-                            featuredImg = metadata.image[0];
-                        }
+                            if (err) return cb(err);
 
-                        var unixTime = global.moment(timestamp).unix();
+                            var postCurrentRevHash = (results[authperm]) ? results[authperm] : '';
 
-                        if (row) //already
-                        {
-                            //grab revision before this one
-                            global.db.get('SELECT body, revHash FROM revisions WHERE author = ? AND permlink = ? AND blockChainDate > 0 AND blockChainDate < ? ORDER BY blockChainDate DESC LIMIT 1', [data.author, data.permlink, unixTime], function(err, row)
+                            var metadata = JSON.parse(data.json_metadata);
+
+                            var featuredImg = '';
+
+                            if (metadata.image && typeof metadata.image == 'object' && typeof metadata.image[0] == 'string') featuredImg = metadata.image[0];
+
+                            var unixTime = global.moment(timestamp).unix();
+
+                            if (row) //already
                             {
-                                if (err) return cb(err);
-
-                                var body = data.body;
-
-                                var lastBCRevisonRevHash = '';
-                                if (row) //found a revision before
+                                //grab revision before this one
+                                global.db.get('SELECT body, revHash FROM revisions WHERE author = ? AND permlink = ? AND blockChainDate > 0 AND blockChainDate < ? ORDER BY blockChainDate DESC LIMIT 1', [data.author, data.permlink, unixTime], function(err, row)
                                 {
-                                    lastBCRevisonRevHash = row.revHash;
-                                    //update body
-                                    body = util.applyPatch(row.body, data.body);
-                                }
+                                    if (err) return cb(err);
 
+                                    var body = data.body;
+
+                                    var lastBCRevisonRevHash = '';
+                                    if (row) //found a revision before
+                                    {
+                                        lastBCRevisonRevHash = row.revHash;
+                                        //update body
+                                        body = util.applyPatch(row.body, data.body);
+                                    }
+
+                                    //no featured image, check metadata genreated from body
+                                    if (featuredImg === '')
+                                    {
+                                        var extractedMeta = textHelpers.metadata(body);
+
+                                        if (extractedMeta.images.length > 0)
+                                        {
+                                            featuredImg = extractedMeta.images[0];
+                                        }
+
+                                    }
+
+                                    //insert revision
+                                    var contentHash = postHelpers.generateContentHash(data.title, body, JSON.stringify(metadata));
+                                    var revHash = postHelpers.generateRevHash(contentHash, unixTime);
+
+                                    postHelpers.insertRevision({
+                                        revHash: revHash,
+                                        contentHash: contentHash,
+                                        publishedTX: trx_id,
+                                        author: data.author,
+                                        permlink: data.permlink,
+                                        authperm: [data.author, data.permlink].join('.'),
+                                        title: data.title,
+                                        body: body,
+                                        json_metadata: JSON.stringify(metadata),
+                                        localDate: 0,
+                                        blockChainDate: unixTime,
+                                        date: unixTime,
+                                        isAutosave: 0
+                                    }, function(err)
+                                    {
+                                        if (err) return cb(err);
+
+                                        if (postCurrentRevHash == lastBCRevisonRevHash)
+                                        {
+                                            //update post
+                                            var postUpdateData = {
+                                                title: data.title,
+                                                status: 'published',
+                                                latestPublishedTX: trx_id,
+                                                date: unixTime,
+                                                featuredImg: featuredImg
+                                            };
+
+                                            //add tags
+                                            postUpdateData = _.extend(postUpdateData, postHelpers.metadataToTagsKV(metadata));
+
+                                            //update posts
+                                            postHelpers.updatePost(data.author, data.permlink, postUpdateData, function(err)
+                                            {
+                                                cb(err);
+                                            });
+
+                                        }
+                                        else
+                                        {
+                                            cb();
+                                        }
+
+                                    });
+
+                                });
+
+                            }
+                            else //not already
+                            {
                                 //no featured image, check metadata genreated from body
                                 if (featuredImg === '')
                                 {
-                                    var extractedMeta = textHelpers.metadata(body);
+                                    var extractedMeta = textHelpers.metadata(data.body);
 
                                     if (extractedMeta.images.length > 0)
                                     {
@@ -142,7 +213,7 @@
                                 }
 
                                 //insert revision
-                                var contentHash = postHelpers.generateContentHash(data.title, body, JSON.stringify(metadata));
+                                var contentHash = postHelpers.generateContentHash(data.title, data.body, JSON.stringify(metadata));
                                 var revHash = postHelpers.generateRevHash(contentHash, unixTime);
 
                                 postHelpers.insertRevision({
@@ -151,8 +222,9 @@
                                     publishedTX: trx_id,
                                     author: data.author,
                                     permlink: data.permlink,
+                                    authperm: [data.author, data.permlink].join('.'),
                                     title: data.title,
-                                    body: body,
+                                    body: data.body,
                                     json_metadata: JSON.stringify(metadata),
                                     localDate: 0,
                                     blockChainDate: unixTime,
@@ -162,98 +234,32 @@
                                 {
                                     if (err) return cb(err);
 
-                                    if (postCurrentRevHash == lastBCRevisonRevHash)
+                                    //insert post
+                                    var postData = {
+                                        author: data.author,
+                                        permlink: data.permlink,
+                                        title: data.title,
+                                        status: 'published',
+                                        latestPublishedTX: trx_id,
+                                        date: unixTime,
+                                        scheduledDate: 0,
+                                        featuredImg: featuredImg
+                                    };
+
+                                    //add tags
+                                    postData = _.extend(postData, postHelpers.metadataToTagsKV(metadata));
+
+                                    //insert
+                                    postHelpers.insertPost(postData, function(err)
                                     {
-                                        //update post
-                                        var postUpdateData = {
-                                            title: data.title,
-                                            status: 'published',
-                                            latestPublishedTX: trx_id,
-                                            revHash: revHash,
-                                            date: unixTime,
-                                            featuredImg: featuredImg
-                                        };
-
-                                        //add tags
-                                        postUpdateData = _.extend(postUpdateData, postHelpers.metadataToTagsKV(metadata));
-
-                                        //update posts
-                                        postHelpers.updatePost(data.author, data.permlink, postUpdateData, function(err)
-                                        {
-                                            cb(err);
-                                        });
-
-                                    }
-                                    else
-                                    {
-                                        cb();
-                                    }
+                                        cb(err);
+                                    });
 
                                 });
-
-                            });
-
-                        }
-                        else //not already
-                        {
-                            //no featured image, check metadata genreated from body
-                            if (featuredImg === '')
-                            {
-                                var extractedMeta = textHelpers.metadata(data.body);
-
-                                if (extractedMeta.images.length > 0)
-                                {
-                                    featuredImg = extractedMeta.images[0];
-                                }
 
                             }
 
-                            //insert revision
-                            var contentHash = postHelpers.generateContentHash(data.title, data.body, JSON.stringify(metadata));
-                            var revHash = postHelpers.generateRevHash(contentHash, unixTime);
-
-                            postHelpers.insertRevision({
-                                revHash: revHash,
-                                contentHash: contentHash,
-                                publishedTX: trx_id,
-                                author: data.author,
-                                permlink: data.permlink,
-                                title: data.title,
-                                body: data.body,
-                                json_metadata: JSON.stringify(metadata),
-                                localDate: 0,
-                                blockChainDate: unixTime,
-                                date: unixTime,
-                                isAutosave: 0
-                            }, function(err)
-                            {
-                                if (err) return cb(err);
-
-                                //insert post
-                                var postData = {
-                                    author: data.author,
-                                    permlink: data.permlink,
-                                    title: data.title,
-                                    status: 'published',
-                                    latestPublishedTX: trx_id,
-                                    revHash: revHash,
-                                    date: unixTime,
-                                    scheduledDate: 0,
-                                    featuredImg: featuredImg
-                                };
-
-                                //add tags
-                                postData = _.extend(postData, postHelpers.metadataToTagsKV(metadata));
-
-                                //insert
-                                postHelpers.insertPost(postData, function(err)
-                                {
-                                    cb(err);
-                                });
-
-                            });
-
-                        }
+                        });
 
                     });
 
