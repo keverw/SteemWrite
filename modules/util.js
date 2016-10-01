@@ -179,6 +179,15 @@
                 return patchText; //replace
             }
 
+        },
+        splitRemoveEmpties: function(delimiter, str)
+        {
+            var tags = str.split(delimiter);
+            tags = tags.filter(function(v) {
+                return v !== '';
+            });
+
+            return tags;
         }
 
     };

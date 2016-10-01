@@ -160,29 +160,18 @@
                         {
                             var errorStrings = [];
 
-                            if (jsonData.hasOwnProperty('tags'))
-                            {
-                                errorStrings.push('<p><code>tags</code> key is automatically added and is not allowed</p>');
-                            }
-
-                            if (jsonData.hasOwnProperty('users'))
-                            {
-                                errorStrings.push('<p><code>users</code> key is automatically added and is not allowed</p>');
-                            }
-
-                            if (jsonData.hasOwnProperty('image'))
-                            {
-                                errorStrings.push('<p><code>image</code> key is automatically added and is not allowed</p>');
-                            }
-
-                            if (jsonData.hasOwnProperty('links'))
-                            {
-                                errorStrings.push('<p><code>links</code> key is automatically added and is not allowed</p>');
-                            }
+                            if (jsonData.hasOwnProperty('tags')) errorStrings.push('<p><code>tags</code> key is automatically added and is not allowed</p>');
+                            if (jsonData.hasOwnProperty('users')) errorStrings.push('<p><code>users</code> key is automatically added and is not allowed</p>');
+                            if (jsonData.hasOwnProperty('image')) errorStrings.push('<p><code>image</code> key is automatically added and is not allowed</p>');
+                            if (jsonData.hasOwnProperty('links')) errorStrings.push('<p><code>links</code> key is automatically added and is not allowed</p>');
 
                             if (errorStrings.length > 0)
                             {
                                 result.errMsg = errorStrings.join('<br>');
+                            }
+                            else
+                            {
+                                result.decoded = jsonData;
                             }
 
                         }

@@ -2,7 +2,8 @@
 {
     var path = require('path');
 
-    var shell = require('electron').shell,
+    var util = require(path.resolve('./modules/util.js')),
+        shell = require('electron').shell,
         textHelpers = require(path.resolve('./modules/textHelpers.js')),
         editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js')),
         editorUtility = require(path.resolve('./modules/editorUtility.js')),
@@ -351,7 +352,7 @@
 
                     var tagsArr = $('#' + reqViewID + " [name='postTags']").val();
 
-                    tagsArr = (typeof tagsArr == 'string') ? tagEditor.textStr2Array(tagsArr) : [];
+                    tagsArr = (typeof tagsArr == 'string') ? util.splitRemoveEmpties(' ', tagsArr) : [];
 
                     if (tagsArr.length === 0) tagsArr.push('uncategorized');
 

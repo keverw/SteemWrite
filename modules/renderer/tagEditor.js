@@ -1,23 +1,14 @@
 (function()
 {
-    var path = require('path'),
-        _ = require('underscore');
+    var path = require('path');
 
-    var categorySelectorValidation = require(path.resolve('./modules/steemit/CategorySelectorValidation.js'));
-
-    function textStr2Array(str)
-    {
-        var tags = str.split(' ');
-        tags = tags.filter(function(v) {
-            return v !== '';
-        });
-
-        return tags;
-    }
-
+    var _ = require('underscore'),
+        util = require(path.resolve('./modules/util.js')),
+        categorySelectorValidation = require(path.resolve('./modules/steemit/CategorySelectorValidation.js'));
+        
     function tagEditorRenderLabels(reqViewID, tags)
     {
-        if (typeof tags == 'string') tags = textStr2Array(tags);
+        if (typeof tags == 'string') tags = util.splitRemoveEmpties(' ', tags);
 
         $('#' + reqViewID + ' .tagsList').html(util.getViewHtml('editor/tagsList', {
             tags: tags,
@@ -26,11 +17,10 @@
     }
 
     module.exports = {
-        textStr2Array: textStr2Array,
         renderLabels: tagEditorRenderLabels,
         init: function(reqViewID, tagsStr)
         {
-            if (typeof tagsStr == 'string') tagsStr = textStr2Array(tagsStr);
+            if (typeof tagsStr == 'string') tagsStr = util.splitRemoveEmpties(' ', tagsStr);
 
             $('#' + reqViewID + " [name='postTags']").val(tagsStr.join(' '));
             tagEditorRenderLabels(reqViewID, tagsStr);
@@ -79,7 +69,7 @@
 
                         if (typeof tagsArray == 'string')
                         {
-                            tagsArray = textStr2Array(tagsArray);
+                            tagsArray = util.splitRemoveEmpties(' ', tagsArray);
 
                             if (_.contains(tagsArray, tagVal))
                             {
@@ -139,7 +129,7 @@
 
                     if (typeof tagsArray == 'string')
                     {
-                        tagsArray = textStr2Array(tagsArray);
+                        tagsArray = util.splitRemoveEmpties(' ', tagsArray);
 
                         var canRemove = false;
                         if (postStatus == 'published' && tagsArray.length > 0 && tagsArray[0] == tag)

@@ -1,7 +1,10 @@
 (function()
 {
     var pagination = require('./pagination.js'),
-        postHelpers = require('./postHelpers.js');
+        postHelpers = require('./postHelpers.js'),
+        util = require('../util.js'),
+        textHelpers = require('../textHelpers.js'),
+        editorUtility = require('../editorUtility.js');
 
     module.exports = {
         postList: function(parameters, cb)
@@ -134,8 +137,27 @@
         },
         savePost: function(parameters, cb)
         {
+            var metadata = {};
+
+            var additionalJSONParseResult = editorUtility.validate.additionalJSONParse(parameters.editorData.additionalJSON);
+
+            //set if no error message
+            if (!additionalJSONParseResult.errMsg) metadata = additionalJSONParseResult.decoded;
+
+            //set tags and extractedMeta
+            var tags = util.splitRemoveEmpties(' ', parameters.editorData.tags);
+            var extractedMeta = textHelpers.metadata(parameters.editorData.body);
+
+            if (tags.length > 0) metadata.tags = tags;
+            if (extractedMeta.usertags.length > 0) metadata.users = extractedMeta.usertags;
+            if (extractedMeta.images.length > 0) metadata.image = extractedMeta.images;
+            if (extractedMeta.links.length > 0) metadata.links = extractedMeta.links;
+
+            console.log('output', metadata);
+
             //console.log(parameters);
 
+            //
             if (parameters.mode == 'autosave')
             {
                 if (postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
