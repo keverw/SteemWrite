@@ -142,9 +142,14 @@
     {
         if (!parameters.body) parameters.body = '';
 
-        var bodyType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
+        var editorType = defaultEditor;
 
-        editorTextEditHelpers.insertEditor(id, bodyType, function change()
+        if (parameters.body.length > 0)
+        {
+            editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
+        }
+
+        editorTextEditHelpers.insertEditor(id, editorType, function change()
         {
             editorUIHelpers.checkPostBodyLength(id);
         }, function init()
