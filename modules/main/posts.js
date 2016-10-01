@@ -16,8 +16,41 @@
             {
                 if (err) return cb(err);
 
+                var authpermsLookups = [];
+
+                //build authpermsLookups list
+                if (rows.length > 0)
+                {
+                    for (var i in rows)
+                    {
+                        if (rows.hasOwnProperty(i))
+                        {
+                            authpermsLookups.push([rows[i].author, rows[i].permlink].join('.'));
+                        }
+
+                    }
+
+                }
+
+                //call getAutosaves and process
+                postHelpers.getAutosaves(authpermsLookups, function(err, results)
+                {
+                    if (err) return cb(err);
+
+                    for (var i in rows)
+                    {
+                        if (rows.hasOwnProperty(i))
+                        {
+                            var authperm = [rows[i].author, rows[i].permlink].join('.');
+                            rows[i].autosaveRevison = (results[authperm]) ? results[authperm] : '';
+                        }
+
+                    }
+
                 output.posts = rows;
                 cb(null, output);
+                });
+
             }
 
             function processCountResult(err, row)
