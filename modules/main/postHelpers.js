@@ -54,17 +54,17 @@
             }
 
         },
-        generateContentHash: function(author, permlink, title, body, json_metadata)
+        generateContentHash: function(title, body, json_metadata)
         {
             // revHash should be: author, permlink, title, body, json_metadata
             // title, body, json_metadata are set to autosave in the hash if it’s a autosave
-            if (author && permlink && title && body && json_metadata)
+            if (title && body && json_metadata)
             {
-                return sha1([author, permlink, title, body, json_metadata].join(','));
+                return sha1([title, body, json_metadata].join(','));
             }
             else
             {
-                return sha1([author, permlink, 'autosave', 'autosave', 'autosave'].join(','));
+                return sha1(['autosave', 'autosave', 'autosave'].join(','));
             }
 
         },

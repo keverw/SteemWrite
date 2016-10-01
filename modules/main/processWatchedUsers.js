@@ -142,7 +142,7 @@
                                 }
 
                                 //insert revision
-                                var contentHash = postHelpers.generateContentHash(data.author, data.permlink, data.title, body, JSON.stringify(metadata));
+                                var contentHash = postHelpers.generateContentHash(data.title, body, JSON.stringify(metadata));
                                 var revHash = postHelpers.generateRevHash(contentHash, unixTime);
 
                                 postHelpers.insertRevision({
@@ -209,7 +209,7 @@
                             }
 
                             //insert revision
-                            var contentHash = postHelpers.generateContentHash(data.author, data.permlink, data.title, data.body, JSON.stringify(metadata));
+                            var contentHash = postHelpers.generateContentHash(data.title, data.body, JSON.stringify(metadata));
                             var revHash = postHelpers.generateRevHash(contentHash, unixTime);
 
                             postHelpers.insertRevision({
