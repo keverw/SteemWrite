@@ -140,26 +140,29 @@
                     what: {}
                 };
 
-                //check for changes
-
-                //check if websocket host changed
-                var wsHostVal = $('#generalTabWSHostInput').val();
-                if (wsHostVal != settingsViewMeta.fields.general.wsHost)
+                //check for changes on general tab
+                if (settingsViewMeta.loaded.general)
                 {
-                    result.unsaved = true;
-                    result.what.wsHost = {
-                        val: wsHostVal
-                    };
-                }
+                    //check if websocket host changed
+                    var wsHostVal = $('#generalTabWSHostInput').val();
+                    if (wsHostVal != settingsViewMeta.fields.general.wsHost)
+                    {
+                        result.unsaved = true;
+                        result.what.wsHost = {
+                            val: wsHostVal
+                        };
+                    }
 
-                //check if json metadata checkbox changed
-                var showJSONMetadataEditorCheckboxVal = $("[name='showJSONMetadataEditorCheckbox']").is(':checked');
-                if (showJSONMetadataEditorCheckboxVal != settingsViewMeta.fields.general.showJSONMetadataEditor)
-                {
-                    result.unsaved = true;
-                    result.what.showJSONMetadataEditor = {
-                        val: showJSONMetadataEditorCheckboxVal
-                    };
+                    //check if json metadata checkbox changed
+                    var showJSONMetadataEditorCheckboxVal = $("[name='showJSONMetadataEditorCheckbox']").is(':checked');
+                    if (showJSONMetadataEditorCheckboxVal != settingsViewMeta.fields.general.showJSONMetadataEditor)
+                    {
+                        result.unsaved = true;
+                        result.what.showJSONMetadataEditor = {
+                            val: showJSONMetadataEditorCheckboxVal
+                        };
+                    }
+
                 }
 
                 //return result
@@ -1186,7 +1189,7 @@
                     {
                         var views = $('#mainContentHolder .viewHolder:not(' + selector + ')');
 
-                        //using .stop() because if you click really fast, animations finish in the wrong order and the view will stay hidden 
+                        //using .stop() because if you click really fast, animations finish in the wrong order and the view will stay hidden
                         if (views.length > 0)
                         {
                             views.stop().fadeOut('fast', function()
