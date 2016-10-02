@@ -5,7 +5,19 @@
         postHelpers = require('./postHelpers.js'),
         util = require('../util.js'),
         textHelpers = require('../textHelpers.js'),
+        secureRandom = require('secure-random'),
+        base58 = require('bs58'),
         editorUtility = require('../editorUtility.js');
+
+    function cleanPermlink(permlink)
+    {
+        //Over STEEMIT_MAX_PERMLINK_LENGTH
+        if (permlink.length > 255) permlink = permlink.substring(permlink.length - 255, permlink.length);
+
+        // only letters numbers and dashes shall survive
+        permlink = permlink.toLowerCase().replace(/[^a-z0-9-]+/g, '');
+        return permlink;
+    }
 
     module.exports = {
         postList: function(parameters, cb)
@@ -109,6 +121,70 @@
             {
                 cb(new Error('Blockchain not ready yet'));
             }
+
+        },
+        createMainPermlink: function(parameters, cb)
+        {
+            var author = parameters.author,
+                title = parameters.title;
+
+            var permlink = '';
+
+            var s = editorUtility.slug(title.toLowerCase());
+
+            if (s === '') s = base58.encode(secureRandom.randomBuffer(4));
+
+            //ensure the permlink(slug) is unique
+            var prefix = '';
+
+            module.exports.bcGetContent({
+                author: author,
+                permlink: s
+            }, function(err, result)
+            {
+                if (err) return cb(err);
+
+                if (result.body === '') //no post for that slug
+                {
+                    //check database
+                    global.db.get('SELECT * FROM posts WHERE author = ? AND permlink = ?', [author, s], function(err, row)
+                    {
+                        if (err) return cb(err);
+
+                        if (row) //post already for that slug
+                        {
+                            prefix = base58.encode(secureRandom.randomBuffer(4)) + '-'; // make sure slug is unique
+                        }
+
+                        cb(null, {
+                            permlink: cleanPermlink(prefix + s)
+                        });
+
+                    });
+
+                }
+                else //post already for that slug
+                {
+                    prefix = base58.encode(secureRandom.randomBuffer(4)) + '-'; // make sure slug is unique
+                    cb(null, {
+                        permlink: cleanPermlink(prefix + s)
+                    });
+
+                }
+
+            });
+
+        },
+        createReplyPermlink: function(parameters, cb)
+        {
+            // comments: re-parentauthor-parentpermlink-time
+            var timeStr = new Date().toISOString().replace(/[^a-zA-Z0-9]+/g, '');
+            parameters.parent_permlink = parameters.parent_permlink.replace(/(-\d{8}t\d{9}z)/g, '');
+            var permlink = 're-' + parameters.parent_author + '-' + parameters.parent_permlink + '-' + timeStr;
+
+            cb(null, {
+                permlink: cleanPermlink(permlink)
+            });
 
         },
         loadPost: function(parameters, cb)

@@ -7,7 +7,6 @@
     module.exports = {
         countPostsByUser: function(username, cb)
         {
-
             global.db.get("SELECT (SELECT COUNT(*) FROM posts WHERE author = ? AND status='scheduled') AS scheduled, (SELECT COUNT(*) FROM posts WHERE author = ? AND status='drafts') AS drafts", [username, username], function(err, row) {
                 if (err) return cb(err);
 
@@ -75,7 +74,6 @@
         {
             sqlHelpers.insert(parameters, function(string, values)
             {
-
                 global.db.run('INSERT OR IGNORE INTO revisions ' + string, values, function(err)
                 {
                     cb(err);
@@ -88,7 +86,6 @@
         {
             sqlHelpers.insert(parameters, function(string, values)
             {
-
                 global.db.run('REPLACE INTO revisions ' + string, values, function(err)
                 {
                     cb(err);

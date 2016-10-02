@@ -53,7 +53,11 @@
             }
             else
             {
-                editorUtility.createMainPermlink(parameters.title, parameters.author, function(err, permlink)
+
+                irpcRenderer.call('posts.createMainPermlink', {
+                    author: parameters.author,
+                    title: parameters.title
+                }, function(err, result)
                 {
                     if (err)
                     {
@@ -62,7 +66,7 @@
                     }
                     else
                     {
-                        parameters.permlink = permlink;
+                        parameters.permlink = result.permlink;
                         editorReadyStep2(id, parameters, cb);
                     }
 
