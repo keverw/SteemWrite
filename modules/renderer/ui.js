@@ -1160,6 +1160,8 @@
         mainContentHolder: {
             view: function(name)
             {
+                if (typeof global.viewData.editorViewMeta.viewID == 'string') editorView.autosave(global.viewData.editorViewMeta.viewID);
+
                 global.viewData.lastView = name;
 
                 $('#navMiddleButtons').html('').hide(); //hide main nav buttons

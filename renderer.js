@@ -497,3 +497,32 @@ $(function()
     });
 
 });
+
+var remote = require('electron').remote;
+
+var canClose = false;
+var isAutosaving = false;
+
+window.onbeforeunload = function(e)
+{
+    if (typeof global.viewData.editorViewMeta.viewID == 'string')
+    {
+        if (!isAutosaving)
+        {
+            isAutosaving = true;
+            editorView.autosave(global.viewData.editorViewMeta.viewID, function()
+            {
+                canClose = true;
+                remote.getCurrentWindow().close();
+            });
+
+        }
+
+    }
+    else
+    {
+        canClose = true;
+    }
+
+    return (canClose) ? null : false;
+};

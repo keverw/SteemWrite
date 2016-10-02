@@ -270,7 +270,11 @@ app.on('ready', function()
 // Quit when all windows are closed.
 app.on('window-all-closed', function()
 {
-    if (global.isAppReady && !global.isAppClosing)
+    if (global.isAppClosing)
+    {
+        app.quit();
+    }
+    else if (global.isAppReady)
     {
         // On OS X it is common for applications and their menu bar
         // to stay active until the user quits explicitly with Cmd + Q
@@ -291,6 +295,10 @@ function canIClose()
     {
         return false;
     }
+    else if (global.mainWindow) //is defined and not null
+    {
+        return false;
+    }
     else //nothing that says no
     {
         return true;
@@ -298,8 +306,16 @@ function canIClose()
 
 }
 
+var askedMainWindowToClose = false;
+
 function doClose()
 {
+    if (!askedMainWindowToClose)
+    {
+        askedMainWindowToClose = true;
+        if (global.mainWindow) global.mainWindow.close();
+    }
+
     if (canIClose())
     {
         if (global.db) //db isn't null, close it
@@ -319,6 +335,7 @@ function doClose()
 
                 app.quit();
             });
+
         }
         else
         {
@@ -374,6 +391,3 @@ app.on('activate', function()
     }
 
 });
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

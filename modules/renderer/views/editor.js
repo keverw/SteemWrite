@@ -360,8 +360,6 @@
                             editorData: data
                         }, function(err, result)
                         {
-                            console.log(err, result);
-
                             if (err)
                             {
                                 console.log(err);
