@@ -135,8 +135,10 @@
                         if (lookupRev.length > 0)
                         {
 
-                            global.db.get("SELECT * FROM revisions WHERE revHash = ? LIMIT 1", [lookupRev], function(err, revisionsRow)
+                            //author and permlink are included because revhash is only 1 part of the pkey.
+                            global.db.get("SELECT * FROM revisions WHERE revHash = ? AND author = ? AND permlink = ? LIMIT 1", [lookupRev, parameters.author, parameters.permlink], function(err, revisionsRow)
                             {
+
                                 if (err) return cb(err);
 
                                 if (revisionsRow)

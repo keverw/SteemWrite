@@ -13,6 +13,7 @@ global.viewData = {
     lastView: '',
     lastAcc: '',
     currentAcc: '',
+    autosaveOn: true,
     postsViewMeta: {},
     editorViewMeta: {}
 };

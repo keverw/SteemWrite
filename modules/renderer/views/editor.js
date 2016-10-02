@@ -21,58 +21,6 @@
         //...
     }
 
-    function autosave(id)
-    {
-        var data = editorUIHelpers.getEditorData(id);
-
-        if (data.found)
-        {
-            var autosaveInterval = 1000; //1 sec
-
-            if (data.c_AutosaveHash == data.n_AutosaveHash)
-            {
-                //no change
-                setTimeout(function()
-                {
-                    autosave(id);
-                }, autosaveInterval);
-
-            }
-            else
-            {
-                //changed
-                irpcRenderer.call('posts.savePost', {
-                    mode: 'autosave',
-                    editorData: data
-                }, function(err, result)
-                {
-                    console.log(err, result);
-
-                    if (err)
-                    {
-                        console.log(err);
-                        bootbox.alert('Error Auto Saving Post...');
-                    }
-                    else if (!result.locked && result.saved)
-                    {
-                        //was saved
-                        $('#' + id + " [name='_autosaveHash']").val(data.n_AutosaveHash);
-                        $('#' + id + " [name='_isNew']").val(0); //no longer new
-                    }
-
-                    setTimeout(function()
-                    {
-                        autosave(id);
-                    }, autosaveInterval);
-
-                });
-
-            }
-
-        }
-
-    }
-
     function updatePublishPanel(id, parameters)
     {
         $('#' + id + ' .publishActions').html(util.getViewHtml('editor/publishPanelActions', {
@@ -203,7 +151,7 @@
                         editorTextHelpers.refresh(editorTextHelpers.getEditorID(id));
                         editorUIHelpers.checkPostBodyLength(id);
                         $('#navMiddleButtons').show();
-                        autosave(id);
+                        editorView.autosave(id);
 
                     });
 
@@ -380,6 +328,76 @@
                     $('#navMiddleButtons .editorTabHasContent .previewtab').addClass('active');
                 }
 
+            }
+
+        },
+        autosave: function(id, cb)
+        {
+            //cb - err
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+                var autosaveInterval = 1000; //1 sec
+
+                if (global.viewData.autosaveOn)
+                {
+                    if (data.c_AutosaveHash == data.n_AutosaveHash)
+                    {
+                        //no change
+                        setTimeout(function()
+                        {
+                            editorView.autosave(id);
+                        }, autosaveInterval);
+
+                        if (cb) cb();
+                    }
+                    else
+                    {
+                        //changed
+                        irpcRenderer.call('posts.savePost', {
+                            mode: 'autosave',
+                            editorData: data
+                        }, function(err, result)
+                        {
+                            console.log(err, result);
+
+                            if (err)
+                            {
+                                console.log(err);
+                                bootbox.alert('Error Auto Saving Post...');
+                            }
+                            else if (!result.locked && result.saved)
+                            {
+                                //was saved
+                                $('#' + id + " [name='_autosaveHash']").val(data.n_AutosaveHash);
+                                $('#' + id + " [name='_isNew']").val(0); //no longer new
+                            }
+
+                            setTimeout(function()
+                            {
+                                editorView.autosave(id);
+                            }, autosaveInterval);
+
+                            if (cb) cb();
+                        });
+                    }
+
+                }
+                else
+                {
+                    setTimeout(function()
+                    {
+                        editorView.autosave(id);
+                    }, autosaveInterval);
+
+                    if (cb) cb();
+                }
+
+            }
+            else
+            {
+                if (cb) cb();
             }
 
         }
