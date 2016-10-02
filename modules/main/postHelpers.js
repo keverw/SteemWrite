@@ -84,6 +84,19 @@
             });
 
         },
+        replaceRevision: function(parameters, cb)
+        {
+            sqlHelpers.insert(parameters, function(string, values)
+            {
+
+                global.db.run('REPLACE INTO revisions ' + string, values, function(err)
+                {
+                    cb(err);
+                });
+
+            });
+
+        },
         insertPost: function(parameters, cb)
         {
             sqlHelpers.insert(parameters, function(string, values)

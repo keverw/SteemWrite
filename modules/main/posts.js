@@ -47,8 +47,8 @@
 
                     }
 
-                output.posts = rows;
-                cb(null, output);
+                    output.posts = rows;
+                    cb(null, output);
                 });
 
             }
@@ -214,13 +214,11 @@
             if (extractedMeta.images.length > 0) metadata.image = extractedMeta.images;
             if (extractedMeta.links.length > 0) metadata.links = extractedMeta.links;
 
-            console.log('output', metadata);
+            var featuredImg = (metadata.image && typeof metadata.image == 'object' && typeof metadata.image[0] == 'string') ? metadata.image[0] : '';
 
-            //console.log(parameters);
-
-            //
             if (parameters.mode == 'autosave')
             {
+
                 if (postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
                 {
                     cb(null, {
@@ -230,20 +228,77 @@
                 }
                 else
                 {
-                    console.log('locking...');
                     postHelpers.opLock(parameters.editorData.author, parameters.editorData.permlink);
 
-                    setTimeout(function()
+                    var unixTime = util.time();
+
+                    var contentHash = postHelpers.generateContentHash(); //autosave one
+                    var revHash = postHelpers.generateRevHash(contentHash, 0);
+
+                    postHelpers.replaceRevision({
+                        revHash: revHash,
+                        contentHash: contentHash,
+                        publishedTX: '',
+                        author: parameters.editorData.author,
+                        permlink: parameters.editorData.permlink,
+                        authperm: [parameters.editorData.author, parameters.editorData.permlink].join('.'),
+                        title: parameters.editorData.title,
+                        body: parameters.editorData.body,
+                        json_metadata: JSON.stringify(metadata),
+                        localDate: unixTime,
+                        blockChainDate: 0,
+                        date: unixTime,
+                        isAutosave: 1
+                    }, function(err)
                     {
-                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
 
-                        console.log('unlocking...');
+                        if (err)
+                        {
+                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                            cb(err);
+                        }
+                        else if (parameters.editorData.isNew) //insert post
+                        {
+                            var postData = {
+                                author: parameters.editorData.author,
+                                permlink: parameters.editorData.permlink,
+                                title: parameters.editorData.title,
+                                status: parameters.editorData.postStatus,
+                                latestPublishedTX: '',
+                                date: unixTime,
+                                scheduledDate: 0,
+                                featuredImg: featuredImg
+                            };
 
-                        cb(null, {
-                            locked: false
-                        });
+                            //add tags
+                            postData = _.extend(postData, postHelpers.metadataToTagsKV(tags));
 
-                    }, 10000);
+                            postHelpers.insertPost(postData, function(err)
+                            {
+                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                if (err) return cb(err);
+
+                                cb(null, {
+                                    locked: false,
+                                    saved: true
+                                });
+
+                            });
+
+                        }
+                        else //saved
+                        {
+                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                            cb(null, {
+                                locked: false,
+                                saved: true
+                            });
+
+                        }
+
+                    });
 
                 }
 

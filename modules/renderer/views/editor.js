@@ -41,9 +41,6 @@
             else
             {
                 //changed
-                console.log(data);
-                console.log('changed');
-
                 irpcRenderer.call('posts.savePost', {
                     mode: 'autosave',
                     editorData: data
@@ -56,15 +53,11 @@
                         console.log(err);
                         bootbox.alert('Error Auto Saving Post...');
                     }
-                    else if (result.locked)
+                    else if (!result.locked && result.saved)
                     {
-                        //locked...
-                        console.log('locked');
-                    }
-                    else
-                    {
-                        //not locked
-                        console.log('was not locked');
+                        //was saved
+                        $('#' + id + " [name='_autosaveHash']").val(data.n_AutosaveHash);
+                        $('#' + id + " [name='_isNew']").val(0); //no longer new
                     }
 
                     setTimeout(function()
@@ -74,12 +67,6 @@
 
                 });
 
-                //contnet changed...
-                //handle save, set a timeout calling htis again later, etc
-
-                //do that when done
-                //$('#' + id + " [name='_autosaveHash']").val(n hash)
-                //$('#' + id + " [name='_isNew']").val(1);
             }
 
         }
@@ -145,10 +132,7 @@
 
         var editorType = defaultEditor;
 
-        if (parameters.body.length > 0)
-        {
-            editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
-        }
+        if (parameters.body.length > 0) editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
 
         editorTextHelpers.insertEditor(id, editorType, function change()
         {
