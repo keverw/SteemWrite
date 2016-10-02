@@ -20,10 +20,14 @@ global.viewData = {
 
 global.tags = require('./tags.json').tags;
 
-var ui = require('./modules/renderer/ui.js');
-var util = require('./modules/util.js'); //my own utils
-var nodeUtil = require('util'); //Node.js utils
-var irpc = require('electron-irpc');
+var ui = require('./modules/renderer/ui.js'),
+    util = require('./modules/util.js'), //my own utils
+    nodeUtil = require('util'), //Node.js utils
+    irpc = require('electron-irpc');
+
+var shell = require('electron').shell,
+    validator = require('validator');
+
 var irpcRenderer = irpc.renderer();
 
 var webFrame = require('electron').webFrame;
@@ -526,3 +530,30 @@ window.onbeforeunload = function(e)
 
     return (canClose) ? null : false;
 };
+
+//attach play button to data-youtubeid
+$(document).on('click', '.previewRender [data-youtubeid]', function()
+{
+    var youTubeID = $(this).attr('data-youtubeid');
+
+    if (typeof youTubeID == 'string')
+    {
+        var iframeSrc = 'https://www.youtube.com/embed/' + youTubeID + '?autoplay=1&autohide=1';
+        $(this).replaceWith('<iframe width="640" height="480" src="' + iframeSrc + '" frameBorder="0" allowFullScreen="true"></iframe>');
+    }
+
+});
+
+//attach open in browser to links
+$(document).on('click', '.previewRender a', function()
+{
+    event.preventDefault();
+
+    var href = $(this).attr('href');
+
+    if (typeof href == 'string' && validator.isURL(href))
+    {
+        shell.openExternal(href);
+    }
+
+});

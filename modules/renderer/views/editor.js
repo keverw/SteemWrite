@@ -3,11 +3,9 @@
     var path = require('path');
 
     var util = require(path.resolve('./modules/util.js')),
-        shell = require('electron').shell,
         textHelpers = require(path.resolve('./modules/textHelpers.js')),
         editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js')),
-        editorUtility = require(path.resolve('./modules/editorUtility.js')),
-        validator = require('validator');
+        editorUtility = require(path.resolve('./modules/editorUtility.js'));
 
     var defaultEditor = 'md'; //markdown is md, html is html
 
@@ -299,33 +297,6 @@
                         category: tagsArr[0],
                         tagList: tagsArr
                     }));
-
-                    //attach play button to data-youtubeid
-                    $('[data-youtubeid]').click(function()
-                    {
-                        var youTubeID = $(this).attr('data-youtubeid');
-
-                        if (typeof youTubeID == 'string')
-                        {
-                            var iframeSrc = 'https://www.youtube.com/embed/' + youTubeID + '?autoplay=1&autohide=1';
-                            $(this).replaceWith('<iframe width="640" height="480" src="' + iframeSrc + '" frameBorder="0" allowFullScreen="true"></iframe>');
-                        }
-
-                    });
-
-                    //attach open in browser to links
-                    $('#' + reqViewID + ' .previewTab a').click(function(event)
-                    {
-                        event.preventDefault();
-
-                        var href = $(this).attr('href');
-
-                        if (typeof href == 'string' && validator.isURL(href))
-                        {
-                            shell.openExternal(href);
-                        }
-
-                    });
 
                     //transition to view
                     $('#' + reqViewID + ' .previewTab').show();

@@ -183,5 +183,28 @@ textarea[name="postJSONTextarea"] {
 }
 
 .markdownPreviewRender {
-    //todo: write css so text looks good on a white background when doing side by side preview
+    color: black;
+
+    a {
+        background-color: transparent;
+        color: #337ab7;
+        text-decoration: none;
+    }
+
+    a:active,
+    a:hover {
+        outline: 0;
+    }
+
+    a:focus,
+    a:hover {
+        color: #23527c;
+        text-decoration: underline;
+    }
+
+    a:focus {
+        outline: 5px auto -webkit-focus-ring-color;
+        outline-offset: -2px;
+    }
+
 }
