@@ -19,53 +19,6 @@
         //...
     }
 
-    function initPublishPanel(id, parameters)
-    {
-        if ($('#' + id).length)
-        {
-            $('#' + id + " [name='_publishActionsMetadata']").val(JSON.stringify({
-                postStatus: parameters.postStatus,
-                autosaveRevison: parameters.autosaveRevison,
-                date: parameters.date,
-                scheduledDate: parameters.scheduledDate
-            }));
-
-            updatePublishPanel(id);
-        }
-
-    }
-
-    function updatePublishPanel(id, parameters)
-    {
-        parameters = (parameters && typeof parameters == 'object') ? parameters : {};
-
-        if ($('#' + id).length)
-        {
-            var author = $('#' + id + " [name='_author']").val();
-            var permalink = $('#' + id + " [name='_permalink']").val();
-            var len = editorUIHelpers.getPostBodyLength(id);
-
-            var meta = JSON.parse($('#' + id + " [name='_publishActionsMetadata']").val());
-
-            if (parameters.postStatus) meta.postStatus = parameters.postStatus;
-            if (parameters.autosaveRevison) meta.autosaveRevison = parameters.autosaveRevison;
-            if (parameters.date) meta.date = parameters.date;
-            if (parameters.scheduledDate) meta.postStatus = parameters.scheduledDate;
-
-            $('#' + id + " [name='_publishActionsMetadata']").val(JSON.stringify(meta));
-
-            //add data that not saved to json
-            meta.bodyLen = len;
-            meta.author = author;
-            meta.permalink = permalink;
-
-            //update ui
-            $('#' + id + ' .publishActions').html(util.getViewHtml('editor/publishPanelActions', meta));
-
-        }
-
-    }
-
     function editorReady(id, parameters, cb)
     {
         if (!parameters.tags) parameters.tags = '';
@@ -140,7 +93,7 @@
             $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
 
             //transition to displaying view
-            initPublishPanel(id, parameters);
+            editorUIHelpers.initPublishPanel(id, parameters);
             cb();
         });
 
