@@ -21,7 +21,10 @@
 
     function updatePublishPanel(id, parameters)
     {
+        var len = editorUIHelpers.getPostBodyLength(id);
+
         $('#' + id + ' .publishActions').html(util.getViewHtml('editor/publishPanelActions', {
+            bodyLen: len,
             postStatus: parameters.postStatus
         }));
 
@@ -268,6 +271,10 @@
 
             if ($('#' + reqViewID).length)
             {
+                //can't preview if empty
+                if (mode == 'preview' && editorUIHelpers.getPostBodyLength(reqViewID) === 0) return;
+
+                //switch view
                 $('#navMiddleButtons .editorTabHasContent li').removeClass('active');
 
                 $('#' + reqViewID + ' .previewTab').html();

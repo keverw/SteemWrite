@@ -1,8 +1,15 @@
 if (postStatus == 'published')
-    |published
+    |Published
 else if (postStatus == 'scheduled')
-    |scheduled
+    |Scheduled
 else if (postStatus == 'drafts')
-    |drafts
+    |Drafts
 else if (postStatus == 'trash')
-    |trash
+    |Trash
+
+
+.row
+    .col-md-6 .col-md-6
+        |Save BTN
+    .col-md-6
+        button.btn.btn-primary(style=(bodyLen) ? '' : 'display: none;',class='previewPostBtn', type='button', onclick!='editorView.switchMode(\'preview\');') Preview

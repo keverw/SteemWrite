@@ -128,11 +128,15 @@
 
                 $('#navMiddleButtons .editorTabNoContent').hide();
                 $('#navMiddleButtons .editorTabHasContent').show();
+
+                $('#' + viewID + ' .previewPostBtn').show();
             }
             else
             {
                 $('#navMiddleButtons .editorTabHasContent').hide();
                 $('#navMiddleButtons .editorTabNoContent').show();
+
+                $('#' + viewID + ' .previewPostBtn').hide();
             }
 
             //update errors view

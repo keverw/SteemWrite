@@ -29,6 +29,9 @@
                 .caption
                     h4
                         a(onclick='postsView.openEditor(this)', data-author=post.author, data-permlink=post.permlink)
+                            if (post.autosaveRevison.length > 0)
+                                span.glyphicon.glyphicon-adjust(aria-hidden='true')
+                                =' '
                             span.title=post.title
 
                     p.dateHolder
