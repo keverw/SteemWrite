@@ -234,7 +234,10 @@
                                             title: revisionsRow.title,
                                             body: revisionsRow.body,
                                             json_metadata: metadata,
-                                            tags: tags
+                                            tags: tags,
+                                            autosaveRevison: info.autosaveRevison,
+                                            date: postsRow.date,
+                                            scheduledDate: postsRow.scheduledDate,
                                         });
 
                                     } catch (err)

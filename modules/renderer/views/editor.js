@@ -25,7 +25,10 @@
 
         $('#' + id + ' .publishActions').html(util.getViewHtml('editor/publishPanelActions', {
             bodyLen: len,
-            postStatus: parameters.postStatus
+            postStatus: parameters.postStatus,
+            autosaveRevison: parameters.autosaveRevison,
+            date: parameters.date,
+            scheduledDate: parameters.scheduledDate
         }));
 
     }
@@ -198,7 +201,10 @@
                                     title: result.title,
                                     body: result.body,
                                     tags: result.tags,
-                                    additionalJSON: result.json_metadata
+                                    additionalJSON: result.json_metadata,
+                                    autosaveRevison: result.autosaveRevison,
+                                    date: result.date,
+                                    scheduledDate: result.scheduledDate
                                 }, transitionView);
 
                             }
@@ -215,7 +221,10 @@
 
                     editorReady(id, {
                         author: author,
-                        postStatus: 'drafts'
+                        postStatus: 'drafts',
+                        autosaveRevison: '',
+                        date: 0,
+                        scheduledDate: 0
                     }, transitionView);
 
                 }

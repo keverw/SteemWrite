@@ -1,15 +1,43 @@
-if (postStatus == 'published')
-    |Published
-else if (postStatus == 'scheduled')
-    |Scheduled
-else if (postStatus == 'drafts')
-    |Drafts
-else if (postStatus == 'trash')
-    |Trash
-
+.row
+    .col-md-6
+        if (postStatus == 'drafts')
+            | todo: Save Draft button
+    .col-md-6
+        button.btn.btn-primary(style=(bodyLen) ? '' : 'display: none;',class='previewPostBtn', type='button', onclick!='editorView.switchMode(\'preview\');')
+            |Preview
+            if (postStatus == 'published')
+                = ' Changes'
 
 .row
-    .col-md-6 .col-md-6
-        |Save BTN
-    .col-md-6
-        button.btn.btn-primary(style=(bodyLen) ? '' : 'display: none;',class='previewPostBtn', type='button', onclick!='editorView.switchMode(\'preview\');') Preview
+    .col-md-12
+        b
+            span.glyphicon.glyphicon-pushpin(aria-hidden='true')
+            =' '
+            |Status:
+        =' '
+        if (postStatus == 'published')
+            |Published
+        else if (postStatus == 'scheduled')
+            |Scheduled
+        else if (postStatus == 'drafts')
+            |Draft
+        else if (postStatus == 'trash')
+            |Trash
+
+.row
+    .col-md-12
+        b
+            span.glyphicon.glyphicon-calendar(aria-hidden='true')
+            =' '
+
+            if (postStatus == 'published')
+                =global.moment.unix(date).tz(global.tz).format('LLLL')
+            else if (postStatus == 'scheduled')
+                |Scheduled
+            else if (postStatus == 'drafts')
+                |Publish immediately (todo: scheduled button)
+            else if (postStatus == 'trash')
+                |Trash
+
+                // autosaveRevison: '',
+                // scheduledDate: 0
