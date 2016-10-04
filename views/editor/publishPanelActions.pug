@@ -1,43 +1,51 @@
-.row
-    .col-md-6
+p
+    .row
         if (postStatus == 'drafts')
             | todo: Save Draft button
-    .col-md-6
-        button.btn.btn-primary(style=(bodyLen) ? '' : 'display: none;',class='previewPostBtn', type='button', onclick!='editorView.switchMode(\'preview\');')
-            |Preview
+
+            button.btn.btn-primary(style=(bodyLen) ? '' : 'display: none;', class='previewPostBtn', type='button', onclick!='editorView.switchMode(\'preview\');')
+                |Preview
+                if (postStatus == 'published')
+                    = ' Changes'
+
+    .row
+        .col-md-12
+            b
+                span.glyphicon.glyphicon-pushpin(aria-hidden='true')
+                =' '
+                |Status:
+            =' '
             if (postStatus == 'published')
-                = ' Changes'
+                |Published
+            else if (postStatus == 'scheduled')
+                |Scheduled
+            else if (postStatus == 'drafts')
+                |Draft
+            else if (postStatus == 'trash')
+                |Trash
 
-.row
-    .col-md-12
-        b
-            span.glyphicon.glyphicon-pushpin(aria-hidden='true')
-            =' '
-            |Status:
-        =' '
-        if (postStatus == 'published')
-            |Published
-        else if (postStatus == 'scheduled')
-            |Scheduled
-        else if (postStatus == 'drafts')
-            |Draft
-        else if (postStatus == 'trash')
-            |Trash
+    if (autosaveRevison.length > 0)
+        .row
+            .col-md-12
+                span.glyphicon.glyphicon-adjust(aria-hidden='true')
+                =' '
+                |Local Autosave
 
-.row
-    .col-md-12
-        b
-            span.glyphicon.glyphicon-calendar(aria-hidden='true')
-            =' '
+    .row
+        .col-md-12
+            b
+                span.glyphicon.glyphicon-calendar(aria-hidden='true')
+                =' '
 
             if (postStatus == 'published')
                 =global.moment.unix(date).tz(global.tz).format('LLLL')
             else if (postStatus == 'scheduled')
-                |Scheduled
+                | Scheduled for:
+                =' '
+                =global.moment.unix(scheduledDate).tz(global.tz).format('LLLL')
+                //todo:  change date, cancel
             else if (postStatus == 'drafts')
                 |Publish immediately (todo: scheduled button)
             else if (postStatus == 'trash')
                 |Trash
 
-                // autosaveRevison: '',
-                // scheduledDate: 0
