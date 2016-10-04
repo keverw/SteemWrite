@@ -375,6 +375,11 @@
                 if (cb) cb();
             }
 
+        },
+        saveDraft: function(id)
+        {
+            // todo: code this
+            alert('saveDraft later');
         }
 
     };

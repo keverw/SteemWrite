@@ -207,6 +207,7 @@
                 meta.bodyLen = len;
                 meta.author = author;
                 meta.permalink = permalink;
+                meta.id = id;
 
                 //update ui
                 $('#' + id + ' .publishActions').html(util.getViewHtml('editor/publishPanelActions', meta));

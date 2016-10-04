@@ -1,51 +1,54 @@
-p
-    .row
+.row(style='width:90%;margin-left: auto; margin-right: auto;margin-bottom: 10px;')
+    .btn-group.btn-group-justified(role='group', aria-label='...')
         if (postStatus == 'drafts')
-            | todo: Save Draft button
+            .btn-group(role='group')
+                button.btn.btn-info(type='button', onclick!='editorView.saveDraft(\' + id + \');')
+                    |Save Draft
 
+        .btn-group(role='group')
             button.btn.btn-primary(style=(bodyLen) ? '' : 'display: none;', class='previewPostBtn', type='button', onclick!='editorView.switchMode(\'preview\');')
                 |Preview
                 if (postStatus == 'published')
                     = ' Changes'
 
-    .row
-        .col-md-12
-            b
-                span.glyphicon.glyphicon-pushpin(aria-hidden='true')
-                =' '
-                |Status:
+.row
+    .col-md-12
+        b
+            span.glyphicon.glyphicon-pushpin(aria-hidden='true')
             =' '
-            if (postStatus == 'published')
-                |Published
-            else if (postStatus == 'scheduled')
-                |Scheduled
-            else if (postStatus == 'drafts')
-                |Draft
-            else if (postStatus == 'trash')
-                |Trash
+            |Status:
+        =' '
+        if (postStatus == 'published')
+            |Published
+        else if (postStatus == 'scheduled')
+            |Scheduled
+        else if (postStatus == 'drafts')
+            |Draft
+        else if (postStatus == 'trash')
+            |Trash
 
-    if (autosaveRevison.length > 0)
-        .row
-            .col-md-12
-                span.glyphicon.glyphicon-adjust(aria-hidden='true')
-                =' '
-                |Local Autosave
-
+if (autosaveRevison.length > 0)
     .row
         .col-md-12
-            b
-                span.glyphicon.glyphicon-calendar(aria-hidden='true')
-                =' '
+            span.glyphicon.glyphicon-adjust(aria-hidden='true')
+            =' '
+            |Local Autosave
 
-            if (postStatus == 'published')
-                =global.moment.unix(date).tz(global.tz).format('LLLL')
-            else if (postStatus == 'scheduled')
-                | Scheduled for:
-                =' '
-                =global.moment.unix(scheduledDate).tz(global.tz).format('LLLL')
-                //todo:  change date, cancel
-            else if (postStatus == 'drafts')
-                |Publish immediately (todo: scheduled button)
-            else if (postStatus == 'trash')
-                |Trash
+.row
+    .col-md-12
+        b
+            span.glyphicon.glyphicon-calendar(aria-hidden='true')
+            =' '
+
+        if (postStatus == 'published')
+            =global.moment.unix(date).tz(global.tz).format('LLLL')
+        else if (postStatus == 'scheduled')
+            | Scheduled for:
+            =' '
+            =global.moment.unix(scheduledDate).tz(global.tz).format('LLLL')
+            //todo:  change date, cancel
+        else if (postStatus == 'drafts')
+            |Publish immediately (todo: scheduled button)
+        else if (postStatus == 'trash')
+            |Trash
 
