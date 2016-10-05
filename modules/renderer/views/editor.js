@@ -382,6 +382,11 @@
             }
 
         },
+        changeAuthor: function(id)
+        {
+            // todo: code this
+            alert('changeAuthor later');
+        },
         saveDraft: function(id)
         {
             // todo: code this
@@ -401,6 +406,31 @@
         {
             // todo: code this
             alert('scheduledCancel later');
+        },
+        trashPost: function()
+        {
+            // todo: code this
+            alert('trashPost later');
+        },
+        restoreTrashed: function(id)
+        {
+            // todo: code this
+            alert('restoreTrashed later');
+        },
+        deleteTrashed: function(id)
+        {
+            // todo: code this
+            alert('deleteTrashed later');
+        },
+        publishPost: function(id)
+        {
+            // todo: code this
+            alert('publishPost later');
+        },
+        updatePost: function(id)
+        {
+            // todo: code this
+            alert('updatePost later');
         }
 
     };

@@ -55,32 +55,14 @@
     {
         // Strip out HTML comments. "JS-DOS" bug.
         text = text.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
-
-        if (module.exports.isHtml(text))
-        {
-            return text;
-        }
-        else
-        {
-            return remarkable.render(text);
-        }
-
+        return (module.exports.isHtml(text)) ? text : remarkable.render(text);
     }
 
     module.exports = {
         isHtml: function(str)
         {
-            str = str.replace(/\s+/, "");
-
-            if (startsWithHtml(str))
-            {
-                return (str.substr(-7).toLowerCase() == '</html>');
-            }
-            else
-            {
-                return false;
-            }
-
+            str = str.replace(/\s+/, '');
+            return (startsWithHtml(str)) ? (str.substr(-7).toLowerCase() == '</html>') : false;
         },
         metadata: function(text)
         {
@@ -113,11 +95,8 @@
                 sanitizeErrors: sanitizeErrors
             }));
 
-            if (sanitizeErrors.length)
-            {
-                rtags.sanitizeErrorsWarning = sanitizeErrors.join('.  ');
-            }
-
+            if (sanitizeErrors.length) rtags.sanitizeErrorsWarning = sanitizeErrors.join('.  ');
+            
             //Convert the Set to regular arrays
             rtags.hashtags = Array.from(rtags.hashtags);
             rtags.usertags = Array.from(rtags.usertags);

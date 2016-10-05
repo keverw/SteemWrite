@@ -44,11 +44,9 @@
         //get db version
         global.db.get("PRAGMA user_version", function(err, row)
         {
-            if (err)
-            {
-                global.dbMigrateErr(err);
-            }
-            else if (typeof row.user_version == 'number')
+            if (err) return global.dbMigrateErr(err);
+            
+            if (typeof row.user_version == 'number')
             {
                 global.dbMeta.userDBVer = row.user_version;
 

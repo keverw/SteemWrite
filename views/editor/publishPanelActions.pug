@@ -1,4 +1,4 @@
-.row(style='margin-left: auto; margin-right: auto;margin-bottom: 10px;')
+div(style='margin-left: auto; margin-right: auto;margin-bottom: 10px;')
     .btn-group.btn-group-justified(role='group', aria-label='...')
         if (postStatus == 'published')
             .btn-group(role='group')
@@ -17,8 +17,8 @@
                 else
                     = 'Preview'
 
-.row
-    .col-md-12
+ul
+    li
         b
             span.glyphicon.glyphicon-pushpin(aria-hidden='true')
             =' '
@@ -33,15 +33,13 @@
         else if (postStatus == 'trash')
             |Trash
 
-if (autosaveRevison.length > 0)
-    .row
-        .col-md-12
+    if (autosaveRevison.length > 0)
+        li
             span.glyphicon.glyphicon-adjust(aria-hidden='true')
             =' '
             |Local Autosave
 
-.row
-    .col-md-12
+    li
         b
             span.glyphicon.glyphicon-user(aria-hidden='true')
             = ' '
@@ -49,14 +47,19 @@ if (autosaveRevison.length > 0)
             =' '
         =author
 
-.row
-    .col-md-12
+        if (postStatus == 'drafts')
+        =' '
+        button.btn.btn-info.btn-sm(type='button', onclick!='editorView.changeAuthor(\'' + id + '\');')
+            |Change
+
+    li
         b
             span.glyphicon.glyphicon-calendar(aria-hidden='true')
             =' '
 
         if (postStatus == 'published')
             =global.moment.unix(date).tz(global.tz).format('LLLL')
+
         else if (postStatus == 'scheduled')
             | Scheduled for:
             =' '
@@ -66,7 +69,7 @@ if (autosaveRevison.length > 0)
                 .btn-group(role='group')
                     button.btn.btn-info.btn-sm(type='button', onclick!='editorView.scheduledChangeDate(\'' + id + '\');')
                         |Change date
-                ='   '
+
                 .btn-group(role='group')
                     button.btn.btn-Warning.btn-sm(type='button', onclick!='editorView.scheduledCancel(\'' + id + '\');')
                         |Cancel
@@ -74,7 +77,31 @@ if (autosaveRevison.length > 0)
             |Publish immediately
             =' '
             button.btn.btn-info.btn-sm(type='button', onclick!='editorView.scheduledSetDate(\'' + id + '\');')
-                |Scheduled
+                |Schedule
         else if (postStatus == 'trash')
             |Trash
 
+div(style='margin-left: auto; margin-right: auto;margin-top: 10px;')
+    .btn-group.btn-group-justified(role='group', aria-label='...')
+        if (postStatus == 'trash')
+            .btn-group(role='group')
+                button.btn.btn-info(type='button', onclick!='editorView.restoreTrashed(\'' + id + '\');')
+                    |Restore as draft
+
+            .btn-group(role='group')
+                button.btn.btn-danger(type='button', onclick!='editorView.deleteTrashed(\'' + id + '\');')
+                    |Delete Permanently
+        else
+
+            if (postStatus == 'published')
+                .btn-group(role='group')
+                    button.btn.btn-info(type='button', onclick!='editorView.updatePost(\'' + id + '\');')
+                        |Update
+            else
+                .btn-group(role='group')
+                    button.btn.btn-info(type='button', onclick!='editorView.publishPost(\'' + id + '\');')
+                        |Publish
+
+            .btn-group(role='group')
+                button.btn.btn-danger(type='button', onclick!='editorView.trashPost(\'' + id + '\');')
+                    |Trash Post

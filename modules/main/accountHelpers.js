@@ -49,7 +49,7 @@
                 {
                     cb(true);
                 }
-
+                
             }
             else
             {
@@ -169,7 +169,7 @@
             {
                 cb(true); //not encrypted or unlocked - good
             }
-
+            
         },
         accessAccountsReady: function(orignalCB, cb)
         {
@@ -434,10 +434,7 @@
 
                                 }
 
-                                if (authLoaded)
-                                {
-                                    module.exports.checkSteemLogin(username, authObj.password, cb);
-                                }
+                                if (authLoaded) module.exports.checkSteemLogin(username, authObj.password, cb);
 
                             }
                             else
