@@ -1,15 +1,21 @@
-.row(style='width:90%;margin-left: auto; margin-right: auto;margin-bottom: 10px;')
+.row(style='margin-left: auto; margin-right: auto;margin-bottom: 10px;')
     .btn-group.btn-group-justified(role='group', aria-label='...')
-        if (postStatus == 'drafts')
+        if (postStatus == 'published')
             .btn-group(role='group')
-                button.btn.btn-info(type='button', onclick!='editorView.saveDraft(\' + id + \');')
+                button.btn.btn-info(type='button', onclick!='editorView.viewOnSteem(\'' + id + '\');')
+                    |View Steemit
+        else if (postStatus == 'drafts')
+            .btn-group(role='group')
+                button.btn.btn-info(type='button', onclick!='editorView.saveDraft(\'' + id + '\');')
                     |Save Draft
 
         .btn-group(role='group')
             button.btn.btn-primary(style=(bodyLen) ? '' : 'display: none;', class='previewPostBtn', type='button', onclick!='editorView.switchMode(\'preview\');')
-                |Preview
+                =' '
                 if (postStatus == 'published')
-                    = ' Changes'
+                    = 'Preview Changes'
+                else
+                    = 'Preview'
 
 .row
     .col-md-12
@@ -37,6 +43,15 @@ if (autosaveRevison.length > 0)
 .row
     .col-md-12
         b
+            span.glyphicon.glyphicon-user(aria-hidden='true')
+            = ' '
+            |Author:
+            =' '
+        =author
+
+.row
+    .col-md-12
+        b
             span.glyphicon.glyphicon-calendar(aria-hidden='true')
             =' '
 
@@ -46,9 +61,20 @@ if (autosaveRevison.length > 0)
             | Scheduled for:
             =' '
             =global.moment.unix(scheduledDate).tz(global.tz).format('LLLL')
-            //todo:  change date, cancel
+
+            .btn-group.btn-group-justified(role='group', aria-label='...')
+                .btn-group(role='group')
+                    button.btn.btn-info.btn-sm(type='button', onclick!='editorView.scheduledChangeDate(\'' + id + '\');')
+                        |Change date
+                ='   '
+                .btn-group(role='group')
+                    button.btn.btn-Warning.btn-sm(type='button', onclick!='editorView.scheduledCancel(\'' + id + '\');')
+                        |Cancel
         else if (postStatus == 'drafts')
-            |Publish immediately (todo: scheduled button)
+            |Publish immediately
+            =' '
+            button.btn.btn-info.btn-sm(type='button', onclick!='editorView.scheduledSetDate(\'' + id + '\');')
+                |Scheduled
         else if (postStatus == 'trash')
             |Trash
 

@@ -5,7 +5,8 @@
     var util = require(path.resolve('./modules/util.js')),
         textHelpers = require(path.resolve('./modules/textHelpers.js')),
         editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js')),
-        editorUtility = require(path.resolve('./modules/editorUtility.js'));
+        editorUtility = require(path.resolve('./modules/editorUtility.js')),
+        shell = require('electron').shell;
 
     var defaultEditor = 'md'; //markdown is md, html is html
 
@@ -13,11 +14,6 @@
     {
         editorUIHelpers.resize();
     });
-
-    function updatePermlinkUI()
-    {
-        //...
-    }
 
     function editorReady(id, parameters, cb)
     {
@@ -376,10 +372,35 @@
             }
 
         },
+        viewOnSteem: function(id)
+        {
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found && data.postStatus == 'published')
+            {
+                shell.openExternal(['https://steemit.com', util.splitRemoveEmpties(' ', data.tags)[0], '@' + data.author, data.permlink].join('/'));
+            }
+
+        },
         saveDraft: function(id)
         {
             // todo: code this
             alert('saveDraft later');
+        },
+        scheduledSetDate: function(id)
+        {
+            // todo: code this
+            alert('scheduledSetDate later');
+        },
+        scheduledChangeDate: function(id)
+        {
+            // todo: code this
+            alert('scheduledChangeDate later');
+        },
+        scheduledCancel: function(id)
+        {
+            // todo: code this
+            alert('scheduledCancel later');
         }
 
     };

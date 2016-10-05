@@ -18,10 +18,7 @@ function makeSingleInstance() {
     });
 }
 
-if (makeSingleInstance())
-{
-    return app.quit();
-}
+if (makeSingleInstance()) return app.quit();
 
 // Module to create native browser window.
 var BrowserWindow = electron.BrowserWindow;
