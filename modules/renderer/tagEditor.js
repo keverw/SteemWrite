@@ -5,7 +5,7 @@
     var _ = require('underscore'),
         util = require(path.resolve('./modules/util.js')),
         categorySelectorValidation = require(path.resolve('./modules/steemit/CategorySelectorValidation.js'));
-        
+
     function tagEditorRenderLabels(reqViewID, tags)
     {
         if (typeof tags == 'string') tags = util.splitRemoveEmpties(' ', tags);
@@ -14,6 +14,19 @@
             tags: tags,
             viewID: reqViewID
         }));
+
+        var errMsg = (tags.length === 0) ? 'At least one tag is required.' : '';
+
+        //update errors ui
+        if (errMsg)
+        {
+            if ($('#' + reqViewID + ' .tagError .emptyTags').length === 0) $('#' + reqViewID + ' .tagError').append('<div class="alert alert-warning emptyTags" role="alert">' + errMsg + '</div>');
+        }
+        else
+        {
+            $('#' + reqViewID + ' .tagError .emptyTags').remove();
+        }
+
     }
 
     module.exports = {
