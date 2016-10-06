@@ -311,7 +311,7 @@
 
             if (data.found)
             {
-                var autosaveInterval = 1000; //1 sec
+                var autosaveInterval = 250; //A quarter of a second
 
                 if (global.viewData.autosaveOn)
                 {
@@ -343,6 +343,11 @@
                                 //was saved
                                 $('#' + id + " [name='_autosaveHash']").val(data.n_AutosaveHash);
                                 $('#' + id + " [name='_isNew']").val(0); //no longer new
+
+                                editorUIHelpers.updatePublishPanel(id, {
+                                    autosaveRevison: result.autosaveRevison
+                                });
+
                             }
 
                             setTimeout(function()

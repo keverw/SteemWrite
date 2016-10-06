@@ -362,7 +362,8 @@
 
                                 cb(null, {
                                     locked: false,
-                                    saved: true
+                                    saved: true,
+                                    autosaveRevison: revHash
                                 });
 
                             });
@@ -374,7 +375,8 @@
 
                             cb(null, {
                                 locked: false,
-                                saved: true
+                                saved: true,
+                                autosaveRevison: revHash
                             });
 
                         }

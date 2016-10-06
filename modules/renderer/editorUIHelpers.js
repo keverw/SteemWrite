@@ -197,7 +197,7 @@
                 var meta = JSON.parse($('#' + id + " [name='_publishActionsMetadata']").val());
 
                 if (parameters.postStatus) meta.postStatus = parameters.postStatus;
-                if (parameters.autosaveRevison) meta.autosaveRevison = parameters.autosaveRevison;
+                if (typeof parameters.autosaveRevison == 'string') meta.autosaveRevison = parameters.autosaveRevison;
                 if (parameters.date) meta.date = parameters.date;
                 if (parameters.scheduledDate) meta.postStatus = parameters.scheduledDate;
 
