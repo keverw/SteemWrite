@@ -226,7 +226,7 @@ global.unlock = function()
 
 };
 
-function updateMenuUI(info)
+global.updateTopAccountsMenuUI = function(info)
 {
     var menuMeta = {
         hasAccs: info.hasAccs,
@@ -245,13 +245,13 @@ function updateMenuUI(info)
         $('#menuDropdownName').text('Accounts');
     }
 
-}
+};
 
 var noAccountsAddedToken = '$$$_NO_ACCOUNTS_ADDED_$$$'; //Can never be set since usernames are auto lowercased
 
 global.updateMainUI = function(info)
 {
-    updateMenuUI(info);
+    global.updateTopAccountsMenuUI(info);
 
     var updateMainView = false;
 

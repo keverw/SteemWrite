@@ -31,7 +31,6 @@
                 $('#' + id + " [name='postTitle']").on('change keyup paste', function()
                 {
                     editorUIHelpers.checkPostTitleLength(id);
-                    //todo: call updatePermlinkUI/write that function
                 });
 
                 //this should only be checked when done typing, not during
@@ -340,8 +339,48 @@
         },
         changeAuthor: function(id)
         {
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+
+                irpcRenderer.call('accounts.accountList', {}, function(err, result)
+                {
+                    if (err)
+                    {
+                        console.log(err);
+                        bootbox.alert('Error Loading Accounts...');
+                    }
+                    else
+                    {
+                        var options = util.array2BootboxSelectOptions(result.accountsList);
+
+                        bootbox.prompt({
+                            title: "Change Author",
+                            inputType: "select",
+                            inputOptions: options,
+                            value: data.author,
+                            callback: function(value)
+                            {
+                                if (value)
+                                {
+                                    if (data.author != value)
+                                    {
+                                        alert('change to: ' + value);
+                                    }
+
+                                }
+
+                            }
+                        });
+
+                    }
+
+                });
+
+            }
+
             // todo: code this
-            alert('changeAuthor later');
         },
         saveDraft: function(id)
         {

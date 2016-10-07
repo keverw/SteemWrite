@@ -188,6 +188,26 @@
             });
 
             return tags;
+        },
+        array2BootboxSelectOptions: function(list)
+        {
+            var options = [];
+
+            for (var item in list)
+            {
+                if (list.hasOwnProperty(item))
+                {
+                    options.push(
+                    {
+                        value: list[item],
+                        text: list[item]
+                    });
+
+                }
+
+            }
+
+            return options;
         }
 
     };
