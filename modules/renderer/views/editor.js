@@ -219,6 +219,12 @@
                     $('#' + reqViewID + ' .previewTab').show();
                     $('#navMiddleButtons .editorTabHasContent .previewtab').addClass('active');
                 }
+                else if (mode == 'revisions')
+                {
+                    //transition to view
+                    $('#' + reqViewID + ' .revisionsTab').show();
+                    $('#navMiddleButtons .editorTabHasContent .revisionsTab').addClass('active');
+                }
 
             }
 
@@ -312,9 +318,9 @@
 
             if (data.found)
             {
-                 irpcRenderer.call('posts.dismissWarning', {
-                   author: data.author,
-                   permlink: data.permlink
+                irpcRenderer.call('posts.dismissWarning', {
+                    author: data.author,
+                    permlink: data.permlink
                 }, function(err, result)
                 {
                     if (err)

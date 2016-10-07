@@ -113,6 +113,10 @@
 
         }
 
+        .sidebarLink {
+            color: inherit;
+        }
+
     }
 
     .tagsList {
@@ -134,90 +138,111 @@
         height: 300px;
     }
 
-}
+    .previewRender {
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
 
-.previewRender {
-    img {
-        display: block;
-        max-width: 100%;
-        height: auto;
-    }
+        .youtube {
+            background-position: 50%;
+            background-repeat: no-repeat;
+            position: relative;
+            display: inline-block;
+            overflow: hidden;
+            cursor: pointer;
 
-    .youtube {
-        background-position: 50%;
-        background-repeat: no-repeat;
-        position: relative;
-        display: inline-block;
-        overflow: hidden;
-        cursor: pointer;
+            .play {
+                background: url("../images/play.svg") no-repeat 50%;
+                background-size: 64px 64px;
+                position: absolute;
+                height: 100%;
+                width: 100%;
+                opacity: 0.8;
+                filter: alpha(opacity=80);
 
-        .play {
-            background: url("../images/play.svg") no-repeat 50%;
-            background-size: 64px 64px;
-            position: absolute;
-            height: 100%;
-            width: 100%;
-            opacity: 0.8;
-            filter: alpha(opacity=80);
-
-            &:hover {
-                opacity: 1;
-                filter: alpha(opacity=100);
+                &:hover {
+                    opacity: 1;
+                    filter: alpha(opacity=100);
+                }
             }
         }
     }
-}
 
-.previewPage {
-    width: 85%;
-    margin-left: auto;
-    margin-right: auto;
+    .previewPage {
+        width: 85%;
+        margin-left: auto;
+        margin-right: auto;
 
-    .postBody {
-        padding: 1rem 0 2rem;
-        clear: left;
-        font-size: 120%;
-        line-height: 150%;
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-        word-break: break-word;
-        -webkit-hyphens: auto;
-        -ms-hyphens: auto;
-        hyphens: auto;
-    }
+        .postBody {
+            padding: 1rem 0 2rem;
+            clear: left;
+            font-size: 120%;
+            line-height: 150%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            -webkit-hyphens: auto;
+            -ms-hyphens: auto;
+            hyphens: auto;
+        }
 
-    .tagList {
-        padding-bottom: 4rem;
+        .tagList {
+            padding-bottom: 4rem;
 
-        .label {
-            margin-right: 8px;
+            .label {
+                margin-right: 8px;
+            }
         }
     }
-}
 
-.markdownPreviewRender {
-    color: black;
+    .markdownPreviewRender {
+        color: black;
 
-    a {
-        background-color: transparent;
-        color: #337ab7;
-        text-decoration: none;
+        a {
+            background-color: transparent;
+            color: #337ab7;
+            text-decoration: none;
+        }
+
+        a:active,
+        a:hover {
+            outline: 0;
+        }
+
+        a:focus,
+        a:hover {
+            color: #23527c;
+            text-decoration: underline;
+        }
+
+        a:focus {
+            outline: 5px auto -webkit-focus-ring-color;
+            outline-offset: -2px;
+        }
+
     }
 
-    a:active,
-    a:hover {
-        outline: 0;
-    }
+    .editorHolderTabs.revisionsTab {
+        img {
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
 
-    a:focus,
-    a:hover {
-        color: #23527c;
-        text-decoration: underline;
-    }
+        p {
+            font-weight: bold;
+            font-size: 18px;
+            display: block;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-    a:focus {
-        outline: 5px auto -webkit-focus-ring-color;
-        outline-offset: -2px;
     }
 
 }

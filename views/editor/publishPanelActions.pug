@@ -40,6 +40,12 @@ ul
         else if (postStatus == 'trash')
             |Trash
 
+    li
+        span.glyphicon.glyphicon-time(aria-hidden='true')
+        =' '
+        a.sidebarLink(onclick!='editorView.switchMode(\'revisions\')')
+            |Post Revisions
+
     if (autosaveRevison.length > 0)
         li
             span.glyphicon.glyphicon-adjust(aria-hidden='true')
