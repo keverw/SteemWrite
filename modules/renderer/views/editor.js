@@ -306,6 +306,32 @@
             }
 
         },
+        dismissWarning: function(id)
+        {
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+                 irpcRenderer.call('posts.dismissWarning', {
+                   author: data.author,
+                   permlink: data.permlink
+                }, function(err, result)
+                {
+                    if (err)
+                    {
+                        console.log(err);
+                        bootbox.alert('Error Dismissing...');
+                    }
+                    else
+                    {
+                        $('#' + id + ' .postWarningAlert').alert('close');
+                    }
+
+                });
+
+            }
+
+        },
         changeAuthor: function(id)
         {
             // todo: code this

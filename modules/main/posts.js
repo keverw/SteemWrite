@@ -30,13 +30,17 @@
 
                 var authpermsLookups = [];
 
-                //build authpermsLookups list
                 if (rows.length > 0)
                 {
                     for (var i in rows)
                     {
                         if (rows.hasOwnProperty(i))
                         {
+                            //set if hadErr
+                            rows[i].hadError = (rows[i].warningMsg.length > 0);
+                            delete rows[i].warningMsg;
+
+                            //build authpermsLookups list
                             authpermsLookups.push([rows[i].author, rows[i].permlink].join('.'));
                         }
 
@@ -79,7 +83,7 @@
                 myPagination.setPage(parameters.page);
                 output.pagination = myPagination.getPagination();
 
-                var fields = 'author, permlink, title, status, date, tag1, tag2, tag3, tag4, tag5, featuredImg';
+                var fields = 'author, permlink, title, status, date, tag1, tag2, tag3, tag4, tag5, featuredImg, warningMsg';
 
                 if (parameters.type == 'all')
                 {
@@ -276,6 +280,21 @@
                 }
 
             });
+
+        },
+        dismissWarning: function(parameters, cb)
+        {
+            if (parameters.author && parameters.permlink)
+            {
+                global.db.run("UPDATE posts SET warningMsg = '' WHERE author = ? AND permlink = ?", [parameters.author, parameters.permlink], function(err)
+                {
+                    cb(err);
+                });
+            }
+            else
+            {
+                cb(new Error('Missing parameters'));
+            }
 
         },
         savePost: function(parameters, cb)

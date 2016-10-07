@@ -17,6 +17,10 @@
                         else
                             img(src='./images/noImage.svg')
 
+                    if (post.hadError)
+                        span.hadErrorLabel.label.label-warning
+                            |Had Error
+
                     if (post.status == 'published')
                         span.statusLabel.label.label-success Published
                     else if (post.status == 'scheduled')

@@ -1,3 +1,10 @@
+if (warningMsgObj && warningMsgObj.title && warningMsgObj.body)
+    .alert.postWarningAlert.alert-dismissible.alert-warning
+        button.close(type='button', onclick!='editorView.dismissWarning(\'' + id + '\');') ×
+        h4=warningMsgObj.title
+        p
+            =warningMsgObj.body
+
 div(style='margin-left: auto; margin-right: auto;margin-bottom: 10px;')
     .btn-group.btn-group-justified(role='group', aria-label='...')
         if (postStatus == 'published')

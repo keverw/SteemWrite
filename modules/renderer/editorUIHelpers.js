@@ -83,6 +83,19 @@
         },
         editorReadyStep2: function(id, parameters, cb)
         {
+            var warningMsgObj = {};
+
+            if (parameters.warningMsg && typeof parameters.warningMsg == 'string' && parameters.warningMsg.length > 0)
+            {
+                try {
+                    warningMsgObj = JSON.parse(parameters.warningMsg);
+                } catch (err)
+                {
+                    console.log(err);
+                }
+
+            }
+
             if (!parameters.body) parameters.body = '';
 
             var editorType = global.viewData.defaultEditor;
@@ -106,6 +119,7 @@
                 $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
 
                 //transition to displaying view
+                parameters.warningMsgObj = warningMsgObj;
                 module.exports.initPublishPanel(id, parameters);
                 cb();
             });
@@ -255,7 +269,8 @@
                     postStatus: parameters.postStatus,
                     autosaveRevison: parameters.autosaveRevison,
                     date: parameters.date,
-                    scheduledDate: parameters.scheduledDate
+                    scheduledDate: parameters.scheduledDate,
+                    warningMsgObj: parameters.warningMsgObj
                 }));
 
                 module.exports.updatePublishPanel(id);
@@ -278,6 +293,7 @@
                 if (typeof parameters.autosaveRevison == 'string') meta.autosaveRevison = parameters.autosaveRevison;
                 if (parameters.date) meta.date = parameters.date;
                 if (parameters.scheduledDate) meta.postStatus = parameters.scheduledDate;
+                if (parameters.warningMsgObj) meta.warningMsgObj = parameters.warningMsgObj;
 
                 $('#' + id + " [name='_publishActionsMetadata']").val(JSON.stringify(meta));
 
