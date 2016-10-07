@@ -13,6 +13,7 @@ global.viewData = {
     lastView: '',
     lastAcc: '',
     currentAcc: '',
+    defaultEditor: 'md', //markdown is md, html is html
     autosaveOn: true,
     postsViewMeta: {},
     editorViewMeta: {}

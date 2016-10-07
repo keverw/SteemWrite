@@ -238,6 +238,7 @@
                                             autosaveRevison: info.autosaveRevison,
                                             date: postsRow.date,
                                             scheduledDate: postsRow.scheduledDate,
+                                            warningMsg: postsRow.warningMsg
                                         });
 
                                     } catch (err)
@@ -348,7 +349,8 @@
                                 latestPublishedTX: '',
                                 date: unixTime,
                                 scheduledDate: 0,
-                                featuredImg: featuredImg
+                                featuredImg: featuredImg,
+                                warningMsg: ''
                             };
 
                             //add tags

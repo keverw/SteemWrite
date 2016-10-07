@@ -243,7 +243,8 @@
                                         latestPublishedTX: trx_id,
                                         date: unixTime,
                                         scheduledDate: 0,
-                                        featuredImg: featuredImg
+                                        featuredImg: featuredImg,
+                                        warningMsg: ''
                                     };
 
                                     //add tags

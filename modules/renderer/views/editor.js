@@ -8,92 +8,10 @@
         editorUtility = require(path.resolve('./modules/editorUtility.js')),
         shell = require('electron').shell;
 
-    var defaultEditor = 'md'; //markdown is md, html is html
-
     $(window).resize(function()
     {
         editorUIHelpers.resize();
     });
-
-    function editorReady(id, parameters, cb)
-    {
-        if (!parameters.tags) parameters.tags = '';
-
-        irpcRenderer.call('kvs.read', {
-            k: 'defaultEditor'
-        }, function(err, result)
-        {
-            if (!err && (result && typeof result == 'object')) defaultEditor = result.v;
-
-            if (!parameters.title) parameters.title = 'Untitled';
-            if (!parameters.additionalJSON) parameters.additionalJSON = {};
-
-            $('#' + id + " [name='postTitle']").val(parameters.title);
-            $('#' + id + " [name='postJSONTextarea']").val(JSON.stringify(parameters.additionalJSON));
-
-            if (parameters.postStatus) $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
-
-            if (parameters.permlink && typeof parameters.permlink == 'string' && parameters.permlink.length > 0)
-            {
-                editorReadyStep2(id, parameters, cb);
-            }
-            else
-            {
-
-                irpcRenderer.call('posts.createMainPermlink', {
-                    author: parameters.author,
-                    title: parameters.title
-                }, function(err, result)
-                {
-                    if (err)
-                    {
-                        console.log(err);
-                        bootbox.alert('Error Loading Editor');
-                    }
-                    else
-                    {
-                        parameters.permlink = result.permlink;
-                        editorReadyStep2(id, parameters, cb);
-                    }
-
-                });
-
-            }
-
-        });
-
-    }
-
-    function editorReadyStep2(id, parameters, cb)
-    {
-        if (!parameters.body) parameters.body = '';
-
-        var editorType = defaultEditor;
-
-        if (parameters.body.length > 0) editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
-
-        editorTextHelpers.insertEditor(id, editorType, function change()
-        {
-            editorUIHelpers.checkPostBodyLength(id);
-        }, function init()
-        {
-            editorTextHelpers.setContent(editorTextHelpers.getEditorID(id), parameters.body);
-
-            editorUIHelpers.checkAdditionalJSON(id);
-            editorUIHelpers.checkPostTitleLength(id);
-
-            tagEditor.init(id, parameters.tags);
-
-            $('#' + id + " [name='_author']").val(parameters.author);
-            $('#' + id + " [name='_permalink']").val(parameters.permlink);
-            $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
-
-            //transition to displaying view
-            editorUIHelpers.initPublishPanel(id, parameters);
-            cb();
-        });
-
-    }
 
     module.exports = {
         load: function(author, permlink)
@@ -132,7 +50,7 @@
                         if (global.viewData.editorViewMeta.viewID == id)
                         {
                             $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                                current: defaultEditor
+                                current: global.viewData.defaultEditor
                             }));
 
                         }
@@ -176,7 +94,7 @@
                                 delete result.json_metadata.image;
                                 delete result.json_metadata.links;
 
-                                editorReady(id, {
+                                editorUIHelpers.editorReady(id, {
                                     postStatus: result.postStatus,
                                     author: result.author,
                                     permlink: result.permlink,
@@ -186,7 +104,8 @@
                                     additionalJSON: result.json_metadata,
                                     autosaveRevison: result.autosaveRevison,
                                     date: result.date,
-                                    scheduledDate: result.scheduledDate
+                                    scheduledDate: result.scheduledDate,
+                                    warningMsg: result.warningMsg
                                 }, transitionView);
 
                             }
@@ -201,7 +120,7 @@
                     //new post
                     $('#' + id + " [name='_isNew']").val(1);
 
-                    editorReady(id, {
+                    editorUIHelpers.editorReady(id, {
                         author: author,
                         postStatus: 'drafts',
                         autosaveRevison: '',
@@ -224,7 +143,7 @@
 
                 if (len === 0 && (type == 'html' || type == 'md'))
                 {
-                    defaultEditor = type;
+                    global.viewData.defaultEditor = type;
 
                     irpcRenderer.call('kvs.set', {
                         k: 'defaultEditor',
@@ -244,7 +163,7 @@
                         if (global.viewData.editorViewMeta.viewID == reqViewID)
                         {
                             $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                                current: defaultEditor
+                                current: global.viewData.defaultEditor
                             })).show();
 
                         }

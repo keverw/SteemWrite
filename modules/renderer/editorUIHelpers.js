@@ -33,6 +33,84 @@
 
             $('#editorHolder .editorHolder').height(editorHolderHeight + 'px');
         },
+        editorReady: function(id, parameters, cb)
+        {
+            if (!parameters.tags) parameters.tags = '';
+
+            irpcRenderer.call('kvs.read', {
+                k: 'defaultEditor'
+            }, function(err, result)
+            {
+                if (!err && (result && typeof result == 'object')) global.viewData.defaultEditor = result.v;
+
+                if (!parameters.title) parameters.title = 'Untitled';
+                if (!parameters.additionalJSON) parameters.additionalJSON = {};
+
+                $('#' + id + " [name='postTitle']").val(parameters.title);
+                $('#' + id + " [name='postJSONTextarea']").val(JSON.stringify(parameters.additionalJSON));
+
+                if (parameters.postStatus) $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
+
+                if (parameters.permlink && typeof parameters.permlink == 'string' && parameters.permlink.length > 0)
+                {
+                    module.exports.editorReadyStep2(id, parameters, cb);
+                }
+                else
+                {
+
+                    irpcRenderer.call('posts.createMainPermlink', {
+                        author: parameters.author,
+                        title: parameters.title
+                    }, function(err, result)
+                    {
+                        if (err)
+                        {
+                            console.log(err);
+                            bootbox.alert('Error Loading Editor');
+                        }
+                        else
+                        {
+                            parameters.permlink = result.permlink;
+                            module.exports.ditorReadyStep2(id, parameters, cb);
+                        }
+
+                    });
+
+                }
+
+            });
+
+        },
+        editorReadyStep2: function(id, parameters, cb)
+        {
+            if (!parameters.body) parameters.body = '';
+
+            var editorType = global.viewData.defaultEditor;
+
+            if (parameters.body.length > 0) editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
+
+            editorTextHelpers.insertEditor(id, editorType, function change()
+            {
+                module.exports.checkPostBodyLength(id);
+            }, function init()
+            {
+                editorTextHelpers.setContent(editorTextHelpers.getEditorID(id), parameters.body);
+
+                module.exports.checkAdditionalJSON(id);
+                module.exports.checkPostTitleLength(id);
+
+                tagEditor.init(id, parameters.tags);
+
+                $('#' + id + " [name='_author']").val(parameters.author);
+                $('#' + id + " [name='_permalink']").val(parameters.permlink);
+                $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
+
+                //transition to displaying view
+                module.exports.initPublishPanel(id, parameters);
+                cb();
+            });
+
+        },
         getEditorData: function(id)
         {
             var result = {
