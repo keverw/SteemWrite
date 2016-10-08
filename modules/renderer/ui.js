@@ -1263,6 +1263,44 @@
                 ui.mainContentHolder.ready(viewHolder);
             }
 
+        },
+        unixtime2DatepickerString: function(unixtime)
+        {
+            return global.moment.unix(unixtime).tz(global.tz).format('MM/DD/YYYY h:mm A')
+        },
+        dateSelectorDialog: function(options, cb)
+        {
+            // ui.dateSelectorDialog({
+            //     title: 'Test',
+            //     value: '10/01/2016 7:17 AM'
+            // }, function(result) {
+            //     console.log(result);
+            // });
+
+            // ui.dateSelectorDialog({
+            //     title: 'Test'
+            // }, function(result) {
+            //     console.log(result);
+            // });
+
+            var opts = {
+                title: options.title,
+                inputType: 'text',
+                className: 'dialogDatePicker',
+                callback: cb
+            };
+
+            if (options.value && typeof options.value == 'string')
+            {
+                opts.value = options.value;
+            }
+
+            var dialog = bootbox.prompt(opts);
+
+            dialog.init(function() {
+                $('.dialogDatePicker .bootbox-input').datetimepicker();
+            });
+
         }
 
     };

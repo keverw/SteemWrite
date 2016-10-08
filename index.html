@@ -14,6 +14,7 @@
         <link href="./thirdParty/simplemde/simplemde.min.css" rel="stylesheet">
         <link href="./css/app.css" rel="stylesheet">
         <link href="./css/non-responsive.css" rel="stylesheet">
+        <link href="./thirdParty/css/bootstrap-datetimepicker.css" rel="stylesheet">
         <link href="./css/posts.css" rel="stylesheet">
         <link href="./css/editor.css" rel="stylesheet">
     </head>
@@ -42,12 +43,16 @@
             require('jquery-serializejson');
             window.bootbox = require('bootbox');
             window.Awesomplete = require('./thirdParty/js/awesomplete.min.js');
+
+            global.moment = require('moment-timezone');
+            global.tz = global.moment.tz.guess();
         </script>
         <script src="./thirdParty/js/bootstrap.min.js"></script>
         <script src="./thirdParty/js/bootstrap-switch.min.js"></script>
         <script src="./thirdParty/js/loadingoverlay.min.js"></script>
         <script src="./thirdParty/simplemde/simplemde.min.js"></script>
         <script src="./thirdParty/js/tinymce/tinymce.min.js"></script>
+        <script src="./thirdParty/js/bootstrap-datetimepicker.min.js"></script>
         <script src="./renderer.js"></script>
     </body>
 

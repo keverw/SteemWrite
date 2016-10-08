@@ -585,6 +585,15 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
+	"\/thirdParty\/css\/bootstrap-datetimepicker.css": {
+		"fileType": 16,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/thirdParty\/css\/bootstrap-datetimepicker.css",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
 	"\/thirdParty\/css\/bootstrap-switch.min.css": {
 		"fileType": 16,
 		"ignore": 0,
@@ -618,6 +627,17 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/thirdParty\/js\/awesomplete.min.js",
 		"outputAbbreviatedPath": "\/thirdParty\/js\/min\/awesomplete.min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 0
+		},
+	"\/thirdParty\/js\/bootstrap-datetimepicker.min.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/thirdParty\/js\/bootstrap-datetimepicker.min.js",
+		"outputAbbreviatedPath": "\/thirdParty\/js\/min\/bootstrap-datetimepicker.min-min.js",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1,
