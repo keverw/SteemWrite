@@ -43,7 +43,6 @@
             {
                 if (!err && (result && typeof result == 'object')) global.viewData.defaultEditor = result.v;
 
-                if (!parameters.title) parameters.title = 'Untitled';
                 if (!parameters.additionalJSON) parameters.additionalJSON = {};
 
                 $('#' + id + " [name='postTitle']").val(parameters.title);

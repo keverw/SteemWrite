@@ -130,10 +130,12 @@
                         }
                         else
                         {
+
                     editorUIHelpers.editorReady(id, {
+                                postStatus: 'drafts',
                         author: author,
                                 permlink: result.permlink,
-                        postStatus: 'drafts',
+                                title: 'Untitled',
                         autosaveRevison: '',
                         date: 0,
                         scheduledDate: 0
