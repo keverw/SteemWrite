@@ -43,52 +43,7 @@
     module.exports = {
         basicInfo: function(parameters, cb)
         {
-            var accountsList = Object.keys(global.accountsData.stored.accounts);
-            var totalAccounts = accountsList.length;
-            var hasAccs = ((totalAccounts > 0) ? true : false);
-
-            ///////// Check if accounts have credentials
-            var hasCredentials = {};
-
-            for (var acc in accountsList)
-            {
-                if (accountsList.hasOwnProperty(acc))
-                {
-                    hasCredentials[accountsList[acc]] = false;
-
-                    if (global.accountsData.stored.accounts[accountsList[acc]] && global.accountsData.stored.accounts[accountsList[acc]].hasAuth)
-                    {
-                        hasCredentials[accountsList[acc]] = true;
-                    }
-
-                }
-
-            }
-
-            postHelpers.countPosts(accountsList, function(err, result)
-            {
-                if (err) return err;
-
-                var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
-                var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
-
-                cb(null, {
-                    hasAccs: hasAccs,
-                    totalAccounts: totalAccounts,
-                    accountsList: accountsList,
-                    hasCredentials: hasCredentials,
-                    draftPostCounts: result.draftPostCounts,
-                    scheduledPostCounts: result.scheduledPostCounts,
-                    lastAcc: global.accountsData.stored.lastAcc,
-                    isEncrypted: isEncrypted,
-                    isUnlocked: isUnlocked,
-                    isLocked: ((isEncrypted && (!isUnlocked)) ? true : false),
-                    dataLocked: global.accountsData.dataLocked,
-                    isLoaded: global.accountsData.isLoaded
-                });
-
-            });
-
+            accountHelpers.basicInfo(cb);
         },
         loadAccounts: function(parameters, cb)
         {
@@ -899,10 +854,10 @@
                                 msg: 'Account is not currently added'
                             });
                         }
-                        else if (status == 'switched')
+                        else if (status == 'switched' || status == 'alreadyswitched')
                         {
                             var replyObj = {
-                                msg: 'Switched Accounts'
+                                msg: 'Switched Account'
                             };
 
                             module.exports.basicInfo({}, function(err, result)
@@ -915,12 +870,6 @@
                                 doneCB(null, replyObj);
                             });
 
-                        }
-                        else if (status == 'alreadyswitched')
-                        {
-                            doneCB(null, {
-                                msg: 'Already switched to that account'
-                            });
                         }
                         else
                         {

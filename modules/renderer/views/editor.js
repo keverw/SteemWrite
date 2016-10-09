@@ -14,7 +14,7 @@
     });
 
     module.exports = {
-        load: function(author, permlink)
+        load: function(author, permlink, editorLoadedCB)
         {
             var viewHolder = ui.mainContentHolder.view('editor');
 
@@ -60,6 +60,7 @@
                         $('#navMiddleButtons').show();
                         editorView.autosave(id);
 
+                        if (editorLoadedCB) editorLoadedCB();
                     });
 
                 };
@@ -131,17 +132,17 @@
                         else
                         {
 
-                    editorUIHelpers.editorReady(id, {
+                            editorUIHelpers.editorReady(id, {
                                 postStatus: 'drafts',
-                        author: author,
+                                author: author,
                                 permlink: result.permlink,
                                 title: 'Untitled',
-                        autosaveRevison: '',
-                        date: 0,
-                        scheduledDate: 0
-                    }, transitionView);
+                                autosaveRevison: '',
+                                date: 0,
+                                scheduledDate: 0
+                            }, transitionView);
 
-                }
+                        }
 
                     });
 
@@ -392,8 +393,8 @@
 
                                         irpcRenderer.call('posts.changeAuthor', {
                                             currentAuthor: data.author,
-                                            newAuthor: value,
-                                            permlink: data.permlink
+                                            currentPermlink: data.permlink,
+                                            newAuthor: value
                                         }, function(err, result) {
                                             if (err)
                                             {
@@ -404,8 +405,23 @@
                                             }
                                             else if (result.changed)
                                             {
-                                                //global.viewData.autosaveOn = true;
-                                                //$.LoadingOverlay('hide');
+                                                $('#' + id).remove();
+                                                global.updateMainUI(result.changed.basicInfo); //update main ui
+
+                                                editorView.load(result.changed.newAuthor, result.changed.newPermlink, function()
+                                                {
+                                                    global.viewData.autosaveOn = true;
+                                                    $.LoadingOverlay('hide');
+                                                });
+
+                                            }
+                                            else if (result.goHome)
+                                            {
+                                                $('#' + id).remove();
+                                                ui.homeBtn();
+                                                global.viewData.autosaveOn = true;
+                                                $.LoadingOverlay('hide');
+                                                if (result.msg) bootbox.alert(result.msg);
                                             }
                                             else
                                             {
@@ -429,7 +445,6 @@
 
             }
 
-            // todo: code this
         },
         saveDraft: function(id)
         {

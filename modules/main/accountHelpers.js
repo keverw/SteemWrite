@@ -49,7 +49,7 @@
                 {
                     cb(true);
                 }
-                
+
             }
             else
             {
@@ -79,6 +79,55 @@
             }
 
             return info;
+        },
+        basicInfo: function(cb)
+        {
+            var accountsList = Object.keys(global.accountsData.stored.accounts);
+            var totalAccounts = accountsList.length;
+            var hasAccs = ((totalAccounts > 0) ? true : false);
+
+            ///////// Check if accounts have credentials
+            var hasCredentials = {};
+
+            for (var acc in accountsList)
+            {
+                if (accountsList.hasOwnProperty(acc))
+                {
+                    hasCredentials[accountsList[acc]] = false;
+
+                    if (global.accountsData.stored.accounts[accountsList[acc]] && global.accountsData.stored.accounts[accountsList[acc]].hasAuth)
+                    {
+                        hasCredentials[accountsList[acc]] = true;
+                    }
+
+                }
+
+            }
+
+            postHelpers.countPosts(accountsList, function(err, result)
+            {
+                if (err) return err;
+
+                var isEncrypted = ((global.accountsData.stored.password.length > 0) ? true : false);
+                var isUnlocked = ((global.accountsData.masterPass.length > 0) ? true : false);
+
+                cb(null, {
+                    hasAccs: hasAccs,
+                    totalAccounts: totalAccounts,
+                    accountsList: accountsList,
+                    hasCredentials: hasCredentials,
+                    draftPostCounts: result.draftPostCounts,
+                    scheduledPostCounts: result.scheduledPostCounts,
+                    lastAcc: global.accountsData.stored.lastAcc,
+                    isEncrypted: isEncrypted,
+                    isUnlocked: isUnlocked,
+                    isLocked: ((isEncrypted && (!isUnlocked)) ? true : false),
+                    dataLocked: global.accountsData.dataLocked,
+                    isLoaded: global.accountsData.isLoaded
+                });
+
+            });
+
         },
         updateStoredAccounts: function(storedData, oldPassphrase, newPassphrase, cb)
         {
@@ -169,7 +218,7 @@
             {
                 cb(true); //not encrypted or unlocked - good
             }
-            
+
         },
         accessAccountsReady: function(orignalCB, cb)
         {

@@ -3,6 +3,7 @@
     var _ = require('underscore'),
         uuid = require('node-uuid'),
         pagination = require('./pagination.js'),
+        accountHelpers = require('./accountHelpers.js'),
         postHelpers = require('./postHelpers.js'),
         util = require('../util.js'),
         textHelpers = require('../textHelpers.js'),
@@ -319,20 +320,20 @@
         },
         changeAuthor: function(parameters, cb)
         {
-            if (parameters.currentAuthor && parameters.newAuthor && parameters.permlink)
+            if (parameters.currentAuthor && parameters.currentPermlink && parameters.newAuthor)
             {
                 var lockCheck = setInterval(function()
                 {
-                    if (!postHelpers.isOpLock(parameters.currentAuthor, parameters.permlink))
+                    if (!postHelpers.isOpLock(parameters.currentAuthor, parameters.currentPermlink))
                     {
-                        postHelpers.opLock(parameters.currentAuthor, parameters.permlink);
+                        postHelpers.opLock(parameters.currentAuthor, parameters.currentPermlink);
                         clearInterval(lockCheck);
 
-                        global.db.get('SELECT * FROM posts WHERE author = ? AND permlink = ?', [parameters.currentAuthor, parameters.permlink], function(err, row)
+                        global.db.get('SELECT * FROM posts WHERE author = ? AND permlink = ?', [parameters.currentAuthor, parameters.currentPermlink], function(err, row)
                         {
                             if (err)
                             {
-                                postHelpers.opUnlock(parameters.currentAuthor, parameters.permlink);
+                                postHelpers.opUnlock(parameters.currentAuthor, parameters.currentPermlink);
                                 cb(err);
                             }
                             else if (row && row.status == 'drafts')
@@ -340,16 +341,102 @@
 
                                 module.exports.createDraftPermlink({
                                     author: parameters.newAuthor
-                                }, function(err, result)
+                                }, function(err, draftPermlinkResult)
                                 {
                                     if (err)
                                     {
-                                        postHelpers.opUnlock(parameters.currentAuthor, parameters.permlink);
+                                        postHelpers.opUnlock(parameters.currentAuthor, parameters.currentPermlink);
                                         cb(err);
                                     }
                                     else
                                     {
-                                        console.log(result.permlink);
+                                        var authperm = [parameters.newAuthor, draftPermlinkResult.permlink].join('.');
+
+                                        global.db.run("UPDATE revisions SET author = ?, permlink = ?, authperm = ? WHERE author = ? AND permlink = ?", [
+                                            parameters.newAuthor,
+                                            draftPermlinkResult.permlink,
+                                            authperm,
+                                            parameters.currentAuthor,
+                                            parameters.currentPermlink
+                                        ], function(err)
+                                        {
+                                            if (err)
+                                            {
+                                                postHelpers.opUnlock(parameters.currentAuthor, parameters.currentPermlink);
+                                                cb(err);
+                                            }
+                                            else
+                                            {
+
+                                                global.db.run("UPDATE posts SET author = ?, permlink = ? WHERE author = ? AND permlink = ?", [
+                                                    parameters.newAuthor,
+                                                    draftPermlinkResult.permlink,
+                                                    parameters.currentAuthor,
+                                                    parameters.currentPermlink
+                                                ], function(err)
+                                                {
+                                                    if (err)
+                                                    {
+                                                        postHelpers.opUnlock(parameters.currentAuthor, parameters.currentPermlink);
+                                                        cb(err);
+                                                    }
+                                                    else
+                                                    {
+                                                        accountHelpers.switchAccount(parameters.newAuthor, function(err, status)
+                                                        {
+                                                            if (err)
+                                                            {
+                                                                postHelpers.opUnlock(parameters.currentAuthor, parameters.currentPermlink);
+                                                                cb(err);
+                                                            }
+                                                            else
+                                                            {
+                                                                var replyObj = {
+                                                                    msg: 'Changed Author'
+                                                                };
+
+                                                                if (status == 'switched')
+                                                                {
+                                                                    accountHelpers.basicInfo(function(err, info)
+                                                                    {
+                                                                        if (err)
+                                                                        {
+                                                                            replyObj.goHome = true;
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            replyObj.changed = {
+                                                                                basicInfo: info,
+                                                                                newAuthor: parameters.newAuthor,
+                                                                                newPermlink: draftPermlinkResult.permlink
+                                                                            };
+
+                                                                        }
+
+                                                                        postHelpers.opUnlock(parameters.currentAuthor, parameters.currentPermlink);
+                                                                        cb(null, replyObj);
+                                                                    });
+
+                                                                }
+                                                                else
+                                                                {
+                                                                    replyObj.goHome = true;
+                                                                    postHelpers.opUnlock(parameters.currentAuthor, parameters.currentPermlink);
+                                                                    cb(null, replyObj);
+                                                                }
+
+                                                            }
+
+                                                        });
+
+                                                    }
+
+                                                });
+
+                                            }
+
+                                        });
+
                                     }
 
                                 });
