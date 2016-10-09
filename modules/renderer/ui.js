@@ -1266,7 +1266,7 @@
         },
         unixtime2DatepickerString: function(unixtime)
         {
-            return global.moment.unix(unixtime).tz(global.tz).format('MM/DD/YYYY h:mm A')
+            return global.moment.unix(unixtime).tz(global.tz).format('MM/DD/YYYY h:mm A');
         },
         dateSelectorDialog: function(options, cb)
         {

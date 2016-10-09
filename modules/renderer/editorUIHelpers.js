@@ -51,77 +51,47 @@
 
                 if (parameters.postStatus) $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
 
-                if (parameters.permlink && typeof parameters.permlink == 'string' && parameters.permlink.length > 0)
-                {
-                    module.exports.editorReadyStep2(id, parameters, cb);
-                }
-                else
-                {
+                var warningMsgObj = {};
 
-                    irpcRenderer.call('posts.createMainPermlink', {
-                        author: parameters.author,
-                        title: parameters.title
-                    }, function(err, result)
+                if (parameters.warningMsg && typeof parameters.warningMsg == 'string' && parameters.warningMsg.length > 0)
+                {
+                    try {
+                        warningMsgObj = JSON.parse(parameters.warningMsg);
+                    } catch (err)
                     {
-                        if (err)
-                        {
-                            console.log(err);
-                            bootbox.alert('Error Loading Editor');
-                        }
-                        else
-                        {
-                            parameters.permlink = result.permlink;
-                            module.exports.ditorReadyStep2(id, parameters, cb);
-                        }
-
-                    });
+                        console.log(err);
+                    }
 
                 }
 
-            });
+                if (!parameters.body) parameters.body = '';
 
-        },
-        editorReadyStep2: function(id, parameters, cb)
-        {
-            var warningMsgObj = {};
+                var editorType = global.viewData.defaultEditor;
 
-            if (parameters.warningMsg && typeof parameters.warningMsg == 'string' && parameters.warningMsg.length > 0)
-            {
-                try {
-                    warningMsgObj = JSON.parse(parameters.warningMsg);
-                } catch (err)
+                if (parameters.body.length > 0) editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
+
+                editorTextHelpers.insertEditor(id, editorType, function change()
                 {
-                    console.log(err);
-                }
+                    module.exports.checkPostBodyLength(id);
+                }, function init()
+                {
+                    editorTextHelpers.setContent(editorTextHelpers.getEditorID(id), parameters.body);
 
-            }
+                    module.exports.checkAdditionalJSON(id);
+                    module.exports.checkPostTitleLength(id);
 
-            if (!parameters.body) parameters.body = '';
+                    tagEditor.init(id, parameters.tags);
 
-            var editorType = global.viewData.defaultEditor;
+                    $('#' + id + " [name='_author']").val(parameters.author);
+                    $('#' + id + " [name='_permalink']").val(parameters.permlink);
+                    $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
 
-            if (parameters.body.length > 0) editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
+                    //transition to displaying view
+                    parameters.warningMsgObj = warningMsgObj;
+                    module.exports.initPublishPanel(id, parameters);
+                    cb();
+                });
 
-            editorTextHelpers.insertEditor(id, editorType, function change()
-            {
-                module.exports.checkPostBodyLength(id);
-            }, function init()
-            {
-                editorTextHelpers.setContent(editorTextHelpers.getEditorID(id), parameters.body);
-
-                module.exports.checkAdditionalJSON(id);
-                module.exports.checkPostTitleLength(id);
-
-                tagEditor.init(id, parameters.tags);
-
-                $('#' + id + " [name='_author']").val(parameters.author);
-                $('#' + id + " [name='_permalink']").val(parameters.permlink);
-                $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
-
-                //transition to displaying view
-                parameters.warningMsgObj = warningMsgObj;
-                module.exports.initPublishPanel(id, parameters);
-                cb();
             });
 
         },

@@ -1,6 +1,7 @@
 (function()
 {
     var _ = require('underscore'),
+        uuid = require('node-uuid'),
         pagination = require('./pagination.js'),
         postHelpers = require('./postHelpers.js'),
         util = require('../util.js'),
@@ -179,6 +180,25 @@
             });
 
         },
+        createDraftPermlink: function(parameters, cb)
+        {
+            if (parameters.author)
+            {
+                module.exports.createMainPermlink({
+                    author: parameters.newAuthor,
+                    title: uuid.v4()
+                }, function(err, result)
+                {
+                    cb(err, result);
+                });
+
+            }
+            else
+            {
+                cb(new Error('Missing parameter'));
+            }
+
+        },
         createReplyPermlink: function(parameters, cb)
         {
             // comments: re-parentauthor-parentpermlink-time
@@ -290,6 +310,65 @@
                 {
                     cb(err);
                 });
+            }
+            else
+            {
+                cb(new Error('Missing parameters'));
+            }
+
+        },
+        changeAuthor: function(parameters, cb)
+        {
+            if (parameters.currentAuthor && parameters.newAuthor && parameters.permlink)
+            {
+                var lockCheck = setInterval(function()
+                {
+                    if (!postHelpers.isOpLock(parameters.currentAuthor, parameters.permlink))
+                    {
+                        postHelpers.opLock(parameters.currentAuthor, parameters.permlink);
+                        clearInterval(lockCheck);
+
+                        global.db.get('SELECT * FROM posts WHERE author = ? AND permlink = ?', [parameters.currentAuthor, parameters.permlink], function(err, row)
+                        {
+                            if (err)
+                            {
+                                postHelpers.opUnlock(parameters.currentAuthor, parameters.permlink);
+                                cb(err);
+                            }
+                            else if (row && row.status == 'drafts')
+                            {
+
+                                module.exports.createDraftPermlink({
+                                    author: parameters.newAuthor
+                                }, function(err, result)
+                                {
+                                    if (err)
+                                    {
+                                        postHelpers.opUnlock(parameters.currentAuthor, parameters.permlink);
+                                        cb(err);
+                                    }
+                                    else
+                                    {
+                                        console.log(result.permlink);
+                                    }
+
+                                });
+
+                            }
+                            else
+                            {
+                                cb(null, {
+                                    msg: 'Post not found or is not a draft'
+                                });
+
+                            }
+
+                        });
+
+                    }
+
+                }, 10);
+
             }
             else
             {

@@ -119,13 +119,29 @@
                     //new post
                     $('#' + id + " [name='_isNew']").val(1);
 
+                    irpcRenderer.call('posts.createDraftPermlink', {
+                        author: author
+                    }, function(err, result)
+                    {
+                        if (err)
+                        {
+                            console.log(err);
+                            bootbox.alert('Error Loading Editor');
+                        }
+                        else
+                        {
                     editorUIHelpers.editorReady(id, {
                         author: author,
+                                permlink: result.permlink,
                         postStatus: 'drafts',
                         autosaveRevison: '',
                         date: 0,
                         scheduledDate: 0
                     }, transitionView);
+
+                }
+
+                    });
 
                 }
 
@@ -356,8 +372,8 @@
                         var options = util.array2BootboxSelectOptions(result.accountsList);
 
                         bootbox.prompt({
-                            title: "Change Author",
-                            inputType: "select",
+                            title: 'Change Author',
+                            inputType: 'select',
                             inputOptions: options,
                             value: data.author,
                             callback: function(value)
@@ -366,14 +382,45 @@
                                 {
                                     if (data.author != value)
                                     {
-                                        alert('change to: ' + value);
+                                        $.LoadingOverlay('show', {
+                                            zIndex: 2000
+                                        });
+
+                                        global.viewData.autosaveOn = false;
+
+                                        irpcRenderer.call('posts.changeAuthor', {
+                                            currentAuthor: data.author,
+                                            newAuthor: value,
+                                            permlink: data.permlink
+                                        }, function(err, result) {
+                                            if (err)
+                                            {
+                                                console.log(err);
+                                                bootbox.alert('Error Changeing Author');
+                                                global.viewData.autosaveOn = true;
+                                                $.LoadingOverlay('hide');
+                                            }
+                                            else if (result.changed)
+                                            {
+                                                //global.viewData.autosaveOn = true;
+                                                //$.LoadingOverlay('hide');
+                                            }
+                                            else
+                                            {
+                                                global.viewData.autosaveOn = true;
+                                                $.LoadingOverlay('hide');
+                                                if (result.msg) bootbox.alert(result.msg);
+                                            }
+
+                                        });
+
                                     }
 
                                 }
 
                             }
-                        });
 
+                        });
                     }
 
                 });
