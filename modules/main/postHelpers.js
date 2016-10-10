@@ -222,6 +222,33 @@
             });
 
         },
+        getLatestContentHash: function(authperm, cb)
+        {
+            global.db.get('SELECT contentHash from revisions WHERE isAutosave = 0 AND authperm = ? GROUP BY authperm ORDER BY date DESC', [authperm], function(err, row)
+            {
+                if (err) return cb(err);
+
+                if (row)
+                {
+                    cb(null, row.contentHash);
+                }
+                else
+                {
+                    cb(null, '');
+                }
+
+            });
+
+        },
+        deleteAutosave: function(author, permlink, cb)
+        {
+            var autoSaveContentHash = module.exports.generateContentHash(); //autosave one
+
+            global.db.run("DELETE FROM revisions WHERE isAutosave = 1 AND contentHash = ? AND author = ? AND permlink = ?", [autoSaveContentHash, author, permlink], function(err)
+            {
+                cb(err);
+            });
+        },
         isOpLock: function(author, permalink)
         {
             var str = author + '.' + permalink;

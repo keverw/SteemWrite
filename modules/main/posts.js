@@ -573,6 +573,160 @@
                 }
 
             }
+            else if (parameters.mode == 'savedraft')
+            {
+                var lockCheck = setInterval(function()
+                {
+                    if (!postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
+                    {
+                        postHelpers.opLock(parameters.editorData.author, parameters.editorData.permlink);
+                        clearInterval(lockCheck);
+
+                        var unixTime = util.time();
+
+                        var contentHash = postHelpers.generateContentHash(parameters.editorData.title, parameters.editorData.body, JSON.stringify(metadata));
+                        var revHash = postHelpers.generateRevHash(contentHash, unixTime);
+
+                        var authperm = [parameters.editorData.author, parameters.editorData.permlink].join('.');
+
+                        //check if already saved:
+                        postHelpers.getLatestContentHash(authperm, function(err, latestContentHash)
+                        {
+                            if (err)
+                            {
+                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                cb(err);
+                            }
+                            else if (latestContentHash == contentHash) //already saved this version
+                            {
+                                //delete if any autosaves if already saved main
+                                postHelpers.deleteAutosave(parameters.editorData.author, parameters.editorData.permlink, function(err)
+                                {
+                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                    cb(err, {
+                                        noAutosave: true
+                                    });
+                                });
+
+                            }
+                            else
+                            {
+                                postHelpers.replaceRevision({
+                                    revHash: revHash,
+                                    contentHash: contentHash,
+                                    publishedTX: '',
+                                    permlink: parameters.editorData.permlink,
+                                    author: parameters.editorData.author,
+                                    authperm: [parameters.editorData.author, parameters.editorData.permlink].join('.'),
+                                    title: parameters.editorData.title,
+                                    body: parameters.editorData.body,
+                                    json_metadata: JSON.stringify(metadata),
+                                    localDate: unixTime,
+                                    blockChainDate: 0,
+                                    date: unixTime,
+                                    isAutosave: 0
+                                }, function(err)
+                                {
+                                    if (err)
+                                    {
+                                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                        return cb(err); //return to stop rest of this code from running
+                                    }
+
+                                    var postData = {
+                                        title: parameters.editorData.title,
+                                        date: unixTime,
+                                        featuredImg: featuredImg,
+                                    };
+
+                                    //add tags
+                                    postData = _.extend(postData, postHelpers.metadataToTagsKV(tags));
+
+                                    if (parameters.editorData.isNew) //insert post
+                                    {
+                                        postData.author = parameters.editorData.author;
+                                        postData.permlink = parameters.editorData.permlink;
+                                        postData.status = parameters.editorData.postStatus;
+                                        postData.latestPublishedTX = '';
+                                        postData.scheduledDate = 0;
+                                        postData.warningMsg = '';
+
+                                        postHelpers.insertPost(postData, function(err)
+                                        {
+                                            if (err)
+                                            {
+                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                cb(err);
+                                            }
+                                            else
+                                            {
+                                                postHelpers.deleteAutosave(parameters.editorData.author, parameters.editorData.permlink, function(err)
+                                                {
+                                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                                    if (err) cb(err);
+
+                                                    cb(null, {
+                                                        msg: 'Draft Saved',
+                                                        wasSaved: true,
+                                                        publishPanel: {
+                                                            date: unixTime,
+                                                            autosaveRevison: ''
+                                                        }
+                                                    });
+                                                });
+
+                                            }
+
+                                        });
+
+                                    }
+                                    else //saved
+                                    {
+
+                                        postHelpers.updatePost(parameters.editorData.author, parameters.editorData.permlink, postData, function(err)
+                                        {
+                                            if (err)
+                                            {
+                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                cb(err);
+                                            }
+                                            else
+                                            {
+                                                postHelpers.deleteAutosave(parameters.editorData.author, parameters.editorData.permlink, function(err)
+                                                {
+                                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                                    if (err) cb(err);
+
+                                                    cb(null, {
+                                                        msg: 'Draft Saved',
+                                                        wasSaved: true,
+                                                        publishPanel: {
+                                                            date: unixTime,
+                                                            autosaveRevison: ''
+                                                        }
+                                                    });
+                                                });
+
+                                            }
+
+                                        });
+
+                                    }
+
+                                });
+
+                            }
+
+                        });
+
+                    }
+
+                }, 10);
+
+            }
             else
             {
                 cb(new Error('Invalid mode'));

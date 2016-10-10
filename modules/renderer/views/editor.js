@@ -448,8 +448,56 @@
         },
         saveDraft: function(id)
         {
-            // todo: code this
-            alert('saveDraft later');
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+                $.LoadingOverlay('show', {
+                    zIndex: 2000
+                });
+
+                global.viewData.autosaveOn = false;
+
+                irpcRenderer.call('posts.savePost', {
+                    mode: 'savedraft',
+                    editorData: data
+                }, function(err, result)
+                {
+                    if (err)
+                    {
+                        console.log(err);
+                        bootbox.alert('Error Saving Post...');
+                        global.viewData.autosaveOn = true;
+                        $.LoadingOverlay('hide');
+                    }
+                    else
+                    {
+                        if (result && result.wasSaved)
+                        {
+                            $('#' + id + " [name='_autosaveHash']").val(data.n_AutosaveHash);
+                            $('#' + id + " [name='_isNew']").val(0); //no longer new
+
+                            editorUIHelpers.updatePublishPanel(id, result.publishPanel);
+                        }
+                        else if (result && result.noAutosave) //not saved, but also no autosave as already saved as a non autosave revision
+                        {
+                            editorUIHelpers.updatePublishPanel(id, {
+                                autosaveRevison: '' //clear autosave
+                            });
+
+                        }
+
+                        global.viewData.autosaveOn = true;
+                        $.LoadingOverlay('hide');
+
+                        if (result && result.msg) bootbox.alert(result.msg);
+
+                    }
+
+                });
+
+            }
+
         },
         scheduledSetDate: function(id)
         {
