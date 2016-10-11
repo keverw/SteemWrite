@@ -499,75 +499,10 @@
 
                     var unixTime = util.time();
 
-                    var contentHash = postHelpers.generateContentHash(); //autosave one
-                    var revHash = postHelpers.generateRevHash(contentHash, 0);
-
-                    postHelpers.replaceRevision({
-                        revHash: revHash,
-                        contentHash: contentHash,
-                        publishedTX: '',
-                        author: parameters.editorData.author,
-                        permlink: parameters.editorData.permlink,
-                        authperm: [parameters.editorData.author, parameters.editorData.permlink].join('.'),
-                        title: parameters.editorData.title,
-                        body: parameters.editorData.body,
-                        json_metadata: JSON.stringify(metadata),
-                        localDate: unixTime,
-                        blockChainDate: 0,
-                        date: unixTime,
-                        isAutosave: 1
-                    }, function(err)
+                    postHelpers.saveAutosave(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, result)
                     {
-
-                        if (err)
-                        {
-                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                            cb(err);
-                        }
-                        else if (parameters.editorData.isNew) //insert post
-                        {
-                            var postData = {
-                                author: parameters.editorData.author,
-                                permlink: parameters.editorData.permlink,
-                                title: parameters.editorData.title,
-                                status: parameters.editorData.postStatus,
-                                latestPublishedTX: '',
-                                date: unixTime,
-                                scheduledDate: 0,
-                                featuredImg: featuredImg,
-                                warningMsg: ''
-                            };
-
-                            //add tags
-                            postData = _.extend(postData, postHelpers.metadataToTagsKV(tags));
-
-                            postHelpers.insertPost(postData, function(err)
-                            {
-                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-
-                                if (err) return cb(err);
-
-                                cb(null, {
-                                    locked: false,
-                                    saved: true,
-                                    autosaveRevison: revHash
-                                });
-
-                            });
-
-                        }
-                        else //saved
-                        {
-                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-
-                            cb(null, {
-                                locked: false,
-                                saved: true,
-                                autosaveRevison: revHash
-                            });
-
-                        }
-
+                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                        cb(err, result);
                     });
 
                 }
@@ -584,140 +519,30 @@
 
                         var unixTime = util.time();
 
-                        var contentHash = postHelpers.generateContentHash(parameters.editorData.title, parameters.editorData.body, JSON.stringify(metadata));
-                        var revHash = postHelpers.generateRevHash(contentHash, unixTime);
-
-                        var authperm = [parameters.editorData.author, parameters.editorData.permlink].join('.');
-
-                        //check if already saved:
-                        postHelpers.getLatestContentHash(authperm, function(err, latestContentHash)
+                        postHelpers.saveDraft(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, result)
                         {
-                            if (err)
-                            {
-                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                                cb(err);
-                            }
-                            else if (latestContentHash == contentHash) //already saved this version
-                            {
-                                //delete if any autosaves if already saved main
-                                postHelpers.deleteAutosave(parameters.editorData.author, parameters.editorData.permlink, function(err)
-                                {
-                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
 
-                                    cb(err, {
-                                        noAutosave: true
-                                    });
+                            if (err) return cb(err);
+
+                            if (result.status == 'alreadySaved')
+                            {
+                                cb(null, {
+                                    noAutosave: true //just meant to clear the autosave
+                                });
+                            }
+                            else if (result.status == 'saved')
+                            {
+                                cb(null, {
+                                    msg: 'Draft Saved',
+                                    wasSaved: true,
+                                    publishPanel: (result.publishPanel) ? result.publishPanel : {}
                                 });
 
                             }
                             else
                             {
-                                postHelpers.replaceRevision({
-                                    revHash: revHash,
-                                    contentHash: contentHash,
-                                    publishedTX: '',
-                                    permlink: parameters.editorData.permlink,
-                                    author: parameters.editorData.author,
-                                    authperm: [parameters.editorData.author, parameters.editorData.permlink].join('.'),
-                                    title: parameters.editorData.title,
-                                    body: parameters.editorData.body,
-                                    json_metadata: JSON.stringify(metadata),
-                                    localDate: unixTime,
-                                    blockChainDate: 0,
-                                    date: unixTime,
-                                    isAutosave: 0
-                                }, function(err)
-                                {
-                                    if (err)
-                                    {
-                                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                                        return cb(err); //return to stop rest of this code from running
-                                    }
-
-                                    var postData = {
-                                        title: parameters.editorData.title,
-                                        date: unixTime,
-                                        featuredImg: featuredImg,
-                                    };
-
-                                    //add tags
-                                    postData = _.extend(postData, postHelpers.metadataToTagsKV(tags));
-
-                                    if (parameters.editorData.isNew) //insert post
-                                    {
-                                        postData.author = parameters.editorData.author;
-                                        postData.permlink = parameters.editorData.permlink;
-                                        postData.status = parameters.editorData.postStatus;
-                                        postData.latestPublishedTX = '';
-                                        postData.scheduledDate = 0;
-                                        postData.warningMsg = '';
-
-                                        postHelpers.insertPost(postData, function(err)
-                                        {
-                                            if (err)
-                                            {
-                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                                                cb(err);
-                                            }
-                                            else
-                                            {
-                                                postHelpers.deleteAutosave(parameters.editorData.author, parameters.editorData.permlink, function(err)
-                                                {
-                                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-
-                                                    if (err) cb(err);
-
-                                                    cb(null, {
-                                                        msg: 'Draft Saved',
-                                                        wasSaved: true,
-                                                        publishPanel: {
-                                                            date: unixTime,
-                                                            autosaveRevison: ''
-                                                        }
-                                                    });
-                                                });
-
-                                            }
-
-                                        });
-
-                                    }
-                                    else //saved
-                                    {
-
-                                        postHelpers.updatePost(parameters.editorData.author, parameters.editorData.permlink, postData, function(err)
-                                        {
-                                            if (err)
-                                            {
-                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                                                cb(err);
-                                            }
-                                            else
-                                            {
-                                                postHelpers.deleteAutosave(parameters.editorData.author, parameters.editorData.permlink, function(err)
-                                                {
-                                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-
-                                                    if (err) cb(err);
-
-                                                    cb(null, {
-                                                        msg: 'Draft Saved',
-                                                        wasSaved: true,
-                                                        publishPanel: {
-                                                            date: unixTime,
-                                                            autosaveRevison: ''
-                                                        }
-                                                    });
-                                                });
-
-                                            }
-
-                                        });
-
-                                    }
-
-                                });
-
+                                cb(null);
                             }
 
                         });

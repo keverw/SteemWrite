@@ -1,6 +1,7 @@
 (function()
 {
-    var async = require('async'),
+    var _ = require('underscore'),
+        async = require('async'),
         sha1 = require('sha1'),
         sqlHelpers = require('./sqlHelpers.js');
 
@@ -248,6 +249,191 @@
             {
                 cb(err);
             });
+        },
+        saveAutosave: function(metadata, tags, featuredImg, unixTime, editorData, cb)
+        {
+            var contentHash = module.exports.generateContentHash(); //autosave one
+            var revHash = module.exports.generateRevHash(contentHash, 0);
+
+            module.exports.replaceRevision({
+                revHash: revHash,
+                contentHash: contentHash,
+                publishedTX: '',
+                author: editorData.author,
+                permlink: editorData.permlink,
+                authperm: [editorData.author, editorData.permlink].join('.'),
+                title: editorData.title,
+                body: editorData.body,
+                json_metadata: JSON.stringify(metadata),
+                localDate: unixTime,
+                blockChainDate: 0,
+                date: unixTime,
+                isAutosave: 1
+            }, function(err)
+            {
+                if (err) cb(err);
+
+                if (editorData.isNew) //insert post
+                {
+                    var postData = {
+                        author: editorData.author,
+                        permlink: editorData.permlink,
+                        title: editorData.title,
+                        status: editorData.postStatus,
+                        latestPublishedTX: '',
+                        date: unixTime,
+                        scheduledDate: 0,
+                        featuredImg: featuredImg,
+                        warningMsg: ''
+                    };
+
+                    //add tags
+                    postData = _.extend(postData, module.exports.metadataToTagsKV(tags));
+
+                    module.exports.insertPost(postData, function(err)
+                    {
+                        if (err) return cb(err);
+
+                        cb(null, {
+                            locked: false,
+                            saved: true,
+                            autosaveRevison: revHash
+                        });
+
+                    });
+
+                }
+                else //not new post
+                {
+
+                    cb(null, {
+                        locked: false,
+                        saved: true,
+                        autosaveRevison: revHash
+                    });
+                }
+
+            });
+
+        },
+        saveDraft: function(metadata, tags, featuredImg, unixTime, editorData, cb)
+        {
+
+            var contentHash = module.exports.generateContentHash(editorData.title, editorData.body, JSON.stringify(metadata));
+            var revHash = module.exports.generateRevHash(contentHash, unixTime);
+
+            var authperm = [editorData.author, editorData.permlink].join('.');
+
+            // check if already saved:
+            module.exports.getLatestContentHash(authperm, function(err, latestContentHash)
+            {
+                if (err) return cb(err);
+
+                if (latestContentHash == contentHash) //already saved this version
+                {
+                    //delete if any autosaves if already saved main
+                    module.exports.deleteAutosave(editorData.author, editorData.permlink, function(err)
+                    {
+                        cb(err, {
+                            status: 'alreadySaved'
+                        });
+
+                    });
+
+                }
+                else
+                {
+
+                    module.exports.replaceRevision({
+                        revHash: revHash,
+                        contentHash: contentHash,
+                        publishedTX: '',
+                        permlink: editorData.permlink,
+                        author: editorData.author,
+                        authperm: [editorData.author, editorData.permlink].join('.'),
+                        title: editorData.title,
+                        body: editorData.body,
+                        json_metadata: JSON.stringify(metadata),
+                        localDate: unixTime,
+                        blockChainDate: 0,
+                        date: unixTime,
+                        isAutosave: 0
+                    }, function(err)
+                    {
+                        if (err) return cb(err);
+
+                        var postData = {
+                            title: editorData.title,
+                            date: unixTime,
+                            featuredImg: featuredImg,
+                        };
+
+                        //add tags
+                        postData = _.extend(postData, module.exports.metadataToTagsKV(tags));
+
+                        if (editorData.isNew) //insert post
+                        {
+                            postData.author = editorData.author;
+                            postData.permlink = editorData.permlink;
+                            postData.status = editorData.postStatus;
+                            postData.latestPublishedTX = '';
+                            postData.scheduledDate = 0;
+                            postData.warningMsg = '';
+
+                            module.exports.insertPost(postData, function(err)
+                            {
+                                if (err) return cb(err);
+
+                                module.exports.deleteAutosave(editorData.author, editorData.permlink, function(err)
+                                {
+                                    if (err) cb(err);
+
+                                    cb(err, {
+                                        status: 'saved',
+                                        publishPanel: {
+                                            date: unixTime,
+                                            autosaveRevison: ''
+                                        }
+
+                                    });
+
+                                });
+
+                            });
+
+                        }
+                        else //saved
+                        {
+
+                            module.exports.updatePost(editorData.author, editorData.permlink, postData, function(err)
+                            {
+                                if (err) cb(err);
+
+                                module.exports.deleteAutosave(editorData.author, editorData.permlink, function(err)
+                                {
+                                    if (err) cb(err);
+
+                                    cb(err, {
+                                        status: 'saved',
+                                        publishPanel: {
+                                            date: unixTime,
+                                            autosaveRevison: ''
+                                        }
+
+                                    });
+
+                                });
+
+                            });
+
+                        }
+
+                    });
+
+                }
+
+            });
+
         },
         isOpLock: function(author, permalink)
         {
