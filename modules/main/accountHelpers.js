@@ -512,6 +512,20 @@
             }
 
         },
+        useAccountStatus2Text: function(status)
+        {
+            var statusCodes = {
+                notloaded: 'Accounts Data Not Loaded',
+                locked: 'Please unlock your encrypted credentials first',
+                notadded: 'Account is not currently added',
+                noauth: 'Account authentication credentials not found. Please edit the password saved for this account.',
+                notfound: 'No account matching given username',
+                badlogin: 'Incorrect Password',
+                good: 'Account authentication credentials were successfully validated!'
+            };
+
+            return (statusCodes.hasOwnProperty(status)) ? statusCodes[status] : null; //string, else null if unknown
+        },
         removeAccount: function(username, cb)
         {
             //cb - err, status
