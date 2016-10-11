@@ -534,10 +534,15 @@
             // todo: code this
             alert('publishPost later');
         },
-        updatePost: function(id)
+        updatePostPublished: function(id)
         {
             // todo: code this
-            alert('updatePost later');
+            alert('updatePostPublished later');
+        },
+        updatePostScheduled: function(id)
+        {
+            // todo: code this
+            alert('updatePostScheduled later');
         }
 
     };

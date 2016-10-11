@@ -61,9 +61,9 @@ ul
         =author
 
         if (postStatus == 'drafts')
-        =' '
-        button.btn.btn-info.btn-sm(type='button', onclick!='editorView.changeAuthor(\'' + id + '\');')
-            |Change
+            =' '
+            button.btn.btn-info.btn-sm(type='button', onclick!='editorView.changeAuthor(\'' + id + '\');')
+                |Change
 
     li
         b
@@ -108,7 +108,11 @@ div(style='margin-left: auto; margin-right: auto;margin-top: 10px;')
 
             if (postStatus == 'published')
                 .btn-group(role='group')
-                    button.btn.btn-info(type='button', onclick!='editorView.updatePost(\'' + id + '\');')
+                    button.btn.btn-info(type='button', onclick!='editorView.updatePostPublished(\'' + id + '\');')
+                        |Update
+            else if (postStatus == 'scheduled')
+                .btn-group(role='group')
+                    button.btn.btn-info(type='button', onclick!='editorView.updatePostScheduled(\'' + id + '\');')
                         |Update
             else
                 .btn-group(role='group')
