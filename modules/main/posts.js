@@ -578,6 +578,55 @@
                         }
                         else
                         {
+                            postHelpers.saveDraft(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, result)
+                            {
+                                if (err)
+                                {
+                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                    cb(err);
+                                }
+                                else
+                                {
+                                    var publishPanelData = {
+                                        autosaveRevison: ''
+                                    };
+
+                                    //get post from blockchain:
+                                    module.exports.bcGetContent({
+                                        author: parameters.editorData.author,
+                                        permlink: parameters.editorData.permlink
+                                    }, function(err, getContentResult)
+                                    {
+                                        if (err)
+                                        {
+                                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                            cb(err);
+                                        }
+                                        else
+                                        {
+
+                                            //check if already saved to blockchain
+                                            if (postHelpers.comparePost(parameters.editorData, metadata, getContentResult))
+                                            {                                                
+                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                                cb(null, {
+                                                    msg: 'Already Published This Version',
+                                                    publishPanel: publishPanelData
+                                                });
+
+                                            }
+                                            else
+                                            {
+                                                //not
+                                                console.log('Not Posted Already');
+                                            }
+                                        }
+                                        
+                                    });
+                            });
+
+
                         }
 
                     }

@@ -1324,6 +1324,10 @@
 
                         editorUIHelpers.updatePublishPanel(id, result.publishPanel);
                     }
+                    else if (result && result.publishPanel)
+                    {
+                        editorUIHelpers.updatePublishPanel(id, result.publishPanel);
+                    }
                     else if (result && result.noAutosave) //not saved, but also no autosave as already saved as a non autosave revision
                     {
                         editorUIHelpers.updatePublishPanel(id, {

@@ -3,7 +3,8 @@
     var _ = require('underscore'),
         async = require('async'),
         sha1 = require('sha1'),
-        sqlHelpers = require('./sqlHelpers.js');
+        sqlHelpers = require('./sqlHelpers.js'),
+        jsonHash = require('json-hash');
 
     module.exports = {
         countPostsByUser: function(username, cb)
@@ -449,6 +450,22 @@
         {
             var str = author + '.' + permalink;
             delete global.postOpLocks[str];
+        },
+        comparePost: function(editorData, editorMetadataObj, bcGetContentResult)
+        {
+            if (bcGetContentResult.body.length > 0) //found post for that slug
+            {
+                //Title is the same
+                if (editorData.title === bcGetContentResult.title) return true;
+
+                //Body is the same
+                if (editorData.body === bcGetContentResult.body) return true;
+
+                //JSON is the same
+                if (jsonHash.digest(editorMetadataObj) === jsonHash.digest(JSON.parse(bcGetContentResult.json_metadata))) return true;
+            }
+
+            return false;
         }
 
     };
