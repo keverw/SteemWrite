@@ -31,6 +31,19 @@
             return (textHelpers.isHtml(str)) ? htmlToText.fromString(str).trim().length : str.length;
         },
         validate: {
+            savePostCheck: function(editorData, tags)
+            {
+                //check title
+                var titleCheck = module.exports.validate.postTitleLength(editorData.title);
+                if (titleCheck) return titleCheck;
+
+                //no title return, check body
+                var bodyCheck = module.exports.validate.postBody(editorData.body);
+                if (bodyCheck) return bodyCheck;
+
+                //no body return, check tags
+                return (tags.length === 0) ? 'At least one tag is required.' : null;
+            },
             postTitleLength: function(text)
             {
                 var errMsg = null;

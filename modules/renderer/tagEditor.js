@@ -15,7 +15,7 @@
             viewID: reqViewID
         }));
 
-        var errMsg = (tags.length === 0) ? 'At least one tag is required.' : '';
+        var errMsg = (tags.length === 0) ? 'At least one tag is required.' : null;
 
         //update errors ui
         if (errMsg)

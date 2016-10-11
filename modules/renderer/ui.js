@@ -1,8 +1,10 @@
 (function()
 {
+    var path = require('path');
     var menuName = (process.platform === 'darwin') ? 'Preferences' : 'Options';
 
-    var uuid = require('node-uuid');
+    var uuid = require('node-uuid'),
+        editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js'));
 
     var settingsBox,
         settingsViewMeta;
@@ -1268,21 +1270,12 @@
         {
             return global.moment.unix(unixtime).tz(global.tz).format('MM/DD/YYYY h:mm A');
         },
+        datepickerString2Unixtime: function(str, timezone)
+        {
+            return global.moment.tz(str, 'MM/DD/YYYY h:mm A', timezone).unix();
+        },
         dateSelectorDialog: function(options, cb)
         {
-            // ui.dateSelectorDialog({
-            //     title: 'Test',
-            //     value: '10/01/2016 7:17 AM'
-            // }, function(result) {
-            //     console.log(result);
-            // });
-
-            // ui.dateSelectorDialog({
-            //     title: 'Test'
-            // }, function(result) {
-            //     console.log(result);
-            // });
-
             var opts = {
                 title: options.title,
                 inputType: 'text',
@@ -1300,6 +1293,54 @@
             dialog.init(function() {
                 $('.dialogDatePicker .bootbox-input').datetimepicker();
             });
+
+        },
+        savePost: function(id, editorData, mode)
+        {
+            $.LoadingOverlay('show', {
+                zIndex: 2000
+            });
+
+            global.viewData.autosaveOn = false;
+
+            irpcRenderer.call('posts.savePost', {
+                mode: mode,
+                editorData: editorData
+            }, function(err, result)
+            {
+                if (err)
+                {
+                    console.log(err);
+                    bootbox.alert('Error Saving Post...');
+                    global.viewData.autosaveOn = true;
+                    $.LoadingOverlay('hide');
+                }
+                else
+                {
+                    if (result && result.wasSaved)
+                    {
+                        $('#' + id + " [name='_autosaveHash']").val(editorData.n_AutosaveHash);
+                        $('#' + id + " [name='_isNew']").val(0); //no longer new
+
+                        editorUIHelpers.updatePublishPanel(id, result.publishPanel);
+                    }
+                    else if (result && result.noAutosave) //not saved, but also no autosave as already saved as a non autosave revision
+                    {
+                        editorUIHelpers.updatePublishPanel(id, {
+                            autosaveRevison: '' //clear autosave
+                        });
+
+                    }
+
+                    global.viewData.autosaveOn = true;
+                    $.LoadingOverlay('hide');
+
+                    if (result && result.msg) bootbox.alert(result.msg);
+
+                }
+
+            });
+
 
         }
 

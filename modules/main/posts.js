@@ -465,8 +465,9 @@
         },
         savePost: function(parameters, cb)
         {
-            var metadata = {};
+            var lockCheck;
 
+            var metadata = {};
             var additionalJSONParseResult = editorUtility.validate.additionalJSONParse(parameters.editorData.additionalJSON);
 
             //set if no error message
@@ -510,7 +511,7 @@
             }
             else if (parameters.mode == 'savedraft')
             {
-                var lockCheck = setInterval(function()
+                lockCheck = setInterval(function()
                 {
                     if (!postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
                     {
@@ -552,11 +553,48 @@
                 }, 10);
 
             }
+            else if (parameters.mode == 'updatePostPublished')
+            {
+
+                lockCheck = setInterval(function()
+                {
+                    if (!postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
+                    {
+                        postHelpers.opLock(parameters.editorData.author, parameters.editorData.permlink);
+                        clearInterval(lockCheck);
+
+                        var unixTime = util.time();
+
+                        //validate title, body and tags
+                        var errMsg = editorUtility.validate.savePostCheck(parameters.editorData, tags);
+                        
+                        if (errMsg)
+                        {
+                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                            cb(null, {
+                                msg: errMsg
+                            });
+                        }
+                        else
+                        {
+                        }
+
+                    }
+
+                }, 10);
+
+            }
             else
             {
                 cb(new Error('Invalid mode'));
             }
 
+        },
+        validateScheduledDate: function(parameters, cb)
+        {
+            //todo: check if post is in the future, then secondly check if time is before or after any other posts by 5 mins
+            //todo: exclude the current post if editing a date
         }
 
     };

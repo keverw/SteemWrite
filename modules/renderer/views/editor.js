@@ -452,61 +452,39 @@
 
             if (data.found)
             {
-                $.LoadingOverlay('show', {
-                    zIndex: 2000
-                });
-
-                global.viewData.autosaveOn = false;
-
-                irpcRenderer.call('posts.savePost', {
-                    mode: 'savedraft',
-                    editorData: data
-                }, function(err, result)
-                {
-                    if (err)
-                    {
-                        console.log(err);
-                        bootbox.alert('Error Saving Post...');
-                        global.viewData.autosaveOn = true;
-                        $.LoadingOverlay('hide');
-                    }
-                    else
-                    {
-                        if (result && result.wasSaved)
-                        {
-                            $('#' + id + " [name='_autosaveHash']").val(data.n_AutosaveHash);
-                            $('#' + id + " [name='_isNew']").val(0); //no longer new
-
-                            editorUIHelpers.updatePublishPanel(id, result.publishPanel);
-                        }
-                        else if (result && result.noAutosave) //not saved, but also no autosave as already saved as a non autosave revision
-                        {
-                            editorUIHelpers.updatePublishPanel(id, {
-                                autosaveRevison: '' //clear autosave
-                            });
-
-                        }
-
-                        global.viewData.autosaveOn = true;
-                        $.LoadingOverlay('hide');
-
-                        if (result && result.msg) bootbox.alert(result.msg);
-
-                    }
-
-                });
-
+                ui.savePost(id, data, 'savedraft');
             }
 
         },
         scheduledSetDate: function(id)
         {
             // todo: code this
-            alert('scheduledSetDate later');
+
+            ui.dateSelectorDialog({
+                title: 'Scheduled Post'
+            }, function(result) {
+                if (result)
+                {
+                    var unixtime = ui.datepickerString2Unixtime(result, global.tz);
+
+                    console.log(unixtime);
+
+                }
+
+            });
+
         },
         scheduledChangeDate: function(id)
         {
             // todo: code this
+
+            // ui.dateSelectorDialog({
+            //     title: 'Test',
+            //     value: '10/01/2016 7:17 AM'
+            // }, function(result) {
+            //     console.log(result);
+            // });
+
             alert('scheduledChangeDate later');
         },
         scheduledCancel: function(id)
@@ -537,7 +515,13 @@
         updatePostPublished: function(id)
         {
             // todo: code this
-            alert('updatePostPublished later');
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+                ui.savePost(id, data, 'updatePostPublished');
+            }
+            
         },
         updatePostScheduled: function(id)
         {
