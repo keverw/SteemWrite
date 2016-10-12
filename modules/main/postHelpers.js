@@ -72,6 +72,10 @@
         {
             return sha1([contentHash, blockChainDate].join(','));
         },
+        generatebcSentHash: function(title, body, metadata)
+        {
+            return sha1([title, body, jsonHash.digest(metadata)].join(','));
+        },
         insertRevision: function(parameters, cb)
         {
             sqlHelpers.insert(parameters, function(string, values)
@@ -89,6 +93,23 @@
             sqlHelpers.insert(parameters, function(string, values)
             {
                 global.db.run('REPLACE INTO revisions ' + string, values, function(err)
+                {
+                    cb(err);
+                });
+
+            });
+
+        },
+        updateRevision: function(revHash, author, permlink, updateData, cb)
+        {
+            //revHash, author, permlink, updateData
+            sqlHelpers.update(updateData, function(string, values)
+            {
+                values.push(revHash);
+                values.push(author);
+                values.push(permlink);
+
+                global.db.run('UPDATE revisions SET ' + string + ' WHERE revHash = ? AND author = ? AND permlink = ?', values, function(err)
                 {
                     cb(err);
                 });
@@ -281,7 +302,6 @@
                         permlink: editorData.permlink,
                         title: editorData.title,
                         status: editorData.postStatus,
-                        latestPublishedTX: '',
                         date: unixTime,
                         scheduledDate: 0,
                         featuredImg: featuredImg,
@@ -336,6 +356,7 @@
                     module.exports.deleteAutosave(editorData.author, editorData.permlink, function(err)
                     {
                         cb(err, {
+                            revHash: revHash,
                             status: 'alreadySaved'
                         });
 
@@ -377,7 +398,6 @@
                             postData.author = editorData.author;
                             postData.permlink = editorData.permlink;
                             postData.status = editorData.postStatus;
-                            postData.latestPublishedTX = '';
                             postData.scheduledDate = 0;
                             postData.warningMsg = '';
 
@@ -390,6 +410,7 @@
                                     if (err) cb(err);
 
                                     cb(err, {
+                                        revHash: revHash,
                                         status: 'saved',
                                         publishPanel: {
                                             date: unixTime,
@@ -415,6 +436,7 @@
                                     if (err) cb(err);
 
                                     cb(err, {
+                                        revHash: revHash,
                                         status: 'saved',
                                         publishPanel: {
                                             date: unixTime,

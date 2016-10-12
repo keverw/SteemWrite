@@ -519,7 +519,8 @@
                     {
                         //Check for accounts to sync
                         var cTime = util.time();
-                        var syncInterval = 60 * 3; //3 min
+                        //var syncInterval = 60 * 3; //3 min
+                        var syncInterval = 30; //every 30 seconds - note this is in seconds and not milliseconds
 
                         var syncList = [];
 

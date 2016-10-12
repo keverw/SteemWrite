@@ -10,7 +10,8 @@
         secureRandom = require('secure-random'),
         base58 = require('bs58'),
         editorUtility = require('../editorUtility.js'),
-        transactionBuilder = require('steemjs-lib').TransactionBuilder;
+        transactionBuilder = require('steemjs-lib').TransactionBuilder,
+        steemUserWatcher = require('./steemUserWatcher.js');
 
     function cleanPermlink(permlink)
     {
@@ -566,24 +567,24 @@
                         var unixTime = util.time();
 
                         //check if account can be used
-                        accountHelpers.useAccount(parameters.editorData.author, ['posting'], function(err, status, login)
+                        accountHelpers.useAccount(parameters.editorData.author, ['posting'], function(err, accountStatus, accountLogin)
                         {
                             if (err)
                             {
                                 postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
                                 cb(err);
                             }
-                            else if (status == 'good')
+                            else if (accountStatus == 'good')
                             {
                                 //validate title, body and tags
-                                var errMsg = editorUtility.validate.savePostCheck(parameters.editorData, tags);
+                                var postCheckErrMsg = editorUtility.validate.savePostCheck(parameters.editorData, tags);
 
-                                if (errMsg)
+                                if (postCheckErrMsg)
                                 {
                                     postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
 
                                     cb(null, {
-                                        msg: errMsg
+                                        msg: postCheckErrMsg
                                     });
                                 }
                                 else
@@ -624,7 +625,7 @@
                                         }
                                         else //Not Posted Already
                                         {
-                                            postHelpers.saveDraft(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, result)
+                                            postHelpers.saveDraft(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, saveDraftResult)
                                             {
                                                 if (err)
                                                 {
@@ -633,7 +634,7 @@
                                                 }
                                                 else
                                                 {
-                                                    var tx = new transactionBuilder();
+                                                    var revHash = saveDraftResult.revHash;
 
                                                     var parent_permlink = tags[0];
                                                     var comment_body = parameters.editorData.body;
@@ -644,32 +645,53 @@
                                                         comment_body = util.createPatch(getContentResult.body, comment_body, true);
                                                     }
 
-                                                    tx.add_type_operation('comment', {
-                                                        parent_author: '',
-                                                        parent_permlink: parent_permlink,
-                                                        author: parameters.editorData.author,
-                                                        permlink: parameters.editorData.permlink,
-                                                        title: parameters.editorData.title,
-                                                        body: comment_body,
-                                                        json_metadata: JSON.stringify(metadata)
-                                                    });
+                                                    var bcSentHash = postHelpers.generatebcSentHash(parameters.editorData.title, comment_body, metadata);
 
-                                                    tx.process_transaction(login, null, true).then(function(res)
+                                                    //set bcSentHash - update in case the draft was already saved before this was called elsewhere:
+                                                    postHelpers.updateRevision(revHash, parameters.editorData.author, parameters.editorData.permlink, {
+                                                        bcSentHash: bcSentHash
+                                                    }, function(err)
                                                     {
-                                                        publishPanelData.date = unixTime;
+                                                        if (err)
+                                                        {
+                                                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                            cb(err);
+                                                        }
+                                                        else
+                                                        {
+                                                            var tx = new transactionBuilder();
 
-                                                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                            tx.add_type_operation('comment', {
+                                                                parent_author: '',
+                                                                parent_permlink: parent_permlink,
+                                                                author: parameters.editorData.author,
+                                                                permlink: parameters.editorData.permlink,
+                                                                title: parameters.editorData.title,
+                                                                body: comment_body,
+                                                                json_metadata: JSON.stringify(metadata)
+                                                            });
 
-                                                        cb(null, {
-                                                            msg: 'Post Updated',
-                                                            wasSaved: true,
-                                                            publishPanel: publishPanelData
-                                                        });
+                                                            tx.process_transaction(accountLogin, null, true).then(function(res)
+                                                            {
+                                                                publishPanelData.date = unixTime;
 
-                                                    }).catch(function(err)
-                                                    {
-                                                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                                                        cb(err);
+                                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                                                steemUserWatcher.sync();
+
+                                                                cb(null, {
+                                                                    msg: 'Post Updated',
+                                                                    wasSaved: true,
+                                                                    publishPanel: publishPanelData
+                                                                });
+
+                                                            }).catch(function(err)
+                                                            {
+                                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                                cb(err);
+                                                            });
+                                                        }
+
                                                     });
 
                                                 }
@@ -686,7 +708,7 @@
                             else
                             {
                                 postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                                var msgStr = accountHelpers.useAccountStatus2Text(status);
+                                var msgStr = accountHelpers.useAccountStatus2Text(accountStatus);
 
                                 if (msgStr)
                                 {
@@ -697,12 +719,13 @@
                                 }
                                 else
                                 {
-                                    cb(new Error('UseAccount Unknown Status - ' + status));
+                                    cb(new Error('UseAccount Unknown Status - ' + accountStatus));
                                 }
 
                             }
 
                         });
+
                     }
 
                 }, 10);

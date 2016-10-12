@@ -102,165 +102,174 @@
 
                         var authperm = [data.author, data.permlink].join('.');
 
-                        postHelpers.getLatestRevisons([authperm], function(err, results)
+                        var metadata = JSON.parse(data.json_metadata);
+
+                        var featuredImg = '';
+
+                        if (metadata.image && typeof metadata.image == 'object' && typeof metadata.image[0] == 'string') featuredImg = metadata.image[0];
+
+                        var unixTime = global.moment.utc(timestamp).unix();
+
+                        if (row) //already
                         {
-                            if (err) return cb(err);
-
-                            var postCurrentRevHash = (results[authperm]) ? results[authperm] : '';
-
-                            var metadata = JSON.parse(data.json_metadata);
-
-                            var featuredImg = '';
-
-                            if (metadata.image && typeof metadata.image == 'object' && typeof metadata.image[0] == 'string') featuredImg = metadata.image[0];
-
-                            var unixTime = global.moment.utc(timestamp).unix();
-
-                            if (row) //already
+                            var revisionInsertedOrUpdated = function()
                             {
-                                //grab revision before this one
-                                global.db.get('SELECT body, revHash FROM revisions WHERE author = ? AND permlink = ? AND blockChainDate > 0 AND blockChainDate < ? ORDER BY blockChainDate DESC LIMIT 1', [data.author, data.permlink, unixTime], function(err, row)
+                                //update post
+                                var postUpdateData = {
+                                    title: data.title,
+                                    status: 'published',
+                                    date: unixTime,
+                                    featuredImg: featuredImg
+                                };
+
+                                //add tags
+                                postUpdateData = _.extend(postUpdateData, postHelpers.metadataToTagsKV(metadata));
+
+                                //update posts
+                                postHelpers.updatePost(data.author, data.permlink, postUpdateData, function(err)
                                 {
-                                    if (err) return cb(err);
+                                    cb(err);
+                                });
 
-                                    var body = data.body;
+                            };
 
-                                    var lastBCRevisonRevHash = '';
-                                    if (row) //found a revision before
-                                    {
-                                        lastBCRevisonRevHash = row.revHash;
-                                        //update body
-                                        body = util.applyPatch(row.body, data.body);
-                                    }
+                            //check for local content hash:
+                            var bcSentHash = postHelpers.generatebcSentHash(data.title, data.body, metadata);
 
-                                    //no featured image, check metadata genreated from body
-                                    if (featuredImg === '')
-                                    {
-                                        var extractedMeta = textHelpers.metadata(body);
+                            global.db.get('SELECT * FROM revisions WHERE isAutosave = 0 AND blockChainDate = 0 AND publishedTX = "" AND author = ? AND permlink = ? AND bcSentHash = ? ORDER BY date ASC LIMIT 1', [data.author, data.permlink, bcSentHash], function(err, contentHashLookupResult)
+                            {
+                                if (err) return cb(err);
 
-                                        if (extractedMeta.images.length > 0)
-                                        {
-                                            featuredImg = extractedMeta.images[0];
-                                        }
-
-                                    }
-
-                                    //insert revision
-                                    var contentHash = postHelpers.generateContentHash(data.title, body, JSON.stringify(metadata));
-                                    var revHash = postHelpers.generateRevHash(contentHash, unixTime);
-
-                                    postHelpers.insertRevision({
-                                        revHash: revHash,
-                                        contentHash: contentHash,
+                                if (contentHashLookupResult) //found bcSentHash - update revision
+                                {
+                                    postHelpers.updateRevision(contentHashLookupResult.revHash, contentHashLookupResult.author, contentHashLookupResult.permlink, {
+                                        revHash: postHelpers.generateRevHash(contentHashLookupResult.contentHash, unixTime),
+                                        bcSentHash: '',
                                         publishedTX: trx_id,
-                                        author: data.author,
-                                        permlink: data.permlink,
-                                        authperm: [data.author, data.permlink].join('.'),
-                                        title: data.title,
-                                        body: body,
-                                        json_metadata: JSON.stringify(metadata),
-                                        localDate: 0,
                                         blockChainDate: unixTime,
-                                        date: unixTime,
-                                        isAutosave: 0
+                                        date: unixTime
                                     }, function(err)
                                     {
                                         if (err) return cb(err);
-
-                                        if (postCurrentRevHash == lastBCRevisonRevHash)
-                                        {
-                                            //update post
-                                            var postUpdateData = {
-                                                title: data.title,
-                                                status: 'published',
-                                                latestPublishedTX: trx_id,
-                                                date: unixTime,
-                                                featuredImg: featuredImg
-                                            };
-
-                                            //add tags
-                                            postUpdateData = _.extend(postUpdateData, postHelpers.metadataToTagsKV(metadata));
-
-                                            //update posts
-                                            postHelpers.updatePost(data.author, data.permlink, postUpdateData, function(err)
-                                            {
-                                                cb(err);
-                                            });
-
-                                        }
-                                        else
-                                        {
-                                            cb();
-                                        }
-
+                                        revisionInsertedOrUpdated();
                                     });
 
-                                });
-
-                            }
-                            else //not already
-                            {
-                                //no featured image, check metadata genreated from body
-                                if (featuredImg === '')
+                                }
+                                else //no bcSentHash found - keep going
                                 {
-                                    var extractedMeta = textHelpers.metadata(data.body);
-
-                                    if (extractedMeta.images.length > 0)
+                                    //grab revision before this one
+                                    global.db.get('SELECT body, revHash FROM revisions WHERE NOT (publishedTX = "") AND author = ? AND permlink = ? AND blockChainDate > 0 AND blockChainDate < ? ORDER BY blockChainDate DESC LIMIT 1', [data.author, data.permlink, unixTime], function(err, row)
                                     {
-                                        featuredImg = extractedMeta.images[0];
-                                    }
+                                        var body = data.body;
+
+                                        if (row) //found a revision before
+                                        {
+                                            body = util.applyPatch(row.body, data.body); //update body
+                                        }
+
+                                        //no featured image, check metadata genreated from body
+                                        if (featuredImg === '')
+                                        {
+                                            var extractedMeta = textHelpers.metadata(body);
+
+                                            if (extractedMeta.images.length > 0)
+                                            {
+                                                featuredImg = extractedMeta.images[0];
+                                            }
+
+                                        }
+
+                                        //insert revision
+                                        var contentHash = postHelpers.generateContentHash(data.title, body, JSON.stringify(metadata));
+                                        var newRevHash = postHelpers.generateRevHash(contentHash, unixTime);
+
+                                        postHelpers.insertRevision({
+                                            revHash: newRevHash,
+                                            contentHash: contentHash,
+                                            publishedTX: trx_id,
+                                            author: data.author,
+                                            permlink: data.permlink,
+                                            authperm: [data.author, data.permlink].join('.'),
+                                            title: data.title,
+                                            body: body,
+                                            json_metadata: JSON.stringify(metadata),
+                                            localDate: 0,
+                                            blockChainDate: unixTime,
+                                            date: unixTime,
+                                            isAutosave: 0
+                                        }, function(err)
+                                        {
+                                            if (err) return cb(err);
+                                            revisionInsertedOrUpdated();
+                                        });
+
+                                    });
 
                                 }
 
-                                //insert revision
-                                var contentHash = postHelpers.generateContentHash(data.title, data.body, JSON.stringify(metadata));
-                                var revHash = postHelpers.generateRevHash(contentHash, unixTime);
+                            });
 
-                                postHelpers.insertRevision({
-                                    revHash: revHash,
-                                    contentHash: contentHash,
-                                    publishedTX: trx_id,
-                                    author: data.author,
-                                    permlink: data.permlink,
-                                    authperm: [data.author, data.permlink].join('.'),
-                                    title: data.title,
-                                    body: data.body,
-                                    json_metadata: JSON.stringify(metadata),
-                                    localDate: 0,
-                                    blockChainDate: unixTime,
-                                    date: unixTime,
-                                    isAutosave: 0
-                                }, function(err)
+                        }
+                        else //not already
+                        {
+                            //no featured image, check metadata genreated from body
+                            if (featuredImg === '')
+                            {
+                                var extractedMeta = textHelpers.metadata(data.body);
+
+                                if (extractedMeta.images.length > 0)
                                 {
-                                    if (err) return cb(err);
-
-                                    //insert post
-                                    var postData = {
-                                        author: data.author,
-                                        permlink: data.permlink,
-                                        title: data.title,
-                                        status: 'published',
-                                        latestPublishedTX: trx_id,
-                                        date: unixTime,
-                                        scheduledDate: 0,
-                                        featuredImg: featuredImg,
-                                        warningMsg: ''
-                                    };
-
-                                    //add tags
-                                    postData = _.extend(postData, postHelpers.metadataToTagsKV(metadata));
-
-                                    //insert
-                                    postHelpers.insertPost(postData, function(err)
-                                    {
-                                        cb(err);
-                                    });
-
-                                });
+                                    featuredImg = extractedMeta.images[0];
+                                }
 
                             }
 
-                        });
+                            //insert revision
+                            var contentHash = postHelpers.generateContentHash(data.title, data.body, JSON.stringify(metadata));
+                            var revHash = postHelpers.generateRevHash(contentHash, unixTime);
+
+                            postHelpers.insertRevision({
+                                revHash: revHash,
+                                contentHash: contentHash,
+                                publishedTX: trx_id,
+                                author: data.author,
+                                permlink: data.permlink,
+                                authperm: [data.author, data.permlink].join('.'),
+                                title: data.title,
+                                body: data.body,
+                                json_metadata: JSON.stringify(metadata),
+                                localDate: 0,
+                                blockChainDate: unixTime,
+                                date: unixTime,
+                                isAutosave: 0
+                            }, function(err)
+                            {
+                                if (err) return cb(err);
+
+                                //insert post
+                                var postData = {
+                                    author: data.author,
+                                    permlink: data.permlink,
+                                    title: data.title,
+                                    status: 'published',
+                                    date: unixTime,
+                                    scheduledDate: 0,
+                                    featuredImg: featuredImg,
+                                    warningMsg: ''
+                                };
+
+                                //add tags
+                                postData = _.extend(postData, postHelpers.metadataToTagsKV(metadata));
+
+                                //insert
+                                postHelpers.insertPost(postData, function(err)
+                                {
+                                    cb(err);
+                                });
+
+                            });
+
+                        }
 
                     });
 
