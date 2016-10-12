@@ -9,7 +9,8 @@
         textHelpers = require('../textHelpers.js'),
         secureRandom = require('secure-random'),
         base58 = require('bs58'),
-        editorUtility = require('../editorUtility.js');
+        editorUtility = require('../editorUtility.js'),
+        transactionBuilder = require('steemjs-lib').TransactionBuilder;
 
     function cleanPermlink(permlink)
     {
@@ -555,7 +556,6 @@
             }
             else if (parameters.mode == 'updatePostPublished')
             {
-
                 lockCheck = setInterval(function()
                 {
                     if (!postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
@@ -565,70 +565,144 @@
 
                         var unixTime = util.time();
 
-                        //validate title, body and tags
-                        var errMsg = editorUtility.validate.savePostCheck(parameters.editorData, tags);
-                        
-                        if (errMsg)
+                        //check if account can be used
+                        accountHelpers.useAccount(parameters.editorData.author, ['posting'], function(err, status, login)
                         {
-                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-
-                            cb(null, {
-                                msg: errMsg
-                            });
-                        }
-                        else
-                        {
-                            postHelpers.saveDraft(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, result)
+                            if (err)
                             {
-                                if (err)
+                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                cb(err);
+                            }
+                            else if (status == 'good')
+                            {
+                                //validate title, body and tags
+                                var errMsg = editorUtility.validate.savePostCheck(parameters.editorData, tags);
+
+                                if (errMsg)
                                 {
                                     postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
-                                    cb(err);
+
+                                    cb(null, {
+                                        msg: errMsg
+                                    });
                                 }
                                 else
                                 {
-                                    var publishPanelData = {
-                                        autosaveRevison: ''
-                                    };
-
-                                    //get post from blockchain:
+                                    //get post from blockchain
                                     module.exports.bcGetContent({
                                         author: parameters.editorData.author,
                                         permlink: parameters.editorData.permlink
                                     }, function(err, getContentResult)
                                     {
+                                        var publishPanelData = {
+                                            autosaveRevison: ''
+                                        };
+
                                         if (err)
                                         {
                                             postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
                                             cb(err);
                                         }
-                                        else
+                                        else if (getContentResult.body.length > 0 && getContentResult.mode == 'archived') //is archived
                                         {
+                                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
 
-                                            //check if already saved to blockchain
-                                            if (postHelpers.comparePost(parameters.editorData, metadata, getContentResult))
-                                            {                                                
-                                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                            cb(null, {
+                                                msg: 'This post is archived and can no longer be edited.'
+                                            });
 
-                                                cb(null, {
-                                                    msg: 'Already Published This Version',
-                                                    publishPanel: publishPanelData
-                                                });
-
-                                            }
-                                            else
-                                            {
-                                                //not
-                                                console.log('Not Posted Already');
-                                            }
                                         }
-                                        
+                                        else if (postHelpers.comparePost(parameters.editorData, metadata, getContentResult)) //not archived, check if already saved to blockchain
+                                        {
+                                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                            cb(null, {
+                                                msg: 'Already Published This Version',
+                                                publishPanel: publishPanelData
+                                            });
+
+                                        }
+                                        else //Not Posted Already
+                                        {
+                                            postHelpers.saveDraft(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, result)
+                                            {
+                                                if (err)
+                                                {
+                                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                    cb(err);
+                                                }
+                                                else
+                                                {
+                                                    var tx = new transactionBuilder();
+
+                                                    var parent_permlink = tags[0];
+                                                    var comment_body = parameters.editorData.body;
+
+                                                    if (getContentResult.body.length > 0) //found post for that slug
+                                                    {
+                                                        parent_permlink = getContentResult.parent_permlink;
+                                                        comment_body = util.createPatch(getContentResult.body, comment_body, true);
+                                                    }
+
+                                                    tx.add_type_operation('comment', {
+                                                        parent_author: '',
+                                                        parent_permlink: parent_permlink,
+                                                        author: parameters.editorData.author,
+                                                        permlink: parameters.editorData.permlink,
+                                                        title: parameters.editorData.title,
+                                                        body: comment_body,
+                                                        json_metadata: JSON.stringify(metadata)
+                                                    });
+
+                                                    tx.process_transaction(login, null, true).then(function(res)
+                                                    {
+                                                        publishPanelData.date = unixTime;
+
+                                                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                                        cb(null, {
+                                                            msg: 'Post Updated',
+                                                            wasSaved: true,
+                                                            publishPanel: publishPanelData
+                                                        });
+
+                                                    }).catch(function(err)
+                                                    {
+                                                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                        cb(err);
+                                                    });
+
+                                                }
+
+                                            });
+
+                                        }
+
                                     });
-                            });
 
+                                }
 
-                        }
+                            }
+                            else
+                            {
+                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                var msgStr = accountHelpers.useAccountStatus2Text(status);
 
+                                if (msgStr)
+                                {
+                                    cb(null, {
+                                        msg: msgStr
+                                    });
+
+                                }
+                                else
+                                {
+                                    cb(new Error('UseAccount Unknown Status - ' + status));
+                                }
+
+                            }
+
+                        });
                     }
 
                 }, 10);

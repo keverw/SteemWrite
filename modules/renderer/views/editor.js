@@ -514,14 +514,13 @@
         },
         updatePostPublished: function(id)
         {
-            // todo: code this
             var data = editorUIHelpers.getEditorData(id);
 
             if (data.found)
             {
                 ui.savePost(id, data, 'updatePostPublished');
             }
-            
+
         },
         updatePostScheduled: function(id)
         {

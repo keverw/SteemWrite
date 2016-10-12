@@ -55,6 +55,10 @@
     {
         // Strip out HTML comments. "JS-DOS" bug.
         text = text.replace(/<!--([\s\S]+?)(-->|$)/g, '(html comment removed: $1)');
+
+        //get rid of span tags
+        text = text.replace(/<\/?span[^>]*>/g, ''); //thanks http://stackoverflow.com/a/18464575/458642
+
         return (module.exports.isHtml(text)) ? text : remarkable.render(text);
     }
 
@@ -96,7 +100,7 @@
             }));
 
             if (sanitizeErrors.length) rtags.sanitizeErrorsWarning = sanitizeErrors.join('.  ');
-            
+
             //Convert the Set to regular arrays
             rtags.hashtags = Array.from(rtags.hashtags);
             rtags.usertags = Array.from(rtags.usertags);

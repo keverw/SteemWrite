@@ -453,19 +453,21 @@
         },
         comparePost: function(editorData, editorMetadataObj, bcGetContentResult)
         {
+            var sameCount = 0;
+
             if (bcGetContentResult.body.length > 0) //found post for that slug
             {
                 //Title is the same
-                if (editorData.title === bcGetContentResult.title) return true;
+                if (editorData.title === bcGetContentResult.title) sameCount++;
 
                 //Body is the same
-                if (editorData.body === bcGetContentResult.body) return true;
+                if (editorData.body === bcGetContentResult.body) sameCount++;
 
                 //JSON is the same
-                if (jsonHash.digest(editorMetadataObj) === jsonHash.digest(JSON.parse(bcGetContentResult.json_metadata))) return true;
+                if (jsonHash.digest(editorMetadataObj) === jsonHash.digest(JSON.parse(bcGetContentResult.json_metadata))) sameCount++;
             }
 
-            return false;
+            return (sameCount === 3); //all 3 are the same
         }
 
     };

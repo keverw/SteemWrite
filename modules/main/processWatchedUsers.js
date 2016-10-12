@@ -114,7 +114,7 @@
 
                             if (metadata.image && typeof metadata.image == 'object' && typeof metadata.image[0] == 'string') featuredImg = metadata.image[0];
 
-                            var unixTime = global.moment(timestamp).unix();
+                            var unixTime = global.moment.utc(timestamp).unix();
 
                             if (row) //already
                             {
