@@ -1,6 +1,7 @@
 (function()
 {
     var _ = require('underscore'),
+        async = require('async'),
         uuid = require('node-uuid'),
         pagination = require('./pagination.js'),
         accountHelpers = require('./accountHelpers.js'),
@@ -11,7 +12,8 @@
         base58 = require('bs58'),
         editorUtility = require('../editorUtility.js'),
         transactionBuilder = require('steemjs-lib').TransactionBuilder,
-        steemUserWatcher = require('./steemUserWatcher.js');
+        steemUserWatcher = require('./steemUserWatcher.js'),
+        kvs = require('./kvs.js');
 
     function cleanPermlink(permlink)
     {
@@ -555,6 +557,70 @@
                 }, 10);
 
             }
+            else if (parameters.mode == 'publishPost')
+            {
+                lockCheck = setInterval(function()
+                {
+                    if (!postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
+                    {
+                        postHelpers.opLock(parameters.editorData.author, parameters.editorData.permlink);
+                        clearInterval(lockCheck);
+
+                        var unixTime = util.time();
+
+                        //check if account can be used
+                        accountHelpers.useAccount(parameters.editorData.author, ['posting'], function(err, accountStatus, accountLogin)
+                        {
+                            if (err)
+                            {
+                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                cb(err);
+                            }
+                            else if (accountStatus == 'good')
+                            {
+                                //validate title, body and tags
+                                var postCheckErrMsg = editorUtility.validate.savePostCheck(parameters.editorData, tags);
+
+                                if (postCheckErrMsg)
+                                {
+                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+
+                                    cb(null, {
+                                        msg: postCheckErrMsg
+                                    });
+                                }
+                                else
+                                {
+
+                                }
+
+                            }
+                            else
+                            {
+                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                var msgStr = accountHelpers.useAccountStatus2Text(accountStatus);
+
+                                if (msgStr)
+                                {
+                                    cb(null, {
+                                        msg: msgStr
+                                    });
+
+                                }
+                                else
+                                {
+                                    cb(new Error('UseAccount Unknown Status - ' + accountStatus));
+                                }
+
+                            }
+
+                        });
+
+                    }
+
+                }, 10);
+
+            }
             else if (parameters.mode == 'updatePostPublished')
             {
                 lockCheck = setInterval(function()
@@ -735,6 +801,65 @@
             {
                 cb(new Error('Invalid mode'));
             }
+
+        },
+        getPostDefaultSettings: function(parameters, cb)
+        {
+            var lastSelectedEditor,
+                lastSelectedPayoutPrecent,
+                lastSelectedAutovotePref;
+
+            async.parallel([
+                function(callback)
+                {
+                    kvs.read({
+                        k: 'lastSelectedEditor',
+                    }, function(err, result)
+                    {
+                        if (err) return callback(err);
+
+                        //no default saved, set to md
+                        lastSelectedEditor = (result && typeof result == 'object') ? result.v : 'md';
+                        callback();
+                    });
+
+                },
+                function(callback)
+                {
+                    kvs.read({
+                        k: 'lastSelectedPayoutPrecent'
+                    }, function(err, result)
+                    {
+                        if (err) return callback(err);
+
+                        lastSelectedPayoutPrecent = (result && typeof result == 'object') ? parseInt(result.v) : 50; //Default to (50% / 50%)
+                        callback();
+                    });
+
+                },
+                function(callback)
+                {
+                    kvs.read({
+                        k: 'lastSelectedAutovotePref'
+                    }, function(err, result)
+                    {
+                        if (err) return callback(err);
+
+                        lastSelectedAutovotePref = (result && typeof result == 'object' && typeof result.v == 'string' && result.v == 'true') ? true : false;
+                        callback();
+                    });
+                }
+            ], function(err, results)
+            {
+                if (err) return cb(err);
+                
+                cb(null, {
+                    lastSelectedEditor: lastSelectedEditor,
+                    lastSelectedPayoutPrecent: lastSelectedPayoutPrecent,
+                    lastSelectedAutovotePref: lastSelectedAutovotePref
+                });
+
+            });
 
         },
         validateScheduledDate: function(parameters, cb)

@@ -15,6 +15,10 @@
         },
         hashContent: function(title, body, tags, additionalJSON)
         {
+            var blankHtml = '<html>\n\n</html>';
+
+            if (body == blankHtml) body = '';
+
             if (typeof tags == 'object') tags = tags.join(' ');
             if (typeof additionalJSON == 'object') additionalJSON = JSON.stringify(additionalJSON);
             additionalJSON = additionalJSON.trim();

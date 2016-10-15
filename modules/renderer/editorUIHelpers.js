@@ -36,61 +36,53 @@
         editorReady: function(id, parameters, cb)
         {
             if (!parameters.tags) parameters.tags = '';
+            
+            if (!parameters.additionalJSON) parameters.additionalJSON = {};
 
-            irpcRenderer.call('kvs.read', {
-                k: 'defaultEditor'
-            }, function(err, result)
+            $('#' + id + " [name='postTitle']").val(parameters.title);
+            $('#' + id + " [name='postJSONTextarea']").val(JSON.stringify(parameters.additionalJSON));
+
+            if (parameters.postStatus) $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
+
+            var warningMsgObj = {};
+
+            if (parameters.warningMsg && typeof parameters.warningMsg == 'string' && parameters.warningMsg.length > 0)
             {
-                if (!err && (result && typeof result == 'object')) global.viewData.defaultEditor = result.v;
-
-                if (!parameters.additionalJSON) parameters.additionalJSON = {};
-
-                $('#' + id + " [name='postTitle']").val(parameters.title);
-                $('#' + id + " [name='postJSONTextarea']").val(JSON.stringify(parameters.additionalJSON));
-
-                if (parameters.postStatus) $('#' + id + " [name='_postStatus']").val(parameters.postStatus);
-
-                var warningMsgObj = {};
-
-                if (parameters.warningMsg && typeof parameters.warningMsg == 'string' && parameters.warningMsg.length > 0)
+                try {
+                    warningMsgObj = JSON.parse(parameters.warningMsg);
+                } catch (err)
                 {
-                    try {
-                        warningMsgObj = JSON.parse(parameters.warningMsg);
-                    } catch (err)
-                    {
-                        console.log(err);
-                    }
-
+                    console.log(err);
                 }
 
-                if (!parameters.body) parameters.body = '';
+            }
 
-                var editorType = global.viewData.defaultEditor;
+            if (!parameters.body) parameters.body = '';
 
-                if (parameters.body.length > 0) editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
+            var editorType = parameters.postDefaultSettingsResult.lastSelectedEditor;
 
-                editorTextHelpers.insertEditor(id, editorType, function change()
-                {
-                    module.exports.checkPostBodyLength(id);
-                }, function init()
-                {
-                    editorTextHelpers.setContent(editorTextHelpers.getEditorID(id), parameters.body);
+            if (parameters.body.length > 0) editorType = textHelpers.isHtml(parameters.body) ? 'html' : 'md';
 
-                    module.exports.checkAdditionalJSON(id);
-                    module.exports.checkPostTitleLength(id);
+            editorTextHelpers.insertEditor(id, editorType, function change()
+            {
+                module.exports.checkPostBodyLength(id);
+            }, function init()
+            {
+                editorTextHelpers.setContent(editorTextHelpers.getEditorID(id), parameters.body);
 
-                    tagEditor.init(id, parameters.tags);
+                module.exports.checkAdditionalJSON(id);
+                module.exports.checkPostTitleLength(id);
 
-                    $('#' + id + " [name='_author']").val(parameters.author);
-                    $('#' + id + " [name='_permalink']").val(parameters.permlink);
-                    $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
+                tagEditor.init(id, parameters.tags);
 
-                    //transition to displaying view
-                    parameters.warningMsgObj = warningMsgObj;
-                    module.exports.initPublishPanel(id, parameters);
-                    cb();
-                });
+                $('#' + id + " [name='_author']").val(parameters.author);
+                $('#' + id + " [name='_permalink']").val(parameters.permlink);
+                $('#' + id + " [name='_autosaveHash']").val(editorUtility.hashContent(parameters.title, parameters.body, parameters.tags, parameters.additionalJSON));
 
+                //transition to displaying view
+                parameters.warningMsgObj = warningMsgObj;
+                module.exports.initPublishPanel(id, parameters);
+                cb();
             });
 
         },

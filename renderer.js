@@ -10,7 +10,6 @@ global.viewData = {
     lastView: '',
     lastAcc: '',
     currentAcc: '',
-    defaultEditor: 'md', //markdown is md, html is html
     autosaveOn: true,
     postsViewMeta: {},
     editorViewMeta: {}
@@ -151,15 +150,15 @@ global.updateBCStatus = function(info)
 
     if (info.status == 'open') //green
     {
-        $('#bcStatus').attr('class', 'led led-green').attr('title', 'Connected to ' + global.bcNode);
+        $('#bcStatus').attr('class', 'led led-green').attr('title', 'Connected to ' + global.bcNode).attr('data-original-title', 'Connected to ' + global.bcNode);
     }
     else if (info.status == 'closed') //yellow
     {
-        $('#bcStatus').attr('class', 'led led-yellow').attr('title', 'Connecting...');
+        $('#bcStatus').attr('class', 'led led-yellow').attr('title', 'Connecting...').attr('data-original-title', 'Connecting...');
     }
     else if (info.status == 'error') //red
     {
-        $('#bcStatus').attr('class', 'led led-red').attr('title', 'Error');
+        $('#bcStatus').attr('class', 'led led-red').attr('title', 'Error').attr('data-original-title', 'Error');
     }
 
 };

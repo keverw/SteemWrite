@@ -16,6 +16,15 @@
     module.exports = {
         load: function(author, permlink, editorLoadedCB)
         {
+            irpcRenderer.call('posts.getPostDefaultSettings', {}, function(err, postDefaultSettingsResult)
+            {
+                if (err)
+                {
+                    console.log(err);
+                    bootbox.alert('Error Loading Editor');
+                }
+                else
+                {
             var viewHolder = ui.mainContentHolder.view('editor');
 
             var id = viewHolder.attr('id');
@@ -49,7 +58,7 @@
                         if (global.viewData.editorViewMeta.viewID == id)
                         {
                             $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                                current: global.viewData.defaultEditor
+                                        current: postDefaultSettingsResult.lastSelectedEditor
                             }));
 
                         }
@@ -95,6 +104,7 @@
                                 delete result.json_metadata.links;
 
                                 editorUIHelpers.editorReady(id, {
+                                            postDefaultSettingsResult: postDefaultSettingsResult,
                                     postStatus: result.postStatus,
                                     author: result.author,
                                     permlink: result.permlink,
@@ -133,6 +143,7 @@
                         {
 
                             editorUIHelpers.editorReady(id, {
+                                        postDefaultSettingsResult: postDefaultSettingsResult,
                                 postStatus: 'drafts',
                                 author: author,
                                 permlink: result.permlink,
@@ -150,6 +161,10 @@
 
             }
 
+                }
+
+            });
+
         },
         switchEditor: function(type)
         {
@@ -161,10 +176,9 @@
 
                 if (len === 0 && (type == 'html' || type == 'md'))
                 {
-                    global.viewData.defaultEditor = type;
 
                     irpcRenderer.call('kvs.set', {
-                        k: 'defaultEditor',
+                        k: 'lastSelectedEditor',
                         v: type
                     }, function(err, result) {
                         //update editor type used
@@ -181,7 +195,7 @@
                         if (global.viewData.editorViewMeta.viewID == reqViewID)
                         {
                             $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
-                                current: global.viewData.defaultEditor
+                                current: type
                             })).show();
 
                         }
@@ -509,8 +523,13 @@
         },
         publishPost: function(id)
         {
-            // todo: code this
-            alert('publishPost later');
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+                ui.savePost(id, data, 'publishPost');
+            }
+
         },
         updatePostPublished: function(id)
         {

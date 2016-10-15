@@ -144,7 +144,7 @@
                                 {
                                     postHelpers.updateRevision(contentHashLookupResult.revHash, contentHashLookupResult.author, contentHashLookupResult.permlink, {
                                         revHash: postHelpers.generateRevHash(contentHashLookupResult.contentHash, unixTime),
-                                        bcSentHash: '',
+                                        bcSentHash: null,
                                         publishedTX: trx_id,
                                         blockChainDate: unixTime,
                                         date: unixTime

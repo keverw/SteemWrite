@@ -195,6 +195,7 @@ irpcMain.addFunction('bc-connect', function(parameters, cb)
             }
             else
             {
+                bcAlertUI('open');
                 steemUserWatcher.sync();
             }
 
