@@ -267,7 +267,9 @@
                                             autosaveRevison: info.autosaveRevison,
                                             date: postsRow.date,
                                             scheduledDate: postsRow.scheduledDate,
-                                            warningMsg: postsRow.warningMsg
+                                            warningMsg: postsRow.warningMsg,
+                                            onPubAutoVote: postsRow.onPubAutoVote,
+                                            onPubPayoutType: postsRow.onPubPayoutType
                                         });
 
                                     } catch (err)
@@ -845,7 +847,15 @@
                     {
                         if (err) return callback(err);
 
-                        lastSelectedAutovotePref = (result && typeof result == 'object' && typeof result.v == 'string' && result.v == 'true') ? true : false;
+                        if (result && typeof result == 'object')
+                        {
+                            lastSelectedAutovotePref = (result.v == 'string' && result.v == 'true') ? true : false;
+                        }
+                        else
+                        {
+                            lastSelectedAutovotePref = true; //default to true when no result
+                        }
+
                         callback();
                     });
                 }

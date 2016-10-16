@@ -25,141 +25,143 @@
                 }
                 else
                 {
-            var viewHolder = ui.mainContentHolder.view('editor');
+                    var viewHolder = ui.mainContentHolder.view('editor');
 
-            var id = viewHolder.attr('id');
+                    var id = viewHolder.attr('id');
 
-            if (id)
-            {
-                global.viewData.editorViewMeta.viewID = id;
-
-                viewHolder.html(util.getViewHtml('editor/initial', {
-                    viewID: id
-                }));
-
-                $('#' + id + " [name='postTitle']").on('change keyup paste', function()
-                {
-                    editorUIHelpers.checkPostTitleLength(id);
-                });
-
-                //this should only be checked when done typing, not during
-                $('#' + id + " [name='postJSONTextarea']").on('change paste', function()
-                {
-                    editorUIHelpers.checkAdditionalJSON(id);
-                });
-
-                var transitionView = function()
-                {
-                    ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
-
-                    ui.mainContentHolder.ready(viewHolder, function()
+                    if (id)
                     {
-                        //update nav bar buttons
-                        if (global.viewData.editorViewMeta.viewID == id)
+                        global.viewData.editorViewMeta.viewID = id;
+
+                        viewHolder.html(util.getViewHtml('editor/initial', {
+                            viewID: id
+                        }));
+
+                        $('#' + id + " [name='postTitle']").on('change keyup paste', function()
                         {
-                            $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
+                            editorUIHelpers.checkPostTitleLength(id);
+                        });
+
+                        //this should only be checked when done typing, not during
+                        $('#' + id + " [name='postJSONTextarea']").on('change paste', function()
+                        {
+                            editorUIHelpers.checkAdditionalJSON(id);
+                        });
+
+                        var transitionView = function()
+                        {
+                            ui.switchBetween($('#' + id + ' .basicLoaderScreen'), $('#' + id + ' #editorHolder'));
+
+                            ui.mainContentHolder.ready(viewHolder, function()
+                            {
+                                //update nav bar buttons
+                                if (global.viewData.editorViewMeta.viewID == id)
+                                {
+                                    $('#navMiddleButtons').html(util.getViewHtml('editor/middleNavNew', {
                                         current: postDefaultSettingsResult.lastSelectedEditor
-                            }));
+                                    }));
 
-                        }
+                                }
 
-                        editorUIHelpers.resize();
-                        editorTextHelpers.refresh(editorTextHelpers.getEditorID(id));
-                        editorUIHelpers.checkPostBodyLength(id);
-                        $('#navMiddleButtons').show();
-                        editorView.autosave(id);
+                                editorUIHelpers.resize();
+                                editorTextHelpers.refresh(editorTextHelpers.getEditorID(id));
+                                editorUIHelpers.checkPostBodyLength(id);
+                                $('#navMiddleButtons').show();
+                                editorView.autosave(id);
 
-                        if (editorLoadedCB) editorLoadedCB();
-                    });
+                                if (editorLoadedCB) editorLoadedCB();
+                            });
 
-                };
+                        };
 
-                if (typeof permlink == 'string' && permlink.length > 0)
-                {
-                    //existing post
-                    $('#' + id + " [name='_isNew']").val(0);
-
-                    irpcRenderer.call('posts.loadPost', {
-                        author: author,
-                        permlink: permlink
-                    }, function(err, result) {
-                        if (err)
+                        if (typeof permlink == 'string' && permlink.length > 0)
                         {
-                            console.log(err);
-                            bootbox.alert('Error Loading Editor');
-                        }
-                        else
-                        {
-                            if (result.status == 'notfound')
-                            {
-                                bootbox.alert('Error Loading Editor');
-                            }
-                            else if (result.status == 'found')
-                            {
-                                if (typeof result.json_metadata != 'object') result.json_metadata = {};
+                            //existing post
+                            $('#' + id + " [name='_isNew']").val(0);
 
-                                delete result.json_metadata.tags;
-                                delete result.json_metadata.users;
-                                delete result.json_metadata.image;
-                                delete result.json_metadata.links;
-
-                                editorUIHelpers.editorReady(id, {
-                                            postDefaultSettingsResult: postDefaultSettingsResult,
-                                    postStatus: result.postStatus,
-                                    author: result.author,
-                                    permlink: result.permlink,
-                                    title: result.title,
-                                    body: result.body,
-                                    tags: result.tags,
-                                    additionalJSON: result.json_metadata,
-                                    autosaveRevison: result.autosaveRevison,
-                                    date: result.date,
-                                    scheduledDate: result.scheduledDate,
-                                    warningMsg: result.warningMsg
-                                }, transitionView);
-
-                            }
-
-                        }
-
-                    });
-
-                }
-                else
-                {
-                    //new post
-                    $('#' + id + " [name='_isNew']").val(1);
-
-                    irpcRenderer.call('posts.createDraftPermlink', {
-                        author: author
-                    }, function(err, result)
-                    {
-                        if (err)
-                        {
-                            console.log(err);
-                            bootbox.alert('Error Loading Editor');
-                        }
-                        else
-                        {
-
-                            editorUIHelpers.editorReady(id, {
-                                        postDefaultSettingsResult: postDefaultSettingsResult,
-                                postStatus: 'drafts',
+                            irpcRenderer.call('posts.loadPost', {
                                 author: author,
-                                permlink: result.permlink,
-                                title: 'Untitled',
-                                autosaveRevison: '',
-                                date: 0,
-                                scheduledDate: 0
-                            }, transitionView);
+                                permlink: permlink
+                            }, function(err, result) {
+                                if (err)
+                                {
+                                    console.log(err);
+                                    bootbox.alert('Error Loading Editor');
+                                }
+                                else
+                                {
+                                    if (result.status == 'notfound')
+                                    {
+                                        bootbox.alert('Error Loading Editor');
+                                    }
+                                    else if (result.status == 'found')
+                                    {
+                                        if (typeof result.json_metadata != 'object') result.json_metadata = {};
+
+                                        delete result.json_metadata.tags;
+                                        delete result.json_metadata.users;
+                                        delete result.json_metadata.image;
+                                        delete result.json_metadata.links;
+
+                                        editorUIHelpers.editorReady(id, {
+                                            postDefaultSettingsResult: postDefaultSettingsResult,
+                                            postStatus: result.postStatus,
+                                            author: result.author,
+                                            permlink: result.permlink,
+                                            title: result.title,
+                                            body: result.body,
+                                            tags: result.tags,
+                                            additionalJSON: result.json_metadata,
+                                            autosaveRevison: result.autosaveRevison,
+                                            date: result.date,
+                                            scheduledDate: result.scheduledDate,
+                                            warningMsg: result.warningMsg,
+                                            onPubAutoVote: result.onPubAutoVote,
+                                            onPubPayoutType: result.onPubPayoutType
+                                        }, transitionView);
+
+                                    }
+
+                                }
+
+                            });
+
+                        }
+                        else
+                        {
+                            //new post
+                            $('#' + id + " [name='_isNew']").val(1);
+
+                            irpcRenderer.call('posts.createDraftPermlink', {
+                                author: author
+                            }, function(err, result)
+                            {
+                                if (err)
+                                {
+                                    console.log(err);
+                                    bootbox.alert('Error Loading Editor');
+                                }
+                                else
+                                {
+
+                                    editorUIHelpers.editorReady(id, {
+                                        postDefaultSettingsResult: postDefaultSettingsResult,
+                                        postStatus: 'drafts',
+                                        author: author,
+                                        permlink: result.permlink,
+                                        title: 'Untitled',
+                                        autosaveRevison: '',
+                                        date: 0,
+                                        scheduledDate: 0
+                                    }, transitionView);
+
+                                }
+
+                            });
 
                         }
 
-                    });
-
-                }
-
-            }
+                    }
 
                 }
 

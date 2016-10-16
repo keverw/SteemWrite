@@ -35,8 +35,12 @@
         },
         editorReady: function(id, parameters, cb)
         {
+            //set onPubAutoVote and onPubPayoutType based on parameters, then failback to parameters.postDefaultSettingsResult
+            if (parameters.onPubAutoVote === null || parameters.onPubAutoVote === undefined) parameters.onPubAutoVote = parameters.postDefaultSettingsResult.lastSelectedAutovotePref;
+            if (parameters.onPubPayoutType === null || parameters.onPubPayoutType === undefined) parameters.onPubPayoutType = parameters.postDefaultSettingsResult.lastSelectedPayoutPrecent;
+
             if (!parameters.tags) parameters.tags = '';
-            
+
             if (!parameters.additionalJSON) parameters.additionalJSON = {};
 
             $('#' + id + " [name='postTitle']").val(parameters.title);
