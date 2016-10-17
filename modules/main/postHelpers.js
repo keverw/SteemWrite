@@ -305,7 +305,9 @@
                         date: unixTime,
                         scheduledDate: 0,
                         featuredImg: featuredImg,
-                        warningMsg: ''
+                        warningMsg: '',
+                        onPubAutoVote: (editorData.onPubAutoVote) ? 1 : 0,
+                        onPubPayoutType: editorData.onPubPayoutType
                     };
 
                     //add tags
@@ -339,7 +341,6 @@
         },
         saveDraft: function(metadata, tags, featuredImg, unixTime, editorData, cb)
         {
-
             var contentHash = module.exports.generateContentHash(editorData.title, editorData.body, JSON.stringify(metadata));
             var revHash = module.exports.generateRevHash(contentHash, unixTime);
 
@@ -384,10 +385,19 @@
                     {
                         if (err) return cb(err);
 
+                        var publishPanel = {
+                            date: unixTime,
+                            autosaveRevison: '',
+                            onPubAutoVote: editorData.onPubAutoVote,
+                            onPubPayoutType: editorData.onPubPayoutType
+                        };
+
                         var postData = {
                             title: editorData.title,
                             date: unixTime,
                             featuredImg: featuredImg,
+                            onPubAutoVote: (editorData.onPubAutoVote) ? 1 : 0,
+                            onPubPayoutType: editorData.onPubPayoutType
                         };
 
                         //add tags
@@ -412,11 +422,7 @@
                                     cb(err, {
                                         revHash: revHash,
                                         status: 'saved',
-                                        publishPanel: {
-                                            date: unixTime,
-                                            autosaveRevison: ''
-                                        }
-
+                                        publishPanel: publishPanel
                                     });
 
                                 });
@@ -438,11 +444,7 @@
                                     cb(err, {
                                         revHash: revHash,
                                         status: 'saved',
-                                        publishPanel: {
-                                            date: unixTime,
-                                            autosaveRevison: ''
-                                        }
-
+                                        publishPanel: publishPanel
                                     });
 
                                 });

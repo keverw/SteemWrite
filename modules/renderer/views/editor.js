@@ -547,6 +547,26 @@
         {
             // todo: code this
             alert('updatePostScheduled later');
+        },
+        pubPayoutTypeChanged: function(id)
+        {
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+                ui.savePost(id, data, 'updatePubPref');
+            }
+
+        },
+        pubAutoVoteChanged: function(id)
+        {
+            var data = editorUIHelpers.getEditorData(id);
+
+            if (data.found)
+            {
+                ui.savePost(id, data, 'updatePubPref');
+            }
+
         }
 
     };

@@ -129,6 +129,16 @@
                     foundCount++;
                 }
 
+                result.onPubPayoutType = $('#' + id + " [name='onPubPayoutTypeSelect']").val();
+                if (typeof result.onPubPayoutType == 'string')
+                {
+                    result.onPubPayoutType = parseInt(result.onPubPayoutType);
+                    foundCount++;
+                }
+
+                result.onPubAutoVote = $('#' + id + " [name='onPubAutoVoteCheckbox']").is(':checked');
+                if (typeof result.onPubAutoVote == 'boolean') foundCount++;
+
                 var _isNew = $('#' + id + " [name='_isNew']").val();
 
                 if (typeof _isNew == 'string')
@@ -140,7 +150,7 @@
                 result.c_AutosaveHash = $('#' + id + " [name='_autosaveHash']").val();
                 if (typeof result.c_AutosaveHash == 'string') foundCount++;
 
-                if (foundCount == 9)
+                if (foundCount == 11)
                 {
                     result.found = true;
                     result.n_AutosaveHash = editorUtility.hashContent(result.title, result.body, result.tags, result.additionalJSON);
@@ -235,7 +245,9 @@
                     autosaveRevison: parameters.autosaveRevison,
                     date: parameters.date,
                     scheduledDate: parameters.scheduledDate,
-                    warningMsgObj: parameters.warningMsgObj
+                    warningMsgObj: parameters.warningMsgObj,
+                    onPubAutoVote: parameters.onPubAutoVote,
+                    onPubPayoutType: parameters.onPubPayoutType
                 }));
 
                 module.exports.updatePublishPanel(id);
@@ -260,6 +272,9 @@
                 if (parameters.scheduledDate) meta.postStatus = parameters.scheduledDate;
                 if (parameters.warningMsgObj) meta.warningMsgObj = parameters.warningMsgObj;
 
+                if (typeof parameters.onPubAutoVote == 'boolean') meta.onPubAutoVote = parameters.onPubAutoVote;
+                if (typeof parameters.onPubPayoutType == 'number') meta.onPubPayoutType = parameters.onPubPayoutType;
+
                 $('#' + id + " [name='_publishActionsMetadata']").val(JSON.stringify(meta));
 
                 //add data that not saved to json
@@ -270,6 +285,7 @@
 
                 //update ui
                 $('#' + id + ' .publishActions').html(util.getViewHtml('editor/publishPanelActions', meta));
+                $("[name='onPubAutoVoteCheckbox']").bootstrapSwitch();
 
             }
 

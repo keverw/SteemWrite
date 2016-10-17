@@ -255,6 +255,11 @@
 
                                         if (metadata.tags) tags = metadata.tags;
 
+                                        if (typeof postsRow.onPubAutoVote == 'number')
+                                        {
+                                            postsRow.onPubAutoVote = (postsRow.onPubAutoVote == 1) ? true : false;
+                                        }
+                                        
                                         cb(null, {
                                             status: 'found',
                                             postStatus: postsRow.status,
@@ -514,6 +519,71 @@
 
                 }
 
+            }
+            else if (parameters.mode == 'updatePubPref')
+            {
+                lockCheck = setInterval(function()
+                {
+                    if (!postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
+                    {
+                        postHelpers.opLock(parameters.editorData.author, parameters.editorData.permlink);
+                        clearInterval(lockCheck);
+
+                        var publishPanel = {
+                            onPubAutoVote: parameters.editorData.onPubAutoVote,
+                            onPubPayoutType: parameters.editorData.onPubPayoutType
+                        };
+
+                        //check if post exists
+                        global.db.get('SELECT * FROM posts WHERE author = ? AND permlink = ?', [parameters.editorData.author, parameters.editorData.permlink], function(err, row)
+                        {
+                            if (err)
+                            {
+                                postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                cb(err);
+                            }
+                            else if (row) //update, do a update
+                            {
+                                var postData = {
+                                    onPubAutoVote: (parameters.editorData.onPubAutoVote) ? 1 : 0,
+                                    onPubPayoutType: parameters.editorData.onPubPayoutType
+                                };
+
+                                postHelpers.updatePost(parameters.editorData.author, parameters.editorData.permlink, postData, function(err)
+                                {
+                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                    if (err) return cb(err);
+
+                                    cb(null, {
+                                        publishPanel: publishPanel
+                                    });
+
+                                });
+
+                            }
+                            else //new post
+                            {
+                                var unixTime = util.time();
+                                postHelpers.saveAutosave(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, result)
+                                {
+                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                    if (err) return cb(err);
+
+                                    if (result && result.autosaveRevison) publishPanel.autosaveRevison = result.autosaveRevison.autosaveRevison;
+
+                                    cb(null, {
+                                        publishPanel: publishPanel
+                                    });
+
+                                });
+
+                            }
+
+                        });
+
+                    }
+
+                }, 10);
             }
             else if (parameters.mode == 'savedraft')
             {

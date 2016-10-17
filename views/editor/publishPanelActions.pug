@@ -94,6 +94,39 @@ ul
         else if (postStatus == 'trash')
             |Trash
 
+        - var pubDisplayOption = (postStatus == 'drafts' || postStatus == 'scheduled') ? '' : 'none';
+        li(style='display: ' + pubDisplayOption)
+            b
+                ='Rewards'
+                =' '
+
+            - var color = (onPubPayoutType == 0) ? 'orange' : 'inherit';
+            select(name='onPubPayoutTypeSelect', value=onPubPayoutType, style='color: ' + color, onchange!='editorView.pubPayoutTypeChanged(\'' + id + '\');')
+                if (onPubPayoutType == 100)
+                    option(value='100', selected='') Power Up 100%
+                else
+                    option(value='100') Power Up 100%
+
+                if (onPubPayoutType == 50)
+                    option(value='50', selected='') Default (50% / 50%)
+                else
+                    option(value='50') Default (50% / 50%)
+
+                if (onPubPayoutType == 0)
+                    option(value='0', selected='') Decline Payout
+                else
+                    option(value='0') Decline Payout
+
+        li(style='display: ' + pubDisplayOption)
+            b(style='margin-right: 8px;')
+                ='Upvote Own Post'
+                =' '
+
+            if (onPubAutoVote)
+                input(type='checkbox', name='onPubAutoVoteCheckbox', onchange!='editorView.pubAutoVoteChanged(\'' + id + '\');', checked='')
+            else
+                input(type='checkbox', name='onPubAutoVoteCheckbox', onchange!='editorView.pubAutoVoteChanged(\'' + id + '\');')
+
 div(style='margin-left: auto; margin-right: auto;margin-top: 10px;')
     .btn-group.btn-group-justified(role='group', aria-label='...')
         if (postStatus == 'trash')
