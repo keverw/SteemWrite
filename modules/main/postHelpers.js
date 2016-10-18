@@ -4,6 +4,7 @@
         async = require('async'),
         sha1 = require('sha1'),
         sqlHelpers = require('./sqlHelpers.js'),
+        kvs = require('./kvs.js'),
         jsonHash = require('json-hash');
 
     module.exports = {
@@ -492,6 +493,40 @@
             }
 
             return (sameCount === 3); //all 3 are the same
+        },
+        updateDefaultUpdatePubPref: function(name, value, cb)
+        {
+            if (name == 'payout')
+            {
+                kvs.set({
+                    k: 'lastSelectedPayoutPrecent',
+                    v: value.toString()
+                }, function(err)
+                {
+                    cb(err);
+                });
+
+            }
+            else if (name == 'autovote')
+            {
+                kvs.set({
+                    k: 'lastSelectedAutovotePref',
+                    v: (value) ? 'true' : 'false'
+                }, function(err)
+                {
+                    cb(err);
+                });
+
+            }
+            else
+            {
+                cb();
+            }
+
+        },
+        validatePostDate: function(author, permalink, unixTime)
+        {
+            //check if any published with in -/+ 5 mins, same for shuldued?
         }
 
     };

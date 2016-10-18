@@ -554,7 +554,7 @@
 
             if (data.found)
             {
-                ui.savePost(id, data, 'updatePubPref');
+                ui.savePost(id, data, 'updatePubPrefPubPayoutType');
             }
 
         },
@@ -564,7 +564,7 @@
 
             if (data.found)
             {
-                ui.savePost(id, data, 'updatePubPref');
+                ui.savePost(id, data, 'updatePubPrefAutoVote');
             }
 
         }

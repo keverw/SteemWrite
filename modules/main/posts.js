@@ -259,7 +259,7 @@
                                         {
                                             postsRow.onPubAutoVote = (postsRow.onPubAutoVote == 1) ? true : false;
                                         }
-                                        
+
                                         cb(null, {
                                             status: 'found',
                                             postStatus: postsRow.status,
@@ -520,7 +520,7 @@
                 }
 
             }
-            else if (parameters.mode == 'updatePubPref')
+            else if (parameters.mode == 'updatePubPrefAutoVote' || parameters.mode == 'updatePubPrefPubPayoutType')
             {
                 lockCheck = setInterval(function()
                 {
@@ -532,6 +532,41 @@
                         var publishPanel = {
                             onPubAutoVote: parameters.editorData.onPubAutoVote,
                             onPubPayoutType: parameters.editorData.onPubPayoutType
+                        };
+
+                        var successCB = function(options)
+                        {
+                            var update,
+                                defaultPrefPubName = '',
+                                defaultPrefPubValue;
+
+                            if (parameters.mode == 'updatePubPrefAutoVote')
+                            {
+                                update = true;
+                                defaultPrefPubName = 'autovote';
+                                defaultPrefPubValue = parameters.editorData.onPubAutoVote;
+                            }
+                            else if (parameters.mode == 'updatePubPrefPubPayoutType')
+                            {
+                                update = true;
+                                defaultPrefPubName = 'payout';
+                                defaultPrefPubValue = parameters.editorData.onPubPayoutType;
+                            }
+
+                            if (update)
+                            {
+                                postHelpers.updateDefaultUpdatePubPref(defaultPrefPubName, defaultPrefPubValue, function(err)
+                                {
+                                    //ignore err on this one, as it's just setting the default. So a failure isn't a show stopper
+                                    cb(null, options);
+                                });
+
+                            }
+                            else
+                            {
+                                cb(null, options);
+                            }
+
                         };
 
                         //check if post exists
@@ -554,7 +589,7 @@
                                     postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
                                     if (err) return cb(err);
 
-                                    cb(null, {
+                                    successCB({
                                         publishPanel: publishPanel
                                     });
 
@@ -571,7 +606,7 @@
 
                                     if (result && result.autosaveRevison) publishPanel.autosaveRevison = result.autosaveRevison.autosaveRevison;
 
-                                    cb(null, {
+                                    successCB({
                                         publishPanel: publishPanel
                                     });
 
@@ -919,7 +954,7 @@
 
                         if (result && typeof result == 'object')
                         {
-                            lastSelectedAutovotePref = (result.v == 'string' && result.v == 'true') ? true : false;
+                            lastSelectedAutovotePref = (typeof result.v == 'string' && result.v == 'true') ? true : false;
                         }
                         else
                         {
@@ -932,7 +967,7 @@
             ], function(err, results)
             {
                 if (err) return cb(err);
-                
+
                 cb(null, {
                     lastSelectedEditor: lastSelectedEditor,
                     lastSelectedPayoutPrecent: lastSelectedPayoutPrecent,
