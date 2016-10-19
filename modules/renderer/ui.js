@@ -1317,29 +1317,47 @@
                 }
                 else
                 {
-                    if (result && result.wasSaved)
+                    if (result.reloadView)
                     {
-                        $('#' + id + " [name='_autosaveHash']").val(editorData.n_AutosaveHash);
-                        $('#' + id + " [name='_isNew']").val(0); //no longer new
+                        $('#' + id).remove();
 
-                        editorUIHelpers.updatePublishPanel(id, result.publishPanel);
-                    }
-                    else if (result && result.publishPanel)
-                    {
-                        editorUIHelpers.updatePublishPanel(id, result.publishPanel);
-                    }
-                    else if (result && result.noAutosave) //not saved, but also no autosave as already saved as a non autosave revision
-                    {
-                        editorUIHelpers.updatePublishPanel(id, {
-                            autosaveRevison: '' //clear autosave
+                        editorView.load(result.author, result.newPermlink, function()
+                        {
+                            global.viewData.autosaveOn = true;
+                            $.LoadingOverlay('hide');
                         });
 
                     }
+                    else
+                    {
+                        if (result && result.wasSaved)
+                        {
+                            $('#' + id + " [name='_autosaveHash']").val(editorData.n_AutosaveHash);
+                            $('#' + id + " [name='_isNew']").val(0); //no longer new
 
-                    global.viewData.autosaveOn = true;
-                    $.LoadingOverlay('hide');
+                            editorUIHelpers.updatePublishPanel(id, result.publishPanel);
+                        }
+                        else if (result && result.errHome)
+                        {
+                            ui.homeBtn();
+                        }
+                        else if (result && result.publishPanel)
+                        {
+                            editorUIHelpers.updatePublishPanel(id, result.publishPanel);
+                        }
+                        else if (result && result.noAutosave) //not saved, but also no autosave as already saved as a non autosave revision
+                        {
+                            editorUIHelpers.updatePublishPanel(id, {
+                                autosaveRevison: '' //clear autosave
+                            });
 
-                    if (result && result.msg) bootbox.alert(result.msg);
+                        }
+
+                        global.viewData.autosaveOn = true;
+                        $.LoadingOverlay('hide');
+
+                        if (result && result.msg) bootbox.alert(result.msg);
+                    }
 
                 }
 

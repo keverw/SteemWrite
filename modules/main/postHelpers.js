@@ -524,9 +524,23 @@
             }
 
         },
-        validatePostDate: function(author, permalink, unixTime)
+        validatePostDate: function(author, permalink, unixTime, cb)
         {
-            //check if any published with in -/+ 5 mins, same for shuldued?
+            var fiveMin = 60 * 5;
+            var plusFive = unixTime + fiveMin;
+            var minusFive = unixTime - fiveMin;
+
+            //check if any published with in -/+ 5 mins, same for scheduled?
+
+            var dateField = "(SELECT COUNT(*) FROM posts WHERE NOT (author = ? AND permlink = ?) AND date > 0 AND date BETWEEN " + minusFive + " AND " + plusFive + ") AS dateField";
+            var scheduledDateField = "(SELECT COUNT(*) FROM posts WHERE NOT (author = ? AND permlink = ?) AND scheduledDate > 0 AND scheduledDate BETWEEN " + minusFive + " AND " + plusFive + ") AS scheduledDateField";
+            
+            global.db.get("SELECT " + dateField + ", " + scheduledDateField, [author, permalink, author, permalink], function(err, row)
+            {
+                if (err) return cb(err);
+                cb(null, row.dateField + row.scheduledDateField);
+            });
+
         }
 
     };

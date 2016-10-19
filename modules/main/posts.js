@@ -666,6 +666,62 @@
             }
             else if (parameters.mode == 'publishPost')
             {
+                var doubleUnlock = function(newPermlink)
+                {
+                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                    postHelpers.opUnlock(parameters.editorData.author, newPermlink);
+                };
+
+                var blockchainPostedSuccess = function(newPermlink)
+                {
+                    global.db.run("UPDATE posts SET status = 'published', permlink = ? WHERE author = ? AND permlink = ?", [newPermlink, parameters.editorData.author, parameters.editorData.permlink], function(err)
+                    {
+                        if (err)
+                        {
+                            console.log(err);
+                            doubleUnlock(newPermlink);
+                            cb(null, {
+                                errHome: true
+                            });
+                        }
+                        else
+                        {
+                            var newAuthperm = [parameters.editorData.author, newPermlink].join('.');
+
+                            global.db.run("UPDATE revisions SET permlink = ?, authperm = ? WHERE author = ? AND permlink = ?", [
+                                newPermlink,
+                                newAuthperm,
+                                parameters.editorData.author,
+                                parameters.editorData.permlink
+                            ], function(err)
+                            {
+                                if (err)
+                                {
+                                    console.log(err);
+                                    doubleUnlock(newPermlink);
+                                    cb(null, {
+                                        errHome: true
+                                    });
+                                }
+                                else
+                                {
+
+                                    cb(null, {
+                                        reloadView: true,
+                                        author: parameters.editorData.author,
+                                        newPermlink: newPermlink
+                                    });
+
+                                }
+
+                            });
+
+                        }
+
+                    });
+
+                };
+
                 lockCheck = setInterval(function()
                 {
                     if (!postHelpers.isOpLock(parameters.editorData.author, parameters.editorData.permlink))
@@ -698,6 +754,141 @@
                                 }
                                 else
                                 {
+                                    postHelpers.saveDraft(metadata, tags, featuredImg, unixTime, parameters.editorData, function(err, saveDraftResult)
+                                    {
+                                        if (err)
+                                        {
+                                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                            cb(err);
+                                        }
+                                        else
+                                        {
+                                            postHelpers.validatePostDate(parameters.editorData.author, parameters.editorData.permlink, unixTime, function(err, count)
+                                            {
+                                                if (err)
+                                                {
+                                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                    cb(err);
+                                                }
+                                                else if (count > 0)
+                                                {
+                                                    postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                    cb(null, {
+                                                        msg: 'Another post was posted or scheduled within -/+ 5 mins minutes of now'
+                                                    });
+                                                }
+                                                else
+                                                {
+                                                    var oldPermlink = parameters.editorData.permlink;
+
+                                                    module.exports.createMainPermlink({
+                                                        author: parameters.editorData.author,
+                                                        title: parameters.editorData.title
+                                                    }, function(err, createPermLinkResult)
+                                                    {
+                                                        if (err)
+                                                        {
+                                                            postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                            cb(err);
+                                                        }
+                                                        else
+                                                        {
+                                                            var newPermlink = createPermLinkResult.permlink;
+                                                            postHelpers.opLock(parameters.editorData.author, newPermlink);
+
+                                                            var revHash = saveDraftResult.revHash;
+
+                                                            var parent_permlink = tags[0];
+                                                            var comment_body = parameters.editorData.body;
+
+                                                            var bcSentHash = postHelpers.generatebcSentHash(parameters.editorData.title, comment_body, metadata);
+
+                                                            //set bcSentHash - update in case the draft was already saved before this was called elsewhere:
+                                                            postHelpers.updateRevision(revHash, parameters.editorData.author, parameters.editorData.permlink, {
+                                                                bcSentHash: bcSentHash
+                                                            }, function(err)
+                                                            {
+                                                                if (err)
+                                                                {
+                                                                    doubleUnlock(newPermlink);
+                                                                    cb(err);
+                                                                }
+                                                                else
+                                                                {
+                                                                    //post to blockchain
+                                                                    var tx = new transactionBuilder();
+
+                                                                    //comment data
+                                                                    tx.add_type_operation('comment', {
+                                                                        parent_author: '',
+                                                                        parent_permlink: parent_permlink,
+                                                                        author: parameters.editorData.author,
+                                                                        permlink: newPermlink,
+                                                                        title: parameters.editorData.title,
+                                                                        body: comment_body,
+                                                                        json_metadata: JSON.stringify(metadata)
+                                                                    });
+
+                                                                    //comment_options
+                                                                    var comment_options = {
+                                                                        author: parameters.editorData.author,
+                                                                        permlink: newPermlink,
+                                                                        max_accepted_payout: "1000000.000 SBD",
+                                                                        percent_steem_dollars: 10000, // 10000 === 100%
+                                                                        allow_votes: true,
+                                                                        allow_curation_rewards: true,
+                                                                        extensions: []
+                                                                    };
+
+                                                                    if (parameters.editorData.onPubPayoutType === 0)
+                                                                    {
+                                                                        comment_options.max_accepted_payout = '0.000 SBD';
+                                                                    }
+                                                                    else if (parameters.editorData.onPubPayoutType === 100)
+                                                                    {
+                                                                        comment_options.percent_steem_dollars = 0; //10000 === 100% (of 50%)
+                                                                    }
+
+                                                                    tx.add_type_operation('comment_options', comment_options);
+
+                                                                    //vote
+                                                                    if (parameters.editorData.onPubAutoVote)
+                                                                    {
+                                                                        tx.add_type_operation('vote', {
+                                                                            voter: parameters.editorData.author,
+                                                                            author: parameters.editorData.author,
+                                                                            permlink: newPermlink,
+                                                                            weight: 10000
+                                                                        });
+
+                                                                    }
+
+                                                                    tx.process_transaction(accountLogin, null, true).then(function(res)
+                                                                    {
+                                                                        postHelpers.opUnlock(parameters.editorData.author, parameters.editorData.permlink);
+                                                                        steemUserWatcher.sync();
+                                                                        blockchainPostedSuccess(newPermlink); //emulate a successful posting
+                                                                    }).catch(function(err)
+                                                                    {
+                                                                        doubleUnlock(newPermlink);
+                                                                        cb(err);
+                                                                    });
+
+                                                                }
+
+                                                            });
+
+                                                        }
+
+                                                    });
+
+                                                }
+
+                                            });
+
+                                        }
+
+                                    });
 
                                 }
 
