@@ -1,11 +1,9 @@
 (function()
 {
-    var path = require('path');
-
-    var util = require(path.resolve('./modules/util.js')),
-        textHelpers = require(path.resolve('./modules/textHelpers.js')),
-        editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js')),
-        editorUtility = require(path.resolve('./modules/editorUtility.js')),
+    var util = require(global.mainPath + '/modules/util.js'),
+        textHelpers = require(global.mainPath + '/modules/textHelpers.js'),
+        editorUIHelpers = require(global.mainPath + '/modules/renderer/editorUIHelpers.js'),
+        editorUtility = require(global.mainPath + '/modules/editorUtility.js'),
         shell = require('electron').shell;
 
     $(window).resize(function()

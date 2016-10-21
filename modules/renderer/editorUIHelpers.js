@@ -1,9 +1,7 @@
 (function()
 {
-    var path = require('path');
-
-    var textHelpers = require(path.resolve('./modules/textHelpers.js')),
-        editorUtility = require(path.resolve('./modules/editorUtility.js'));
+    var textHelpers = require(global.mainPath + '/modules/textHelpers.js'),
+        editorUtility = require(global.mainPath + '/modules/editorUtility.js');
 
     function getPostAsStr(viewID)
     {

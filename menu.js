@@ -3,7 +3,8 @@
     //note: If this is ever translated in the future - replace the role: ones with what's in menu-item-roles.js in the electron-master
     //note: Then translate each label
 
-    var Menu = require('electron').Menu;
+    var electronShell = require('electron').shell,
+        Menu = require('electron').Menu;
 
     function displayDialog(focusedWindow, dialogName)
     {
@@ -201,10 +202,17 @@
 
         helpMenu.submenu.push(
         {
-            label: 'Learn More',
+            label: 'Issue Tracker',
             click: function click()
             {
-                require('electron').shell.openExternal('http://electron.atom.io');
+                electronShell.openExternal('https://github.com/keverw/SteemWrite/issues');
+            }
+        },
+        {
+            label: 'Steem Profile',
+            click: function click()
+            {
+                electronShell.openExternal('https://steemit.com/@steemwrite');
             }
         });
 

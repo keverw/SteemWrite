@@ -1,10 +1,9 @@
 (function()
 {
-    var path = require('path');
     var menuName = (process.platform === 'darwin') ? 'Preferences' : 'Options';
 
     var uuid = require('node-uuid'),
-        editorUIHelpers = require(path.resolve('./modules/renderer/editorUIHelpers.js'));
+        editorUIHelpers = require(global.mainPath + '/modules/renderer/editorUIHelpers.js');
 
     var settingsBox,
         settingsViewMeta;

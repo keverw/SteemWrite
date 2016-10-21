@@ -2,6 +2,8 @@ global.appConfig = require('./appConfig.json');
 global.appConfig.appVersion = require('./package.json').version;
 global.lang = require('./lang/en.json');
 
+global.mainPath = __dirname;
+
 global.moment = require('moment-timezone');
 global.tz = global.moment.tz.guess();
 
@@ -247,8 +249,8 @@ global.createWindow = function()
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 
-var path = require('path');
-var sqlite3 = require('sqlite3');
+var path = require('path'),
+    sqlite3 = require('sqlite3');
 
 app.on('ready', function()
 {

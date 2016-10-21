@@ -1,8 +1,6 @@
 (function()
 {
-    var path = require('path');
-
-    var textHelpers = require(path.resolve('./modules/textHelpers.js')),
+    var textHelpers = require(global.mainPath + '/modules/textHelpers.js'),
         htmlToText = require('html-to-text'),
         getSlug = require('speakingurl'),
         sha1 = require('sha1');

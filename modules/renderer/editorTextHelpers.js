@@ -1,8 +1,6 @@
 (function()
 {
-    var path = require('path');
-    var textHelpers = require(path.resolve('./modules/textHelpers.js'));
-    //'./modules/textHelpers.js' won't work for some reason by itself...
+    var textHelpers = require(global.mainPath + '/modules/textHelpers.js');
 
     var shell = require('electron').shell;
 

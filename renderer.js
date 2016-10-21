@@ -6,6 +6,8 @@ global.appConfig = require('./appConfig.json');
 global.appConfig.appVersion = require('./package.json').version;
 global.lang = require('./lang/en.json');
 
+global.mainPath = __dirname;
+
 global.viewData = {
     lastView: '',
     lastAcc: '',

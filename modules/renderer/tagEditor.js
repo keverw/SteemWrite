@@ -1,10 +1,8 @@
 (function()
 {
-    var path = require('path');
-
     var _ = require('underscore'),
-        util = require(path.resolve('./modules/util.js')),
-        categorySelectorValidation = require(path.resolve('./modules/steemit/CategorySelectorValidation.js'));
+        util = require(global.mainPath + '/modules/util.js'),
+        categorySelectorValidation = require(global.mainPath + '/modules/steemit/CategorySelectorValidation.js');
 
     function tagEditorRenderLabels(reqViewID, tags)
     {
