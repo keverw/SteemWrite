@@ -2,7 +2,7 @@
     "name": "SteemWrite",
     "private": true,
     "version": "0.0.1",
-    "description": "A desktop writing app for Steem",
+    "description": "SteemWrite",
     "author": {
         "name": "Keverw",
         "email": "keverw92@gmail.com"

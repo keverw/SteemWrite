@@ -1,4 +1,5 @@
 // Module to control application life.
+var electron = require('electron');
 var app = electron.app;
 
 // this should be placed at top of main.js to handle setup events quickly
@@ -33,7 +34,7 @@ function handleSquirrelEvent()
 
         return spawnedProcess;
     };
-    
+
     var spawnUpdate = function spawnUpdate(args) {
         return spawn(updateDotExe, args);
     };
@@ -83,8 +84,6 @@ global.mainPath = __dirname;
 
 global.moment = require('moment-timezone');
 global.tz = global.moment.tz.guess();
-
-var electron = require('electron');
 
 function makeSingleInstance() {
     return app.makeSingleInstance(function() {
