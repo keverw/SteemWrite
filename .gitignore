@@ -1,6 +1,7 @@
 npm-debug.log
 node_modules/
 dist/
+images/unused
 
 #css is auto generated from LESS
 css/
