@@ -2,10 +2,25 @@
     "name": "SteemWrite",
     "private": true,
     "version": "0.0.1",
-    "description": "",
+    "description": "A desktop writing app for Steem",
+    "author": {
+        "name": "Keverw",
+        "email": "keverw92@gmail.com"
+    },
     "main": "main.js",
     "scripts": {
-        "start": "electron ."
+        "start": "electron .",
+        "pack": "build --dir",
+        "dist": "build --dir --ia32 --x64  -m dmg -l deb rpm -w squirrel"
+    },
+    "build": {
+        "appId": "com.keverw.steemwrite",
+        "mac": {
+            "category": "public.app-category.productivity"
+        },
+        "win": {
+            "iconUrl": "https://raw.githubusercontent.com/keverw/steemwrite/master/build/icon.ico"
+        }
     },
     "devDependencies": {
         "debug-menu": "0.4.0",

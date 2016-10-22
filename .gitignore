@@ -1,8 +1,9 @@
 npm-debug.log
 node_modules/
+dist/
 
 #css is auto generated from LESS
-/css
+css/
 
 ############
 # Windows Crap
