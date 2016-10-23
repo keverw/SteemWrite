@@ -11,7 +11,10 @@
     "scripts": {
         "start": "electron .",
         "pack": "build --dir",
-        "dist": "build --dir --ia32 --x64  -m dmg -l deb rpm -w squirrel"
+        "distall": "build --dir --ia32 --x64  -m dmg -l deb rpm -w squirrel",
+        "distmac": "build --dir --ia32 --x64  -m dmg",
+        "distwin": "build --dir --ia32 --x64 -w squirrel",
+        "distlin": "build --dir --ia32 --x64 -l deb rpm"
     },
     "build": {
         "appId": "com.keverw.steemwrite",
