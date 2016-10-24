@@ -482,7 +482,7 @@ $(function()
             {
                 $('#licenseView').html(util.getViewHtml('base/license'));
 
-                fs.readFile('./LICENSE-en.html', 'utf8', function(err, data)
+                fs.readFile(global.mainPath + '/LICENSE-en.html', 'utf8', function(err, data)
                 {
                     if (err) return global.closeWithError(err);
                     $('#licenseView .licenseText').html(data);
