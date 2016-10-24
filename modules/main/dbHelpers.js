@@ -15,7 +15,7 @@
 
     var steemUserWatcher = require('./steemUserWatcher.js'),
         processWatchedUsers = require('./processWatchedUsers.js'),
-        migrationsPath = process.cwd() + '/migrations';
+        migrationsPath = global.mainPath + '/migrations';
 
     global.didMigrateCheck = false;
     global.isMigrateingDone = false;
