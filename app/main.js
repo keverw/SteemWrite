@@ -1,80 +1,10 @@
-// Module to control application life.
-var electron = require('electron');
-var app = electron.app;
+//fix for win32 not finding native modules https://github.com/electron-userland/electron-packager/issues/217#issuecomment-168223915
+var path = require('path');
 
-// this should be placed at top of main.js to handle setup events quickly
-if (handleSquirrelEvent()) {
-    // squirrel event handled and app will exit in 1000ms, so don't do anything else
-    return app.quit();
-}
-
-function handleSquirrelEvent()
-{
-    if (process.argv.length === 1) {
-        return false;
-    }
-
-    var ChildProcess = require('child_process');
-    var path = require('path');
-
-    var appFolder = path.resolve(process.execPath, '..');
-    var rootAtomFolder = path.resolve(appFolder, '..');
-    var updateDotExe = path.resolve(path.join(rootAtomFolder, 'Update.exe'));
-    var exeName = path.basename(process.execPath);
-
-    var spawn = function spawn(command, args) {
-        var spawnedProcess = void 0,
-            error = void 0;
-
-        try {
-            spawnedProcess = ChildProcess.spawn(command, args, {
-                detached: true
-            });
-        } catch (error) {}
-
-        return spawnedProcess;
-    };
-
-    var spawnUpdate = function spawnUpdate(args) {
-        return spawn(updateDotExe, args);
-    };
-
-    var squirrelEvent = process.argv[1];
-    switch (squirrelEvent) {
-        case '--squirrel-install':
-        case '--squirrel-updated':
-            // Optionally do things such as:
-            // - Add your .exe to the PATH
-            // - Write to the registry for things like file associations and
-            //   explorer context menus
-
-            // Install desktop and start menu shortcuts
-            spawnUpdate(['--createShortcut', exeName]);
-
-            setTimeout(app.quit, 1000);
-            return true;
-
-        case '--squirrel-uninstall':
-            // Undo anything you did in the --squirrel-install and
-            // --squirrel-updated handlers
-
-            // Remove desktop and start menu shortcuts
-            spawnUpdate(['--removeShortcut', exeName]);
-
-            setTimeout(app.quit, 1000);
-            return true;
-
-        case '--squirrel-obsolete':
-            // This is called on the outgoing version of your app before
-            // we update to the new version - it's the opposite of
-            // --squirrel-updated
-
-            app.quit();
-            return true;
-    }
-}
-
-////
+module.paths.push(path.resolve('node_modules'));
+module.paths.push(path.resolve('../node_modules'));
+module.paths.push(path.resolve(__dirname, '..', '..', '..', '..', 'resources', 'app', 'node_modules'));
+module.paths.push(path.resolve(__dirname, '..', '..', '..', '..', 'resources', 'app.asar', 'node_modules'));
 
 global.appConfig = require('./appConfig.json');
 global.appConfig.appVersion = require('./package.json').version;
@@ -84,6 +14,10 @@ global.mainPath = __dirname;
 
 global.moment = require('moment-timezone');
 global.tz = global.moment.tz.guess();
+
+// Module to control application life.
+var electron = require('electron');
+var app = electron.app;
 
 function makeSingleInstance() {
     return app.makeSingleInstance(function() {
@@ -323,8 +257,7 @@ global.createWindow = function()
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 
-var path = require('path'),
-    sqlite3 = require('sqlite3');
+var sqlite3 = require('sqlite3');
 
 app.on('ready', function()
 {

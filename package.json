@@ -4,13 +4,14 @@
     "postinstall": "install-app-deps",
     "start": "npm install && electron ./app",
     "pack": "build --dir",
-    "distall": "build --dir --ia32 --x64  -m dmg -l deb rpm -w squirrel",
+    "distall": "build --dir --ia32 --x64  -m dmg -l deb rpm -w NSIS",
     "distmac": "build --dir --ia32 --x64  -m dmg",
-    "distwin": "build --dir --ia32 --x64 -w squirrel",
+    "distwin": "build --dir --ia32 --x64 -w NSIS",
     "distlin": "build --dir --ia32 --x64 -l deb rpm"
   },
   "build": {
     "appId": "com.keverw.steemwrite",
+    "asar": false,
     "mac": {
       "category": "public.app-category.productivity"
     },
