@@ -21,8 +21,8 @@
   },
   "devDependencies": {
     "debug-menu": "0.4.0",
-    "electron": "1.4.4",
-    "electron-builder": "7.15.2",
-    "electron-reload": "1.0.2"
+    "electron": "1.4.6",
+    "electron-builder": "7.24.1",
+    "electron-reload": "1.0.3"
   }
 }
