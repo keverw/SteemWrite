@@ -14,15 +14,12 @@
     "asar": false,
     "mac": {
       "category": "public.app-category.productivity"
-    },
-    "win": {
-      "iconUrl": "https://raw.githubusercontent.com/keverw/steemwrite/master/build/icon.ico"
     }
   },
   "devDependencies": {
     "debug-menu": "0.4.0",
-    "electron": "1.4.8",
-    "electron-builder": "8.6.0",
+    "electron": "1.4.10",
+    "electron-builder": "10.3.0",
     "electron-reload": "1.0.3"
   }
 }
