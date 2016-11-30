@@ -1,25 +1,24 @@
 {
-  "private": true,
-  "scripts": {
-    "postinstall": "install-app-deps",
-    "start": "npm install && electron ./app",
-    "pack": "build --dir",
-    "distall": "build --dir --ia32 --x64  -m dmg -l deb rpm -w NSIS",
-    "distmac": "build --dir --x64  -m dmg",
-    "distwin": "build --dir --ia32 --x64 -w NSIS",
-    "distlin": "build --dir --ia32 --x64 -l deb rpm"
-  },
-  "build": {
-    "appId": "com.keverw.steemwrite",
-    "asar": false,
-    "mac": {
-      "category": "public.app-category.productivity"
+    "private": true,
+    "scripts": {
+        "postinstall": "install-app-deps",
+        "start": "npm install && ./node_modules/.bin/electron ./app",
+        "pack": "build --dir",
+        "distall": "build --dir --ia32 --x64  -m dmg -l deb rpm -w NSIS",
+        "distmac": "build --dir --x64  -m dmg",
+        "distwin": "build --dir --ia32 --x64 -w NSIS",
+        "distlin": "build --dir --ia32 --x64 -l deb rpm"
+    },
+    "build": {
+        "appId": "com.keverw.steemwrite",
+        "asar": false,
+        "mac": {
+            "category": "public.app-category.productivity"
+        }
+    },
+    "devDependencies": {
+        "debug-menu": "0.4.0",
+        "electron": "1.4.10",
+        "electron-builder": "10.3.0"
     }
-  },
-  "devDependencies": {
-    "debug-menu": "0.4.0",
-    "electron": "1.4.10",
-    "electron-builder": "10.3.0",
-    "electron-reload": "1.0.3"
-  }
 }

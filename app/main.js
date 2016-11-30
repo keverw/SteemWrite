@@ -39,7 +39,7 @@ global.isAppClosing = false;
 if (global.appConfig.dev)
 {
     require('electron-reload')(__dirname, {
-        electron: require('electron')
+        //electron: require('electron')
     });
 }
 
